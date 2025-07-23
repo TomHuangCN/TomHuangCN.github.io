@@ -6,6 +6,7 @@ const works = [
   { id: 'work1', name: '作品一' },
   { id: 'work2', name: '作品二' },
   { id: 'work3', name: '作品三' },
+  { id: 'work4', name: '作品四' },
 ];
 
 const sidebarStyle: React.CSSProperties = {
