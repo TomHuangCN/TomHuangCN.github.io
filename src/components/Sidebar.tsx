@@ -1,13 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-
-const works = [
-  { id: 'all', name: '作品合集' },
-  { id: 'work1', name: '作品一' },
-  { id: 'work2', name: '作品二' },
-  { id: 'work3', name: '作品三' },
-  { id: 'work4', name: '作品四' },
-];
+import { WORKS } from '../works/constants';
 
 const sidebarStyle: React.CSSProperties = {
   width: 180,
@@ -37,7 +30,7 @@ const Sidebar: React.FC = () => (
     >
       作品合集
     </NavLink>
-    {works.slice(1).map((work) => (
+    {WORKS.map((work) => (
       <NavLink
         key={work.id}
         to={`/works/${work.id}`}
