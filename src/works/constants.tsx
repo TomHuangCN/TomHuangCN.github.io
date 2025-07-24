@@ -1,29 +1,23 @@
-import CalendarGen1 from './calendar-gen-1';
+import { useTranslation } from 'react-i18next';
+import MonthlyGen from './calendar-gen/monthly-gen';
+import React from 'react';
 
-export interface Work {
+export interface IWork {
   id: string;
   name: string;
   desc: string;
   content: React.ComponentType | string;
 }
 
-export const WORKS: Work[] = [
-  {
-    id: 'work1',
-    name: '作品一',
-    desc: '这是作品一的简介',
-    content: CalendarGen1,
-  },
-  {
-    id: 'work2',
-    name: '作品二',
-    desc: '这是作品二的简介',
-    content: '这里是作品二的详细内容。',
-  },
-  {
-    id: 'work3',
-    name: '作品三',
-    desc: '这是作品三的简介',
-    content: '这里是作品三的详细内容。',
-  },
-]; 
+export const useWorks = (): IWork[] => {
+  const { t } = useTranslation();
+  
+  return [
+    {
+      id: 'monthly-calendar-gen',
+      name: t('作品一'),
+      desc: t('作品一简介'),
+      content: MonthlyGen,
+    }
+  ];
+}; 

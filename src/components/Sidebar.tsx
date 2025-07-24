@@ -1,6 +1,7 @@
 import React from 'react';
+import { useWorks } from '../works/constants';
 import { NavLink } from 'react-router-dom';
-import { WORKS } from '../works/constants';
+import { useTranslation } from 'react-i18next';
 
 const sidebarStyle: React.CSSProperties = {
   width: 180,
@@ -22,24 +23,29 @@ const activeStyle: React.CSSProperties = {
   color: '#1890ff',
 };
 
-const Sidebar: React.FC = () => (
-  <nav style={sidebarStyle}>
-    <NavLink
-      to="/works"
-      style={({ isActive }) => ({ ...linkStyle, ...(isActive ? activeStyle : {}) })}
-    >
-      作品合集
-    </NavLink>
-    {WORKS.map((work) => (
+const Sidebar: React.FC = () => {
+  const WORKS = useWorks();
+  const { t } = useTranslation();
+
+  return (
+    <nav style={sidebarStyle}>
       <NavLink
-        key={work.id}
-        to={`/works/${work.id}`}
+        to="/works"
         style={({ isActive }) => ({ ...linkStyle, ...(isActive ? activeStyle : {}) })}
       >
-        {work.name}
+        {t('作品合集')}
       </NavLink>
-    ))}
-  </nav>
-);
+      {WORKS.map((work) => (
+        <NavLink
+          key={work.id}
+          to={`/works/${work.id}`}
+          style={({ isActive }) => ({ ...linkStyle, ...(isActive ? activeStyle : {}) })}
+        >
+          {work.name}
+        </NavLink>
+      ))}
+    </nav>
+  );
+};
 
 export default Sidebar; 

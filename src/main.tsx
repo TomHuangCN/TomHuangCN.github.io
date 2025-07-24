@@ -1,10 +1,11 @@
+import './i18n';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import App from './App';
-import WorksList from './pages/WorksList';
-import WorkDetail from './pages/WorkDetail';
-import Cooperation from './pages/Cooperation';
+import App from './app';
+import WorksList from './pages/works-list';
+import WorkDetail from './pages/work-detail';
+import Cooperation from './pages/cooperation';
 
 const Main: React.FC = () => (
   <BrowserRouter>
