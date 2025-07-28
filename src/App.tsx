@@ -1,30 +1,30 @@
-import React from 'react';
-import { Outlet } from 'react-router-dom';
-import Header from './components/header';
-import Sidebar from './components/sidebar';
-import { SearchContext } from './components/header';
-import { useState } from 'react';
+import React from "react";
+import { Outlet } from "react-router-dom";
+import Header from "./components/header";
+import Sidebar from "./components/sidebar";
+import { SearchContext } from "./components/header";
+import { useState } from "react";
 
 const appStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  height: '100vh',
+  display: "flex",
+  flexDirection: "column",
+  height: "100vh",
 };
 const mainStyle: React.CSSProperties = {
-  display: 'flex',
+  display: "flex",
   flex: 1,
   minHeight: 0,
 };
 
 const App: React.FC = () => {
-  const [keyword, setKeyword] = useState('');
+  const [keyword, setKeyword] = useState("");
   return (
     <SearchContext.Provider value={{ keyword, setKeyword }}>
       <div style={appStyle}>
         <Header />
         <div style={mainStyle}>
           <Sidebar />
-          <div style={{ flex: 1, padding: 24, overflow: 'auto' }}>
+          <div style={{ flex: 1, padding: 24, overflow: "auto" }}>
             <Outlet />
           </div>
         </div>
@@ -33,4 +33,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App; 
+export default App;

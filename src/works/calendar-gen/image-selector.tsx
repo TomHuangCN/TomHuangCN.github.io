@@ -1,5 +1,5 @@
-import React from 'react';
-import type { CalendarImage } from './calendar-gen'
+import React from "react";
+import type { CalendarImage } from "./calendar-gen";
 
 interface ImageSelectorProps {
   images: CalendarImage[];
@@ -15,7 +15,11 @@ function fileToUrl(file: File): Promise<string> {
   });
 }
 
-export default function ImageSelector({ images, setImages, maxImages }: ImageSelectorProps) {
+export default function ImageSelector({
+  images,
+  setImages,
+  maxImages,
+}: ImageSelectorProps) {
   // 批量上传
   const handleFiles = (files: FileList | null) => {
     if (!files) return;
@@ -27,24 +31,67 @@ export default function ImageSelector({ images, setImages, maxImages }: ImageSel
   // 单张替换
   const handleReplace = (idx: number, file: File) => {
     fileToUrl(file).then(url => {
-      setImages((imgs) => imgs.map((img, i) => i === idx ? { url, file } : img));
+      setImages(imgs =>
+        imgs.map((img, i) => (i === idx ? { url, file } : img))
+      );
     });
   };
   return (
-    <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-      <input type="file" multiple accept="image/*" onChange={e => handleFiles(e.target.files)} />
+    <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+      <input
+        type="file"
+        multiple
+        accept="image/*"
+        onChange={e => handleFiles(e.target.files)}
+      />
       {Array.from({ length: maxImages }).map((_, i) => (
-        <div key={i} style={{ width: 60, height: 80, border: '1px solid #ccc', borderRadius: 4, overflow: 'hidden', position: 'relative' }}>
+        <div
+          key={i}
+          style={{
+            width: 60,
+            height: 80,
+            border: "1px solid #ccc",
+            borderRadius: 4,
+            overflow: "hidden",
+            position: "relative",
+          }}
+        >
           {images[i]?.url ? (
             <>
-              <img src={images[i].url} alt="img" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              <input type="file" accept="image/*" style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }} onChange={e => e.target.files && handleReplace(i, e.target.files[0])} />
+              <img
+                src={images[i].url}
+                alt="img"
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
+              <input
+                type="file"
+                accept="image/*"
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  opacity: 0,
+                  cursor: "pointer",
+                }}
+                onChange={e =>
+                  e.target.files && handleReplace(i, e.target.files[0])
+                }
+              />
             </>
           ) : (
-            <span style={{ color: '#aaa', fontSize: 12, lineHeight: '80px', textAlign: 'center', display: 'block' }}>{i === 0 ? '封面' : `内页${i}`}</span>
+            <span
+              style={{
+                color: "#aaa",
+                fontSize: 12,
+                lineHeight: "80px",
+                textAlign: "center",
+                display: "block",
+              }}
+            >
+              {i === 0 ? "封面" : `内页${i}`}
+            </span>
           )}
         </div>
       ))}
     </div>
   );
-} 
+}
