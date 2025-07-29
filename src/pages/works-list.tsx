@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useWorks } from "../works/constants";
+import Tooltip from "../components/tooltip";
 
 const WorksList: React.FC = () => {
   const works = useWorks();
@@ -14,12 +15,25 @@ const WorksList: React.FC = () => {
       <ul style={{ listStyle: "none", padding: 0 }}>
         {filteredWorks.map(work => (
           <li key={work.id} style={{ marginBottom: 16 }}>
-            <Link
-              to={`/works/${work.id}`}
-              style={{ fontSize: 18, fontWeight: 500 }}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                marginBottom: "4px",
+              }}
             >
-              {work.name}
-            </Link>
+              <Link
+                to={`/works/${work.id}`}
+                style={{ fontSize: 18, fontWeight: 500 }}
+              >
+                {work.name}
+              </Link>
+              {work.tips &&
+                work.tips.map((tip, index) => (
+                  <Tooltip key={index} content={tip.content} link={tip.link} />
+                ))}
+            </div>
             <div style={{ color: "#888", fontSize: 14 }}>{work.desc}</div>
           </li>
         ))}

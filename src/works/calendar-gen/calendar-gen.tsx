@@ -21,7 +21,7 @@ export interface CalendarImage {
 
 interface CalendarGenProps {
   maxImages?: number;
-  renderPage?: (img: CalendarImage, idx: number) => React.ReactNode;
+  renderPage?: (imgs: CalendarImage[]) => React.ReactNode;
   storeName?: string;
 }
 

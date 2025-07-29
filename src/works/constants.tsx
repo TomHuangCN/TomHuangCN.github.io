@@ -7,6 +7,10 @@ export interface IWork {
   desc: string;
   content: React.ComponentType | string;
   illustration?: string; // 本地图片的 URL
+  tips?: Array<{
+    content: string;
+    link?: string;
+  }>;
 }
 
 export const useWorks = (): IWork[] => {
@@ -17,6 +21,12 @@ export const useWorks = (): IWork[] => {
       desc: "辅助生成各式各样的月历，支持自定义图片、布局和样式，快速生成精美的月历作品",
       content: CJ_VTCP001_MonthlyGen,
       illustration: "/assets/CJ-VTCP001_illustration.png",
+      tips: [
+        {
+          content: "产品编号的含义",
+          link: "https://youmind.site/IOoX8F52nYuTDw",
+        },
+      ],
     },
   ];
 };

@@ -20,6 +20,8 @@ export default function ImageSelector({
   setImages,
   maxImages,
 }: ImageSelectorProps) {
+  const [isDragOver, setIsDragOver] = React.useState(false);
+
   // 批量上传
   const handleFiles = (files: FileList | null) => {
     if (!files) return;
@@ -28,6 +30,7 @@ export default function ImageSelector({
       setImages(urls.map((url, i) => ({ url, file: arr[i] })));
     });
   };
+
   // 单张替换
   const handleReplace = (idx: number, file: File) => {
     fileToUrl(file).then(url => {
@@ -36,8 +39,41 @@ export default function ImageSelector({
       );
     });
   };
+
+  // 拖拽事件处理
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    const files = e.dataTransfer.files;
+    handleFiles(files);
+  };
+
   return (
-    <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+    <div
+      style={{
+        display: "flex",
+        gap: 8,
+        marginBottom: 16,
+        padding: isDragOver ? "16px" : "0",
+        border: isDragOver ? "2px dashed #007bff" : "none",
+        borderRadius: isDragOver ? "8px" : "0",
+        backgroundColor: isDragOver ? "rgba(0, 123, 255, 0.1)" : "transparent",
+        transition: "all 0.2s ease",
+      }}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
       <label
         style={{
           display: "flex",

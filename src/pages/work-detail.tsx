@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useWorks } from "../works/constants";
 import { useParams } from "react-router-dom";
 import ImageModal from "../components/image-modal";
+import Tooltip from "../components/tooltip";
 
 const WorkDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -25,7 +26,20 @@ const WorkDetail: React.FC = () => {
       >
         {/* 左侧：标题和描述 */}
         <div style={{ flex: 1 }}>
-          <h2 style={{ marginTop: "0", marginBottom: 8 }}>{work.name}</h2>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              marginBottom: 8,
+            }}
+          >
+            <h2 style={{ marginTop: "0", marginBottom: 0 }}>{work.name}</h2>
+            {work.tips &&
+              work.tips.map((tip, index) => (
+                <Tooltip key={index} content={tip.content} link={tip.link} />
+              ))}
+          </div>
           <div style={{ color: "#888", lineHeight: 1.6 }}>{work.desc}</div>
         </div>
 
