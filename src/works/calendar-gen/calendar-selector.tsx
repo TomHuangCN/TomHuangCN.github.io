@@ -1,5 +1,4 @@
-import React from "react";
-import type { Calendar } from "./calendar-gen";
+import { Calendar } from "./storage";
 
 interface CalendarSelectorProps {
   calendars: Calendar[];

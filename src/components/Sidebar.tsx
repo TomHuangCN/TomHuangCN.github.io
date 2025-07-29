@@ -1,7 +1,6 @@
 import React from "react";
 import { useWorks } from "../works/constants";
 import { NavLink } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 
 const sidebarStyle: React.CSSProperties = {
   width: 180,
@@ -11,6 +10,7 @@ const sidebarStyle: React.CSSProperties = {
   display: "flex",
   flexDirection: "column",
   gap: 8,
+  fontSize: "smaller",
 };
 const linkStyle: React.CSSProperties = {
   padding: "8px 24px",
@@ -25,7 +25,6 @@ const activeStyle: React.CSSProperties = {
 
 const Sidebar: React.FC = () => {
   const WORKS = useWorks();
-  const { t } = useTranslation();
 
   return (
     <nav style={sidebarStyle}>
@@ -36,7 +35,7 @@ const Sidebar: React.FC = () => {
           ...(isActive ? activeStyle : {}),
         })}
       >
-        {t("作品合集")}
+        作品合集
       </NavLink>
       {WORKS.map(work => (
         <NavLink

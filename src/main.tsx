@@ -23,5 +23,5 @@ const Main: React.FC = () => (
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <Main />
-  </React.StrictMode>,
+  </React.StrictMode>
 );

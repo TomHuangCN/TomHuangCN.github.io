@@ -1,6 +1,5 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import { createContext, useState, useContext } from "react";
 import { useWorks } from "../works/constants";
 
@@ -40,7 +39,6 @@ const rightStyle: React.CSSProperties = {
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation();
   const { keyword, setKeyword } = useContext(SearchContext);
   const [showDropdown, setShowDropdown] = useState(false);
   const WORKS = useWorks();
@@ -63,13 +61,19 @@ const Header: React.FC = () => {
   return (
     <header style={headerStyle}>
       <div style={leftStyle} onClick={() => navigate("/")}>
-        MyLogo
+        <span>
+          <span style={{ color: "#e57373" }}>Y</span>ou{" "}
+          <span style={{ color: "#64b5f6" }}>H</span>ave{" "}
+          <span style={{ color: "#81c784" }}>A</span>{" "}
+          <span style={{ color: "#ffd54f" }}>G</span>ood{" "}
+          <span style={{ color: "#ba68c8" }}>E</span>ye
+        </span>
       </div>
       <div style={centerStyle}>
         <div style={{ position: "relative", width: 240 }}>
           <input
             type="text"
-            placeholder={t("搜索占位")}
+            placeholder="搜索占位"
             value={keyword}
             onChange={e => {
               setKeyword(e.target.value);
@@ -118,21 +122,7 @@ const Header: React.FC = () => {
         </div>
       </div>
       <div style={rightStyle}>
-        <button onClick={() => navigate("/cooperation")}>
-          {t("业务合作")}
-        </button>
-        <button
-          onClick={() => i18n.changeLanguage("zh")}
-          style={{ marginLeft: 8 }}
-        >
-          中文
-        </button>
-        <button
-          onClick={() => i18n.changeLanguage("en")}
-          style={{ marginLeft: 4 }}
-        >
-          English
-        </button>
+        <button onClick={() => navigate("/cooperation")}>业务合作</button>
       </div>
     </header>
   );

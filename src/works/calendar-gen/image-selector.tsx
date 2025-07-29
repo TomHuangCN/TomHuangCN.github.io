@@ -38,12 +38,31 @@ export default function ImageSelector({
   };
   return (
     <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-      <input
-        type="file"
-        multiple
-        accept="image/*"
-        onChange={e => handleFiles(e.target.files)}
-      />
+      <label
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "4px 12px",
+          fontSize: 12,
+          background: "#f5f5f5",
+          border: "1px solid #ccc",
+          borderRadius: 4,
+          cursor: "pointer",
+          marginRight: 8,
+          minWidth: 80,
+        }}
+      >
+        <span style={{ textAlign: "center", width: "100%" }}>点击上传图片</span>
+        <input
+          type="file"
+          multiple
+          accept="image/*"
+          style={{ display: "none" }}
+          onChange={e => handleFiles(e.target.files)}
+        />
+      </label>
       {Array.from({ length: maxImages }).map((_, i) => (
         <div
           key={i}
