@@ -6,7 +6,7 @@ interface CalendarRendererProps {
   renderPage?: (imgs: CalendarImage[]) => React.ReactNode;
 }
 
-export default function CalendarRenderer({
+function CalendarRenderer({
   images,
   renderPage,
 }: CalendarRendererProps) {
@@ -36,3 +36,16 @@ export default function CalendarRenderer({
     </div>
   );
 }
+
+// 使用 React.memo 避免不必要的重渲染
+export default React.memo(CalendarRenderer, (prevProps, nextProps) => {
+  // 只有当图片数组真正发生变化时才重新渲染
+  if (prevProps.images.length !== nextProps.images.length) {
+    return false;
+  }
+  
+  // 检查每个图片的 URL 是否发生变化
+  return prevProps.images.every((img, index) => 
+    img.url === nextProps.images[index]?.url
+  );
+});

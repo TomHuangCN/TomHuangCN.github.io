@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import type { CalendarImage } from "./calendar-gen";
 
 interface ImageSelectorProps {
@@ -25,28 +25,34 @@ export default function ImageSelector({
   const [isDragOver, setIsDragOver] = React.useState(false);
 
   // 批量上传
-  const handleFiles = (files: FileList | null) => {
-    if (!files) return;
-    const arr = Array.from(files).slice(0, maxImages);
-    Promise.all(arr.map(f => fileToUrl(f))).then(urls => {
-      const newImages = urls.map((url, i) => ({ url, file: arr[i] }));
-      setImages(newImages);
-      // 通知父组件图片已更新，需要更新storage
-      onImageReplace?.(newImages);
-    });
-  };
+  const handleFiles = useCallback(
+    (files: FileList | null) => {
+      if (!files) return;
+      const arr = Array.from(files).slice(0, maxImages);
+      Promise.all(arr.map(f => fileToUrl(f))).then(urls => {
+        const newImages = urls.map((url, i) => ({ url, file: arr[i] }));
+        setImages(newImages);
+        // 批量上传时立即通知父组件更新存储
+        onImageReplace?.(newImages);
+      });
+    },
+    [maxImages, setImages, onImageReplace]
+  );
 
-  // 单张替换
-  const handleReplace = (idx: number, file: File) => {
-    fileToUrl(file).then(url => {
-      const newImages = images.map((img, i) =>
-        i === idx ? { url, file } : img
-      );
-      setImages(newImages);
-      // 通知父组件图片已替换，需要更新storage
-      onImageReplace?.(newImages);
-    });
-  };
+  // 单张替换 - 优化版本
+  const handleReplace = useCallback(
+    (idx: number, file: File) => {
+      fileToUrl(file).then(url => {
+        const newImages = images.map((img, i) =>
+          i === idx ? { url, file } : img
+        );
+        setImages(newImages);
+        // 单张替换时通知父组件更新存储（会触发防抖）
+        onImageReplace?.(newImages);
+      });
+    },
+    [images, setImages, onImageReplace]
+  );
 
   // 拖拽事件处理
   const handleDragOver = (e: React.DragEvent) => {

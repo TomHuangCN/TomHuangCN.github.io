@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import CalendarSelector from "./calendar-selector";
 import ImageSelector from "./image-selector";
 import CalendarRenderer from "./calendar-renderer";
@@ -44,6 +44,9 @@ function CalendarGen({
   const [loading, setLoading] = useState(true);
   // 是否已生成日历
   const [isGenerated, setIsGenerated] = useState(false);
+
+  // 防抖定时器引用
+  const debounceTimerRef = useRef<number | null>(null);
 
   // 初始化时加载日历数据
   useEffect(() => {
@@ -107,31 +110,48 @@ function CalendarGen({
     [selectedId, storage]
   );
 
-  // 处理单张图片替换
+  // 处理单张图片替换 - 优化版本
   const handleImageReplace = useCallback(
     async (newImages: CalendarImage[]) => {
       if (selectedId && newImages.length > 0) {
-        try {
-          // 更新当前日历的图片
-          const cover = newImages[0].url;
-          const pages = newImages.map(img => img.url);
-          const updatedCalendar: Calendar = { id: selectedId, cover, pages };
-
-          const success = await storage.save(updatedCalendar);
-          if (success) {
-            // 更新日历列表
-            const allCalendars = await storage.getAll();
-            setCalendars(allCalendars);
-          } else {
-            console.error("更新日历失败");
-          }
-        } catch (error) {
-          console.error("更新日历失败:", error);
+        // 清除之前的定时器
+        if (debounceTimerRef.current) {
+          clearTimeout(debounceTimerRef.current);
         }
+
+        // 设置防抖定时器，300ms 后执行保存操作
+        debounceTimerRef.current = setTimeout(async () => {
+          try {
+            // 更新当前日历的图片
+            const cover = newImages[0].url;
+            const pages = newImages.map(img => img.url);
+            const updatedCalendar: Calendar = { id: selectedId, cover, pages };
+
+            const success = await storage.save(updatedCalendar);
+            if (success) {
+              // 只在成功保存后更新日历列表，避免频繁更新
+              const allCalendars = await storage.getAll();
+              setCalendars(allCalendars);
+            } else {
+              console.error("更新日历失败");
+            }
+          } catch (error) {
+            console.error("更新日历失败:", error);
+          }
+        }, 300);
       }
     },
     [selectedId, storage]
   );
+
+  // 清理定时器
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
 
   if (loading) {
     return (
