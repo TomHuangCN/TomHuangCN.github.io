@@ -1,0 +1,32 @@
+import CJ_VTCP001_Monthly from "./CJ-VTCP001/CJ-VTCP001-monthly";
+import React from "react";
+
+export interface IWork {
+  id: string;
+  name: string;
+  desc: string;
+  content: React.ComponentType | string;
+  illustration?: string; // 本地图片的 URL
+  tips?: Array<{
+    content: string;
+    link?: string;
+  }>;
+}
+
+export const useWorks = (): IWork[] => {
+  return [
+    {
+      id: "monthly-calendar-gen",
+      name: "月历 CJ-VTCP001",
+      desc: "辅助生成各式各样的月历，支持自定义图片、布局和样式，快速生成精美的月历作品",
+      content: CJ_VTCP001_Monthly,
+      illustration: "/assets/CJ-VTCP001_illustration.png",
+      tips: [
+        {
+          content: "产品编号的含义",
+          link: "https://youmind.site/IOoX8F52nYuTDw",
+        },
+      ],
+    },
+  ];
+};
