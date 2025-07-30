@@ -37,7 +37,6 @@ export class CJVTCP001Renderer implements ICJVTCP001Renderer {
     const img = new window.Image();
     img.src = imgUrl;
 
-    // 只有图片尺寸有效时才绘制
     if (img.width > 0 && img.height > 0) {
       const tempCanvas = document.createElement("canvas");
       tempCanvas.width = img.width;
@@ -63,7 +62,6 @@ export class CJVTCP001Renderer implements ICJVTCP001Renderer {
         ctx.drawImage(transformed, 0, 0);
       }
     } else {
-      // 图片未加载时，等加载后再绘制
       img.onload = () => {
         this._drawPerspectiveImage(
           ctx,
@@ -89,7 +87,6 @@ export class CJVTCP001Renderer implements ICJVTCP001Renderer {
     extraHeight: number
   ) {
     // 只取前12张（从一月开始）
-    console.log("images", images);
     const total = Math.min(images.length, 12);
     if (total === 0) return;
 
@@ -146,6 +143,127 @@ export class CJVTCP001Renderer implements ICJVTCP001Renderer {
         };
       }
     }
+  }
+
+  /**
+   * 渲染内页大图（每页6张，分两行渲染，每行图片尽量占满canvas宽度）
+   * @param images 最多6张图片
+   * @returns HTMLCanvasElement
+   */
+  private _renderInnerPage(images: CalendarImage[]): HTMLCanvasElement {
+    const { _bgImage } = this;
+    const canvas = document.createElement("canvas");
+    canvas.width = _bgImage.width;
+    canvas.height = _bgImage.height;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw new Error("无法获取 canvas 2D 上下文");
+
+    // 背景填充为白色
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // 分两行渲染
+    const count = images.length;
+    const rows = 2;
+    // 计算每行图片数量
+    const row1Count = Math.ceil(count / 2);
+    const row2Count = count - row1Count;
+
+    // 布局参数
+    const marginX = 32; // 左右边距
+    const marginY = 64; // 顶部/底部边距
+    const rowGap = 24; // 行间距
+    const gap = 24; // 图片间距
+
+    // 计算每行的高度
+    const availableHeight = canvas.height - marginY * 2 - rowGap;
+    const imgHeight = Math.floor(availableHeight / rows);
+
+    // 第一行
+    if (row1Count > 0) {
+      const availableWidth1 =
+        canvas.width - marginX * 2 - gap * (row1Count - 1);
+      const imgWidth1 = Math.floor(availableWidth1 / row1Count);
+      for (let i = 0; i < row1Count; i++) {
+        const imgObj = images[i];
+        if (!imgObj || !imgObj.url) continue;
+        const img = new window.Image();
+        img.src = imgObj.url;
+
+        // 保持图片比例缩放
+        let drawW = imgWidth1,
+          drawH = imgHeight;
+        if (img.width > 0 && img.height > 0) {
+          const scale = Math.min(
+            imgWidth1 / img.width,
+            imgHeight / img.height,
+            1
+          );
+          drawW = Math.round(img.width * scale);
+          drawH = Math.round(img.height * scale);
+        }
+
+        // 计算目标绘制区域
+        const x =
+          marginX + i * (imgWidth1 + gap) + Math.floor((imgWidth1 - drawW) / 2);
+        const y = marginY + Math.floor((imgHeight - drawH) / 2);
+
+        // 立即绘制（图片已加载时），否则等图片加载后再绘制
+        if (img.complete && img.naturalWidth > 0) {
+          ctx.drawImage(img, x, y, drawW, drawH);
+        } else {
+          img.onload = () => {
+            ctx.drawImage(img, x, y, drawW, drawH);
+          };
+        }
+      }
+    }
+
+    // 第二行
+    if (row2Count > 0) {
+      const availableWidth2 =
+        canvas.width - marginX * 2 - gap * (row2Count - 1);
+      const imgWidth2 = Math.floor(availableWidth2 / row2Count);
+      for (let i = 0; i < row2Count; i++) {
+        const imgObj = images[row1Count + i];
+        if (!imgObj || !imgObj.url) continue;
+        const img = new window.Image();
+        img.src = imgObj.url;
+
+        // 保持图片比例缩放
+        let drawW = imgWidth2,
+          drawH = imgHeight;
+        if (img.width > 0 && img.height > 0) {
+          const scale = Math.min(
+            imgWidth2 / img.width,
+            imgHeight / img.height,
+            1
+          );
+          drawW = Math.round(img.width * scale);
+          drawH = Math.round(img.height * scale);
+        }
+
+        // 计算目标绘制区域
+        const x =
+          marginX + i * (imgWidth2 + gap) + Math.floor((imgWidth2 - drawW) / 2);
+        const y =
+          marginY + imgHeight + rowGap + Math.floor((imgHeight - drawH) / 2);
+
+        // 立即绘制（图片已加载时），否则等图片加载后再绘制
+        if (img.complete && img.naturalWidth > 0) {
+          ctx.drawImage(img, x, y, drawW, drawH);
+        } else {
+          img.onload = () => {
+            ctx.drawImage(img, x, y, drawW, drawH);
+          };
+        }
+      }
+    }
+
+    // 绑定canvas点击事件
+    this._bindCanvasClick(canvas);
+
+    return canvas;
   }
 
   /**
@@ -207,7 +325,7 @@ export class CJVTCP001Renderer implements ICJVTCP001Renderer {
         [
           [650, 220], // 左上
           [960, 214], // 右上
-          [910, 703], // 右下
+          [910, 708], // 右下
           [600, 669], // 左下
         ],
         _bgImage.width,
@@ -219,7 +337,7 @@ export class CJVTCP001Renderer implements ICJVTCP001Renderer {
     ctx.drawImage(_ringImage, 0, 0);
 
     // 渲染底部内页图片（在扩展区域，3行大图，从一月开始，最多12张）
-    const innerImages: CalendarImage[] = _images.slice(1, 14); // 只取12张
+    const innerImages: CalendarImage[] = _images.slice(1, 13); // 只取12张
     this._drawInnerImages(ctx, canvas, innerImages, extraHeight);
 
     // 绑定canvas点击事件
@@ -235,6 +353,15 @@ export class CJVTCP001Renderer implements ICJVTCP001Renderer {
     if (!cover) {
       throw new Error("渲染封面时发生错误，canvas 未生成。");
     }
-    return [cover];
+
+    // 渲染内页大图（_images[1]~_images[12]，共12张，分2页，每页6张）
+    const innerImages: CalendarImage[] = this._images.slice(1, 13); // [1]~[12]
+    const page1Images = innerImages.slice(0, 6);
+    const page2Images = innerImages.slice(6, 12);
+
+    const innerPage1 = this._renderInnerPage(page1Images);
+    const innerPage2 = this._renderInnerPage(page2Images);
+
+    return [cover, innerPage1, innerPage2];
   }
 }

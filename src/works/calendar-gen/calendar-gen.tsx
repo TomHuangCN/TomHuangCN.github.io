@@ -107,6 +107,32 @@ function CalendarGen({
     [selectedId, storage]
   );
 
+  // 处理单张图片替换
+  const handleImageReplace = useCallback(
+    async (newImages: CalendarImage[]) => {
+      if (selectedId && newImages.length > 0) {
+        try {
+          // 更新当前日历的图片
+          const cover = newImages[0].url;
+          const pages = newImages.map(img => img.url);
+          const updatedCalendar: Calendar = { id: selectedId, cover, pages };
+
+          const success = await storage.save(updatedCalendar);
+          if (success) {
+            // 更新日历列表
+            const allCalendars = await storage.getAll();
+            setCalendars(allCalendars);
+          } else {
+            console.error("更新日历失败");
+          }
+        } catch (error) {
+          console.error("更新日历失败:", error);
+        }
+      }
+    },
+    [selectedId, storage]
+  );
+
   if (loading) {
     return (
       <div
@@ -134,6 +160,7 @@ function CalendarGen({
         images={images}
         setImages={setImages}
         maxImages={maxImages}
+        onImageReplace={handleImageReplace}
       />
       <button onClick={handleGenerate} style={{ marginBottom: 16 }}>
         生成日历

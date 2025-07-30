@@ -5,6 +5,7 @@ interface ImageSelectorProps {
   images: CalendarImage[];
   setImages: React.Dispatch<React.SetStateAction<CalendarImage[]>>;
   maxImages: number;
+  onImageReplace?: (images: CalendarImage[]) => void;
 }
 
 function fileToUrl(file: File): Promise<string> {
@@ -19,6 +20,7 @@ export default function ImageSelector({
   images,
   setImages,
   maxImages,
+  onImageReplace,
 }: ImageSelectorProps) {
   const [isDragOver, setIsDragOver] = React.useState(false);
 
@@ -27,16 +29,22 @@ export default function ImageSelector({
     if (!files) return;
     const arr = Array.from(files).slice(0, maxImages);
     Promise.all(arr.map(f => fileToUrl(f))).then(urls => {
-      setImages(urls.map((url, i) => ({ url, file: arr[i] })));
+      const newImages = urls.map((url, i) => ({ url, file: arr[i] }));
+      setImages(newImages);
+      // 通知父组件图片已更新，需要更新storage
+      onImageReplace?.(newImages);
     });
   };
 
   // 单张替换
   const handleReplace = (idx: number, file: File) => {
     fileToUrl(file).then(url => {
-      setImages(imgs =>
-        imgs.map((img, i) => (i === idx ? { url, file } : img))
+      const newImages = images.map((img, i) =>
+        i === idx ? { url, file } : img
       );
+      setImages(newImages);
+      // 通知父组件图片已替换，需要更新storage
+      onImageReplace?.(newImages);
     });
   };
 
