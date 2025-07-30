@@ -1,8 +1,8 @@
-import CalendarGen from "./calendar-gen";
+import CalendarGen from "../calendar-gen/calendar-gen";
 import { useCallback } from "react";
-import type { CalendarImage } from "./calendar-gen";
+import type { CalendarImage } from "../calendar-gen/calendar-gen";
 
-export default function CJ_VTCP001_MonthlyGen() {
+export default function CJ_VTCP001_Monthly() {
   const renderPage = useCallback((imgs: CalendarImage[]) => {
     console.log(imgs);
     return <div>333</div>;
