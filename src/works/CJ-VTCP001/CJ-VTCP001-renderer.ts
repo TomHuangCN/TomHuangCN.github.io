@@ -1,3 +1,4 @@
+import { perspectiveTransform } from "../../util/transform";
 import { CalendarImage } from "../calendar-gen/calendar-gen";
 import { ICJVTCP001Renderer } from "./i-CJ-VTCP001-renderer";
 
@@ -8,34 +9,232 @@ export class CJVTCP001Renderer implements ICJVTCP001Renderer {
   constructor(private _images: CalendarImage[]) {}
 
   private async _init() {
-    // const { _images } = this;
-
     this._bgImage.src = "/assets/CJ-VTCP001-calendar-bg.png";
     this._ringImage.src = "/assets/CJ-VTCP001-calendar-ring.png";
 
     await Promise.all([
-      new Promise(resolve => {
+      new Promise((resolve, reject) => {
         this._bgImage.onload = resolve;
+        this._bgImage.onerror = () => reject(new Error("背景图片加载失败"));
       }),
-      new Promise(resolve => {
+      new Promise((resolve, reject) => {
         this._ringImage.onload = resolve;
+        this._ringImage.onerror = () => reject(new Error("环形图片加载失败"));
       }),
     ]);
+  }
 
-    // console.log(_images);
+  /**
+   * 透视渲染一张图片到指定四边形
+   */
+  private _drawPerspectiveImage(
+    ctx: CanvasRenderingContext2D,
+    imgUrl: string,
+    dstQuad: [number, number][],
+    canvasWidth: number,
+    canvasHeight: number
+  ) {
+    const img = new window.Image();
+    img.src = imgUrl;
+
+    // 只有图片尺寸有效时才绘制
+    if (img.width > 0 && img.height > 0) {
+      const tempCanvas = document.createElement("canvas");
+      tempCanvas.width = img.width;
+      tempCanvas.height = img.height;
+      const tempCtx = tempCanvas.getContext("2d");
+      if (tempCtx) {
+        tempCtx.drawImage(img, 0, 0);
+
+        const srcQuad: [number, number][] = [
+          [0, 0],
+          [img.width, 0],
+          [img.width, img.height],
+          [0, img.height],
+        ];
+
+        const transformed = perspectiveTransform(
+          tempCanvas,
+          srcQuad,
+          dstQuad,
+          canvasWidth,
+          canvasHeight
+        );
+        ctx.drawImage(transformed, 0, 0);
+      }
+    } else {
+      // 图片未加载时，等加载后再绘制
+      img.onload = () => {
+        this._drawPerspectiveImage(
+          ctx,
+          imgUrl,
+          dstQuad,
+          canvasWidth,
+          canvasHeight
+        );
+      };
+    }
+  }
+
+  /**
+   * 渲染底部内页图片（大图，顶部间距更大，从一月开始，总共12张），分三行渲染
+   * canvas: 传入的画布（已扩展高度）
+   * images: 内页图片数组
+   * extraHeight: 扩展的底部高度
+   */
+  private _drawInnerImages(
+    ctx: CanvasRenderingContext2D,
+    canvas: HTMLCanvasElement,
+    images: CalendarImage[],
+    extraHeight: number
+  ) {
+    // 只取前12张（从一月开始）
+    console.log("images", images);
+    const total = Math.min(images.length, 12);
+    if (total === 0) return;
+
+    // 新参数（底部区域更大，每个图更大，间距更小）
+    const marginBottom = 16; // 距离底部边距，缩小
+    const marginTop = 16; // 距离扩展区顶部的间距，缩小
+    const gap = 8; // 图片间横向间距，缩小
+    const rowGap = 12; // 行间距，缩小
+    const rows = 1;
+    const cols = 12;
+
+    // 计算每张图片的最大宽高
+    const availableWidth = canvas.width - gap * (cols + 1);
+    const availableHeight =
+      extraHeight - marginTop - marginBottom - rowGap * (rows - 1);
+    const imgWidth = Math.floor(availableWidth / cols);
+    const imgHeight = Math.floor(availableHeight / rows);
+
+    for (let i = 0; i < total; i++) {
+      const row = Math.floor(i / cols);
+      const col = i % cols;
+      const imgObj = images[i];
+      if (!imgObj || !imgObj.url) continue;
+      const img = new window.Image();
+      img.src = imgObj.url;
+
+      // 计算目标绘制区域
+      const x = gap + col * (imgWidth + gap);
+      const y =
+        canvas.height -
+        extraHeight + // 扩展区顶部
+        marginTop +
+        row * (imgHeight + rowGap);
+
+      // 保持图片比例缩放
+      let drawW = imgWidth,
+        drawH = imgHeight;
+      if (img.width > 0 && img.height > 0) {
+        const scale = Math.min(imgWidth / img.width, imgHeight / img.height, 1);
+        drawW = Math.round(img.width * scale);
+        drawH = Math.round(img.height * scale);
+      }
+
+      // 居中对齐
+      const drawX = x + Math.floor((imgWidth - drawW) / 2);
+      const drawY = y + Math.floor((imgHeight - drawH) / 2);
+
+      // 立即绘制（图片已加载时），否则等图片加载后再绘制
+      if (img.complete && img.naturalWidth > 0) {
+        ctx.drawImage(img, drawX, drawY, drawW, drawH);
+      } else {
+        img.onload = () => {
+          ctx.drawImage(img, drawX, drawY, drawW, drawH);
+        };
+      }
+    }
+  }
+
+  /**
+   * 绑定canvas点击事件，输出像素坐标
+   */
+  private _bindCanvasClick(canvas: HTMLCanvasElement) {
+    canvas.onclick = function (e) {
+      const rect = canvas.getBoundingClientRect();
+      const x = Math.round(
+        (e.clientX - rect.left) * (canvas.width / rect.width)
+      );
+      const y = Math.round(
+        (e.clientY - rect.top) * (canvas.height / rect.height)
+      );
+      console.log("点击像素坐标：", { x, y });
+    };
   }
 
   private _renderCover() {
     const { _bgImage, _ringImage, _images } = this;
 
-    // const canvas = document.createElement("canvas");
-    // canvas.width = _bgImage.width;
-    // canvas.height = _bgImage.height;
+    // 扩展底部空白区域高度（更大）
+    const extraHeight = 160; // 比原来更高，给大图和更大顶部间距
+
+    // 创建更高的canvas
+    const canvas = document.createElement("canvas");
+    canvas.width = _bgImage.width;
+    canvas.height = _bgImage.height + extraHeight;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+      throw new Error("无法获取 canvas 2D 上下文");
+    }
+
+    // 先绘制背景图（在顶部）
+    ctx.drawImage(_bgImage, 0, 0);
+
+    // 透视渲染 _images[0]
+    if (_images && _images[0] && _images[0].url) {
+      this._drawPerspectiveImage(
+        ctx,
+        _images[0].url,
+        [
+          [190, 203], // 左上
+          [539, 187], // 右上
+          [483, 738], // 右下
+          [135, 698], // 左下
+        ],
+        _bgImage.width,
+        _bgImage.height
+      );
+    }
+
+    // 透视渲染 _images[1] 到指定坐标
+    if (_images && _images[1] && _images[1].url) {
+      this._drawPerspectiveImage(
+        ctx,
+        _images[1].url,
+        [
+          [650, 220], // 左上
+          [960, 214], // 右上
+          [910, 703], // 右下
+          [600, 669], // 左下
+        ],
+        _bgImage.width,
+        _bgImage.height
+      );
+    }
+
+    // 绘制环形图
+    ctx.drawImage(_ringImage, 0, 0);
+
+    // 渲染底部内页图片（在扩展区域，3行大图，从一月开始，最多12张）
+    const innerImages: CalendarImage[] = _images.slice(1, 14); // 只取12张
+    this._drawInnerImages(ctx, canvas, innerImages, extraHeight);
+
+    // 绑定canvas点击事件
+    this._bindCanvasClick(canvas);
+
+    return canvas;
   }
 
   async render(): Promise<HTMLCanvasElement[]> {
     await this._init();
-    this._renderCover();
-    return [];
+    const cover = this._renderCover();
+
+    if (!cover) {
+      throw new Error("渲染封面时发生错误，canvas 未生成。");
+    }
+    return [cover];
   }
 }

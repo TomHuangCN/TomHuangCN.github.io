@@ -18,7 +18,7 @@ export const useWorks = (): IWork[] => {
     {
       id: "monthly-calendar-gen",
       name: "月历 CJ-VTCP001",
-      desc: "辅助生成各式各样的月历，支持自定义图片、布局和样式，快速生成精美的月历作品",
+      desc: "图的尺寸是：153mm * 225mm",
       content: CJ_VTCP001_Monthly,
       illustration: "/assets/CJ-VTCP001_illustration.png",
       tips: [

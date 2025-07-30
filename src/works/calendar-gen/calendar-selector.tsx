@@ -21,7 +21,7 @@ export default function CalendarSelector({
             border: "1px solid #ccc",
             borderRadius: 4,
             overflow: "hidden",
-            width: 60,
+            width: "fit-content",
             height: 80,
             cursor: "pointer",
           }}
