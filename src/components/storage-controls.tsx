@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { storageManager } from "../util/storage";
+import { storageManager } from "../utils/storage";
 
 interface ProgressState {
   isVisible: boolean;

@@ -3,7 +3,7 @@ import {
   StorageData,
   StorageConfig,
   storageManager,
-} from "../../util/storage";
+} from "../../utils/storage";
 
 // 日历存储工具对象
 export interface Calendar extends StorageData {

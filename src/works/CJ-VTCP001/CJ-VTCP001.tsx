@@ -1,6 +1,6 @@
-import CalendarDemo from "../calendar-demo/calendar-demo";
+import CalendarDemo from "../../helps/calendar-demo/calendar-demo";
 import { useCallback, useState, useRef } from "react";
-import type { CalendarImage } from "../calendar-demo/calendar-demo";
+import type { CalendarImage } from "../../helps/calendar-demo/calendar-demo";
 import { CJVTCP001Renderer } from "./CJ-VTCP001-renderer";
 
 export default function CJ_VTCP001() {

@@ -1,5 +1,5 @@
-import { perspectiveTransform } from "../../util/transform";
-import { CalendarImage } from "../calendar-demo/calendar-demo";
+import { perspectiveTransform } from "../../utils/transform";
+import { CalendarImage } from "../../helps/calendar-demo/calendar-demo";
 import { ICJVTCP001Renderer } from "./i-CJ-VTCP001-renderer";
 
 export class CJVTCP001Renderer implements ICJVTCP001Renderer {
