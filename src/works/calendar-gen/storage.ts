@@ -1,30 +1,40 @@
+import {
+  BaseStorage,
+  StorageData,
+  StorageConfig,
+  storageManager,
+} from "../../util/storage";
+
 // 日历存储工具对象
-export interface Calendar {
-  id: string;
+export interface Calendar extends StorageData {
   cover: string;
   pages: string[];
 }
 
-class CalendarStorage {
-  private readonly dbName: string;
-  private readonly dbVersion = 1;
-  private readonly storeName: string;
+class CalendarStorage extends BaseStorage<Calendar> {
   private readonly imageStoreName: string;
-  private db: IDBDatabase | null = null;
   private readonly maxCalendars = 20; // 最多保存20个日历
 
   constructor(storeName: string = "calendars") {
-    this.storeName = storeName;
+    const config: StorageConfig = {
+      dbName: `CalendarDB_${storeName}`,
+      storeName,
+      version: 1,
+      maxItems: 20,
+    };
+    super(config);
     this.imageStoreName = `${storeName}_images`;
-    this.dbName = `CalendarDB_${storeName}`;
+
+    // 注册到 storage manager
+    storageManager.register("calendar", this);
   }
 
-  // 初始化数据库
-  private async initDB(): Promise<IDBDatabase> {
+  // 重写初始化数据库方法，添加图片存储
+  protected async initDB(): Promise<IDBDatabase> {
     if (this.db) return this.db;
 
     return new Promise((resolve, reject) => {
-      const request = indexedDB.open(this.dbName, this.dbVersion);
+      const request = indexedDB.open(this.config.dbName, this.config.version!);
 
       request.onerror = () => reject(request.error);
       request.onsuccess = () => {
@@ -36,8 +46,8 @@ class CalendarStorage {
         const db = (event.target as IDBOpenDBRequest).result;
 
         // 创建日历存储对象
-        if (!db.objectStoreNames.contains(this.storeName)) {
-          const calendarStore = db.createObjectStore(this.storeName, {
+        if (!db.objectStoreNames.contains(this.config.storeName)) {
+          const calendarStore = db.createObjectStore(this.config.storeName, {
             keyPath: "id",
           });
           calendarStore.createIndex("timestamp", "timestamp", {
@@ -119,7 +129,7 @@ class CalendarStorage {
   }
 
   // 清理旧数据
-  private async cleanupOldData(): Promise<void> {
+  protected async cleanupOldData(): Promise<void> {
     try {
       const calendars = await this.getAll();
       if (calendars.length >= this.maxCalendars) {
@@ -139,7 +149,7 @@ class CalendarStorage {
     }
   }
 
-  // 保存日历
+  // 重写保存方法，处理图片数据
   async save(calendar: Calendar): Promise<boolean> {
     try {
       const db = await this.initDB();
@@ -162,8 +172,11 @@ class CalendarStorage {
       };
 
       return new Promise((resolve, reject) => {
-        const transaction = db.transaction([this.storeName], "readwrite");
-        const store = transaction.objectStore(this.storeName);
+        const transaction = db.transaction(
+          [this.config.storeName],
+          "readwrite"
+        );
+        const store = transaction.objectStore(this.config.storeName);
         const request = store.put(calendarData);
 
         request.onsuccess = async () => {
@@ -184,8 +197,8 @@ class CalendarStorage {
       const db = await this.initDB();
 
       return new Promise((resolve, reject) => {
-        const transaction = db.transaction([this.storeName], "readonly");
-        const store = transaction.objectStore(this.storeName);
+        const transaction = db.transaction([this.config.storeName], "readonly");
+        const store = transaction.objectStore(this.config.storeName);
         const request = store.get(id);
 
         request.onsuccess = async () => {
@@ -230,14 +243,14 @@ class CalendarStorage {
     }
   }
 
-  // 获取所有日历
+  // 重写获取所有方法，处理图片数据
   async getAll(): Promise<Calendar[]> {
     try {
       const db = await this.initDB();
 
       return new Promise((resolve, reject) => {
-        const transaction = db.transaction([this.storeName], "readonly");
-        const store = transaction.objectStore(this.storeName);
+        const transaction = db.transaction([this.config.storeName], "readonly");
+        const store = transaction.objectStore(this.config.storeName);
         const request = store.getAll();
 
         request.onsuccess = async () => {
@@ -281,8 +294,11 @@ class CalendarStorage {
 
       // 删除日历元数据
       return new Promise((resolve, reject) => {
-        const transaction = db.transaction([this.storeName], "readwrite");
-        const store = transaction.objectStore(this.storeName);
+        const transaction = db.transaction(
+          [this.config.storeName],
+          "readwrite"
+        );
+        const store = transaction.objectStore(this.config.storeName);
         const request = store.delete(id);
 
         request.onsuccess = () => resolve(true);
@@ -301,8 +317,11 @@ class CalendarStorage {
 
       // 清空日历存储
       await new Promise<void>((resolve, reject) => {
-        const transaction = db.transaction([this.storeName], "readwrite");
-        const store = transaction.objectStore(this.storeName);
+        const transaction = db.transaction(
+          [this.config.storeName],
+          "readwrite"
+        );
+        const store = transaction.objectStore(this.config.storeName);
         const request = store.clear();
 
         request.onsuccess = () => resolve();
@@ -329,8 +348,8 @@ class CalendarStorage {
       const db = await this.initDB();
 
       return new Promise((resolve, reject) => {
-        const transaction = db.transaction([this.storeName], "readonly");
-        const store = transaction.objectStore(this.storeName);
+        const transaction = db.transaction([this.config.storeName], "readonly");
+        const store = transaction.objectStore(this.config.storeName);
         const request = store.count(id);
 
         request.onsuccess = () => resolve(request.result > 0);
@@ -348,8 +367,8 @@ class CalendarStorage {
       const db = await this.initDB();
 
       return new Promise((resolve, reject) => {
-        const transaction = db.transaction([this.storeName], "readonly");
-        const store = transaction.objectStore(this.storeName);
+        const transaction = db.transaction([this.config.storeName], "readonly");
+        const store = transaction.objectStore(this.config.storeName);
         const request = store.count();
 
         request.onsuccess = () => resolve(request.result);
