@@ -1,9 +1,9 @@
-import CalendarGen from "../calendar-gen/calendar-gen";
+import CalendarDemo from "../calendar-demo/calendar-demo";
 import { useCallback, useState, useRef } from "react";
-import type { CalendarImage } from "../calendar-gen/calendar-gen";
+import type { CalendarImage } from "../calendar-demo/calendar-demo";
 import { CJVTCP001Renderer } from "./CJ-VTCP001-renderer";
 
-export default function CJ_VTCP001_Monthly() {
+export default function CJ_VTCP001() {
   const [isLoading, setIsLoading] = useState(false);
   const canvasRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -59,7 +59,7 @@ export default function CJ_VTCP001_Monthly() {
   }, []);
 
   return (
-    <CalendarGen
+    <CalendarDemo
       maxImages={13}
       renderPage={renderPage}
       storeName="monthly_calendars"

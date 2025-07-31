@@ -1,4 +1,4 @@
-import CJ_VTCP001_Monthly from "./CJ-VTCP001/CJ-VTCP001-monthly";
+import CJ_VTCP001 from "./CJ-VTCP001/CJ-VTCP001";
 import React from "react";
 
 export interface IWork {
@@ -19,7 +19,7 @@ export const useWorks = (): IWork[] => {
       id: "monthly-calendar-gen",
       name: "月历 CJ-VTCP001",
       desc: "图的尺寸是：153mm * 225mm",
-      content: CJ_VTCP001_Monthly,
+      content: CJ_VTCP001,
       illustration: "/assets/CJ-VTCP001_illustration.png",
       tips: [
         {

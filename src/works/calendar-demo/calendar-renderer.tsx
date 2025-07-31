@@ -1,15 +1,12 @@
 import React from "react";
-import type { CalendarImage } from "./calendar-gen";
+import type { CalendarImage } from "./calendar-demo";
 
 interface CalendarRendererProps {
   images: CalendarImage[];
   renderPage?: (imgs: CalendarImage[]) => React.ReactNode;
 }
 
-function CalendarRenderer({
-  images,
-  renderPage,
-}: CalendarRendererProps) {
+function CalendarRenderer({ images, renderPage }: CalendarRendererProps) {
   return (
     <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
       {renderPage
@@ -43,9 +40,9 @@ export default React.memo(CalendarRenderer, (prevProps, nextProps) => {
   if (prevProps.images.length !== nextProps.images.length) {
     return false;
   }
-  
+
   // 检查每个图片的 URL 是否发生变化
-  return prevProps.images.every((img, index) => 
-    img.url === nextProps.images[index]?.url
+  return prevProps.images.every(
+    (img, index) => img.url === nextProps.images[index]?.url
   );
 });

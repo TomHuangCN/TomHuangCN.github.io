@@ -19,18 +19,18 @@ export interface CalendarImage {
   file?: File;
 }
 
-interface CalendarGenProps {
+interface CalendarDemoProps {
   maxImages?: number;
   renderPage?: (imgs: CalendarImage[]) => React.ReactNode;
   storeName?: string;
 }
 
 // 主组件
-function CalendarGen({
+function CalendarDemo({
   maxImages = 13,
   renderPage,
   storeName = "calendars",
-}: CalendarGenProps) {
+}: CalendarDemoProps) {
   // 创建存储实例
   const [storage] = useState(() => new CalendarStorage(storeName));
 
@@ -193,4 +193,4 @@ function CalendarGen({
   );
 }
 
-export default CalendarGen;
+export default CalendarDemo;

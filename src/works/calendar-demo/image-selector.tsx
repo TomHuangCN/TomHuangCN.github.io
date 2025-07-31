@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import type { CalendarImage } from "./calendar-gen";
+import type { CalendarImage } from "./calendar-demo";
 
 interface ImageSelectorProps {
   images: CalendarImage[];
