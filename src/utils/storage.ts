@@ -78,7 +78,6 @@ export abstract class BaseStorage<T extends StorageData> {
         request.onerror = () => reject(request.error);
       });
     } catch (error) {
-      // 国际化：console.error(i18n.t("storage.saveFailed"), error);
       console.error("保存数据失败:", error);
       return false;
     }
@@ -100,7 +99,6 @@ export abstract class BaseStorage<T extends StorageData> {
         request.onerror = () => reject(request.error);
       });
     } catch (error) {
-      // 国际化：console.error(i18n.t("storage.getFailed"), error);
       console.error("获取数据失败:", error);
       return null;
     }
@@ -122,7 +120,6 @@ export abstract class BaseStorage<T extends StorageData> {
         request.onerror = () => reject(request.error);
       });
     } catch (error) {
-      // 国际化：console.error(i18n.t("storage.getAllFailed"), error);
       console.error("获取所有数据失败:", error);
       return [];
     }
@@ -145,7 +142,6 @@ export abstract class BaseStorage<T extends StorageData> {
         request.onerror = () => reject(request.error);
       });
     } catch (error) {
-      // 国际化：console.error(i18n.t("storage.deleteFailed"), error);
       console.error("删除数据失败:", error);
       return false;
     }
@@ -168,7 +164,6 @@ export abstract class BaseStorage<T extends StorageData> {
         request.onerror = () => reject(request.error);
       });
     } catch (error) {
-      // 国际化：console.error(i18n.t("storage.clearFailed"), error);
       console.error("清空数据失败:", error);
     }
   }
@@ -187,7 +182,6 @@ export abstract class BaseStorage<T extends StorageData> {
         request.onerror = () => reject(request.error);
       });
     } catch (error) {
-      // 国际化：console.error(i18n.t("storage.existsFailed"), error);
       console.error("检查数据是否存在失败:", error);
       return false;
     }
@@ -207,7 +201,6 @@ export abstract class BaseStorage<T extends StorageData> {
         request.onerror = () => reject(request.error);
       });
     } catch (error) {
-      // 国际化：console.error(i18n.t("storage.countFailed"), error);
       console.error("获取数据数量失败:", error);
       return 0;
     }
@@ -232,7 +225,6 @@ export abstract class BaseStorage<T extends StorageData> {
         }
       }
     } catch (error) {
-      // 国际化：console.error(i18n.t("storage.cleanupFailed"), error);
       console.error("清理旧数据失败:", error);
     }
   }
@@ -249,7 +241,6 @@ export abstract class BaseStorage<T extends StorageData> {
       };
       return JSON.stringify(exportData, null, 2);
     } catch (error) {
-      // 国际化：console.error(i18n.t("storage.exportFailed"), error);
       console.error("导出数据失败:", error);
       throw error;
     }
@@ -262,7 +253,6 @@ export abstract class BaseStorage<T extends StorageData> {
 
       // 验证数据格式
       if (!importData.data || !Array.isArray(importData.data)) {
-        // 国际化：throw new Error(i18n.t("storage.invalidFormat"));
         throw new Error("无效的数据格式");
       }
 
@@ -278,7 +268,6 @@ export abstract class BaseStorage<T extends StorageData> {
 
       return true;
     } catch (error) {
-      // 国际化：console.error(i18n.t("storage.importFailed"), error);
       console.error("导入数据失败:", error);
       return false;
     }
@@ -332,7 +321,6 @@ export class StorageManager {
 
       return JSON.stringify(exportData, null, 2);
     } catch (error) {
-      // 国际化：console.error(i18n.t("storage.exportAllFailed"), error);
       console.error("导出所有数据失败:", error);
       throw error;
     }
@@ -344,7 +332,6 @@ export class StorageManager {
       const importData = JSON.parse(jsonData);
 
       if (!importData.storages || typeof importData.storages !== "object") {
-        // 国际化：throw new Error(i18n.t("storage.invalidFormat"));
         throw new Error("无效的数据格式");
       }
 
@@ -357,7 +344,6 @@ export class StorageManager {
 
       return true;
     } catch (error) {
-      // 国际化：console.error(i18n.t("storage.importAllFailed"), error);
       console.error("导入所有数据失败:", error);
       return false;
     }
