@@ -62,7 +62,7 @@ export default function CJ_MVTCP001() {
     <CalendarDemo
       maxImages={13}
       renderPage={renderPage}
-      storeName="monthly_calendars"
+      storeName="CJ_MVTCP001"
     />
   );
 }

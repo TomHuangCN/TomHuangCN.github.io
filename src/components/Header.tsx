@@ -2,7 +2,6 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { createContext, useState, useContext } from "react";
 import { useWorks } from "../works/constants";
-import StorageControls from "./storage-controls";
 
 export interface SearchContextType {
   keyword: string;
@@ -123,8 +122,33 @@ const Header: React.FC = () => {
         </div>
       </div>
       <div style={rightStyle}>
-        <StorageControls />
-        <button onClick={() => navigate("/cooperation")}>业务合作</button>
+        <button
+          onClick={() => navigate("/data-management")}
+          style={{
+            padding: "6px 12px",
+            margin: "0 8px",
+            border: "1px solid #ccc",
+            borderRadius: "4px",
+            background: "#fff",
+            cursor: "pointer",
+            fontSize: "12px",
+          }}
+        >
+          数据管理
+        </button>
+        <button
+          onClick={() => navigate("/cooperation")}
+          style={{
+            padding: "6px 12px",
+            border: "1px solid #ccc",
+            borderRadius: "4px",
+            background: "#fff",
+            cursor: "pointer",
+            fontSize: "12px",
+          }}
+        >
+          业务合作
+        </button>
       </div>
     </header>
   );

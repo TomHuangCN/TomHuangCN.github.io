@@ -5,6 +5,7 @@ import App from "./app";
 import WorksList from "./pages/works-list";
 import WorkDetail from "./pages/work-detail";
 import Cooperation from "./pages/cooperation";
+import DataManagement from "./pages/data-management";
 
 const Main: React.FC = () => (
   <BrowserRouter>
@@ -14,6 +15,7 @@ const Main: React.FC = () => (
         <Route path="works" element={<WorksList />} />
         <Route path="works/:id" element={<WorkDetail />} />
         <Route path="cooperation" element={<Cooperation />} />
+        <Route path="data-management" element={<DataManagement />} />
       </Route>
     </Routes>
   </BrowserRouter>

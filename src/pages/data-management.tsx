@@ -7,7 +7,7 @@ interface ProgressState {
   message: string;
 }
 
-const StorageControls: React.FC = () => {
+const DataManagement: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [progress, setProgress] = useState<ProgressState>({
     isVisible: false,
@@ -102,14 +102,90 @@ const StorageControls: React.FC = () => {
     }
   };
 
-  const buttonStyle: React.CSSProperties = {
-    padding: "6px 12px",
-    margin: "0 4px",
-    border: "1px solid #ccc",
-    borderRadius: "4px",
+  // 清空所有数据
+  const handleClear = () => {
+    if (confirm("确定要清空所有数据吗？此操作不可恢复！")) {
+      const storageNames = storageManager.getAllStorageNames();
+      Promise.all(
+        storageNames.map(name => {
+          const storage = storageManager.get(name);
+          return storage?.clear();
+        })
+      )
+        .then(() => {
+          alert("数据清空成功！");
+          window.location.reload();
+        })
+        .catch(error => {
+          console.error("清空数据失败:", error);
+          window.alert("清空数据失败，请重试");
+        });
+    }
+  };
+
+  const containerStyle: React.CSSProperties = {
+    maxWidth: "800px",
+    margin: "0 auto",
+    padding: "20px",
+  };
+
+  const titleStyle: React.CSSProperties = {
+    fontSize: "24px",
+    fontWeight: "bold",
+    marginBottom: "30px",
+    color: "#333",
+  };
+
+  const sectionStyle: React.CSSProperties = {
     background: "#fff",
+    border: "1px solid #e0e0e0",
+    borderRadius: "8px",
+    padding: "20px",
+    marginBottom: "20px",
+    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+  };
+
+  const sectionTitleStyle: React.CSSProperties = {
+    fontSize: "18px",
+    fontWeight: "600",
+    marginBottom: "15px",
+    color: "#555",
+  };
+
+  const descriptionStyle: React.CSSProperties = {
+    fontSize: "14px",
+    color: "#666",
+    marginBottom: "15px",
+    lineHeight: "1.5",
+  };
+
+  const buttonStyle: React.CSSProperties = {
+    padding: "10px 20px",
+    border: "none",
+    borderRadius: "6px",
     cursor: "pointer",
-    fontSize: "12px",
+    fontSize: "14px",
+    fontWeight: "500",
+    marginRight: "10px",
+    transition: "all 0.2s ease",
+  };
+
+  const exportButtonStyle: React.CSSProperties = {
+    ...buttonStyle,
+    background: "#4CAF50",
+    color: "white",
+  };
+
+  const importButtonStyle: React.CSSProperties = {
+    ...buttonStyle,
+    background: "#2196F3",
+    color: "white",
+  };
+
+  const clearButtonStyle: React.CSSProperties = {
+    ...buttonStyle,
+    background: "#f44336",
+    color: "white",
   };
 
   const progressBarStyle: React.CSSProperties = {
@@ -153,11 +229,24 @@ const StorageControls: React.FC = () => {
   };
 
   return (
-    <>
-      <div style={{ display: "flex", alignItems: "center" }}>
-        <button onClick={handleExport} style={buttonStyle}>
+    <div style={containerStyle}>
+      <h1 style={titleStyle}>数据管理</h1>
+
+      <div style={sectionStyle}>
+        <h2 style={sectionTitleStyle}>导出数据</h2>
+        <p style={descriptionStyle}>
+          将当前所有存储的数据导出为JSON文件，包含所有工作项目的配置和设置。
+        </p>
+        <button onClick={handleExport} style={exportButtonStyle}>
           导出数据
         </button>
+      </div>
+
+      <div style={sectionStyle}>
+        <h2 style={sectionTitleStyle}>导入数据</h2>
+        <p style={descriptionStyle}>
+          从之前导出的JSON文件中恢复数据。这将覆盖当前的所有数据。
+        </p>
         <input
           ref={fileInputRef}
           type="file"
@@ -167,9 +256,19 @@ const StorageControls: React.FC = () => {
         />
         <button
           onClick={() => fileInputRef.current?.click()}
-          style={buttonStyle}
+          style={importButtonStyle}
         >
-          导入数据
+          选择文件并导入
+        </button>
+      </div>
+
+      <div style={sectionStyle}>
+        <h2 style={sectionTitleStyle}>清空数据</h2>
+        <p style={descriptionStyle}>
+          删除所有存储的数据，包括所有工作项目的配置和设置。此操作不可恢复，请谨慎使用。
+        </p>
+        <button onClick={handleClear} style={clearButtonStyle}>
+          清空所有数据
         </button>
       </div>
 
@@ -195,8 +294,8 @@ const StorageControls: React.FC = () => {
           </div>
         </>
       )}
-    </>
+    </div>
   );
 };
 
-export default StorageControls;
+export default DataManagement;

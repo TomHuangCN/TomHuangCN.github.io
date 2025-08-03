@@ -19,8 +19,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
-    "@types/react": "^19.1.8",
-    "@types/react-dom": "^19.1.6",
+    "@types/react": "^19.1.9",
+    "@types/react-dom": "^19.1.7",
     "@typescript-eslint/eslint-plugin": "^8.38.0",
     "@typescript-eslint/parser": "^8.38.0",
     "@vitejs/plugin-react": "^4.7.0",
@@ -34,15 +34,15 @@
     "husky": "^9.1.7",
     "postcss": "^8.5.6",
     "prettier": "^3.6.2",
-    "typescript": "^5.8.3",
+    "typescript": "^5.9.2",
     "vite": "^5.4.19"
   },
   "dependencies": {
     "@types/lz-string": "^1.5.0",
     "@types/react-router-dom": "^5.3.3",
     "lz-string": "^1.5.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
     "react-router-dom": "^7.7.1",
     "roughjs": "^4.6.6",
     "sanitize.css": "^13.0.0"
