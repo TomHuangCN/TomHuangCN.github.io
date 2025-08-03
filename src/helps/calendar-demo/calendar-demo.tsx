@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect, useRef } from "react";
 import CalendarSelector from "./calendar-selector";
 import ImageSelector from "./image-selector";
 import CalendarRenderer from "./calendar-renderer";
-import { CalendarStorage, Calendar } from "./storage";
+import { CalendarStorage, Calendar } from "./calendar-demo-storage";
 
 // 工具函数：file 转 url
 // function fileToUrl(file: File): Promise<string> {

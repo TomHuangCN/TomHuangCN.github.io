@@ -1,16 +1,16 @@
 import { perspectiveTransform } from "../../utils/transform";
 import { CalendarImage } from "../../helps/calendar-demo/calendar-demo";
-import { ICJVTCP001Renderer } from "./i-CJ-VTCP001-renderer";
+import { ICJMVTCP001Renderer } from "./i-CJ-MVTCP001-renderer";
 
-export class CJVTCP001Renderer implements ICJVTCP001Renderer {
+export class CJMVTCP001Renderer implements ICJMVTCP001Renderer {
   private _bgImage: HTMLImageElement = new Image();
   private _ringImage: HTMLImageElement = new Image();
 
   constructor(private _images: CalendarImage[]) {}
 
   private async _init() {
-    this._bgImage.src = "/assets/CJ-VTCP001-calendar-bg.png";
-    this._ringImage.src = "/assets/CJ-VTCP001-calendar-ring.png";
+    this._bgImage.src = "/assets/CJ-MVTCP001-calendar-bg.png";
+    this._ringImage.src = "/assets/CJ-MVTCP001-calendar-ring.png";
 
     await Promise.all([
       new Promise((resolve, reject) => {

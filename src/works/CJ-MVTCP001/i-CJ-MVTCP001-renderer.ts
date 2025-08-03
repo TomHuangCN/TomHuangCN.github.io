@@ -1,3 +1,3 @@
-export interface ICJVTCP001Renderer {
+export interface ICJMVTCP001Renderer {
   render(): Promise<HTMLCanvasElement[]>;
 }
