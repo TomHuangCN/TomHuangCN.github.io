@@ -2,15 +2,15 @@ import { perspectiveTransform } from "../../utils/transform";
 import { CalendarImage } from "../../helps/calendar-demo/calendar-demo";
 import { ICalendarDemoShowRenderer } from "../../helps/calendar-demo/calendar-demo-show-renderer";
 
-export class CJMVTCP001Renderer implements ICalendarDemoShowRenderer {
+export class CJMVTCP002Renderer implements ICalendarDemoShowRenderer {
   private _bgImage: HTMLImageElement = new Image();
   private _ringImage: HTMLImageElement = new Image();
 
   constructor(private _images: CalendarImage[]) {}
 
   private async _init() {
-    this._bgImage.src = "/assets/CJ-MVTCP001-calendar-bg.png";
-    this._ringImage.src = "/assets/CJ-MVTCP001-calendar-ring.png";
+    this._bgImage.src = "/assets/CJ-MVTCP002-calendar-bg.png";
+    this._ringImage.src = "/assets/CJ-MVTCP002-calendar-ring.png";
 
     await Promise.all([
       new Promise((resolve, reject) => {
@@ -307,10 +307,10 @@ export class CJMVTCP001Renderer implements ICalendarDemoShowRenderer {
         ctx,
         _images[0].url,
         [
-          [190, 203], // 左上
-          [539, 185], // 右上
-          [483, 738], // 右下
-          [135, 698], // 左下
+          [239, 154], // 左上
+          [531, 136], // 右上
+          [487, 672], // 右下
+          [180, 638], // 左下
         ],
         _bgImage.width,
         _bgImage.height
@@ -323,10 +323,10 @@ export class CJMVTCP001Renderer implements ICalendarDemoShowRenderer {
         ctx,
         _images[1].url,
         [
-          [650, 220], // 左上
-          [960, 212], // 右上
-          [910, 708], // 右下
-          [600, 669], // 左下
+          [678, 180], // 左上
+          [953, 162], // 右上
+          [910, 667], // 右下
+          [637, 629], // 左下
         ],
         _bgImage.width,
         _bgImage.height
