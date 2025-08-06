@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Solar, SolarYear, HolidayUtil } from "lunar-javascript";
+import { htmlToPng } from "../../utils/html-to-png";
+import JSZip from "jszip";
 
 interface DayData {
   solar: Solar;
@@ -16,7 +18,9 @@ interface DayData {
 export const CalendarGrid: React.FC = () => {
   const [year, setYear] = useState<number>(new Date().getFullYear());
   const [startDay, setStartDay] = useState<number>(0);
+  const [showMonthTitle, setShowMonthTitle] = useState<boolean>(true);
   const [calendarData, setCalendarData] = useState<DayData[][]>([]);
+  const [isDownloading, setIsDownloading] = useState<boolean>(false);
 
   const generateCalendar = useCallback(
     (targetYear: number, weekStart: number) => {
@@ -131,6 +135,51 @@ export const CalendarGrid: React.FC = () => {
 
   const weekDays = ["日", "一", "二", "三", "四", "五", "六"];
 
+  const handleDownloadAllImages = async () => {
+    setIsDownloading(true);
+    try {
+      const zip = new JSZip();
+
+      // 获取所有月份元素
+      const monthElements = document.querySelectorAll("#body ul");
+
+      for (let i = 0; i < monthElements.length; i++) {
+        const monthElement = monthElements[i] as HTMLElement;
+        const monthNumber = i + 1;
+
+        try {
+          // 生成PNG图片 (300 DPI)
+          const pngData = await htmlToPng(monthElement, {
+            width: 370, // 350px + 20px margin
+            height: 354, // 334px + 20px margin
+            scale: 4, // 300 DPI = 4x scale (72 DPI * 4 = 288 DPI, 接近300 DPI)
+          });
+
+          // 将PNG数据转换为Blob并添加到ZIP
+          const pngBlob = await fetch(pngData).then(res => res.blob());
+          zip.file(`${year}年${monthNumber}月日历.png`, pngBlob);
+        } catch (error) {
+          console.error(`生成${monthNumber}月图片失败:`, error);
+        }
+      }
+
+      // 生成并下载ZIP文件
+      const zipBlob = await zip.generateAsync({ type: "blob" });
+      const url = URL.createObjectURL(zipBlob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${year}年日历.zip`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("下载图片失败:", error);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   return (
     <div
       id="calendar"
@@ -183,6 +232,36 @@ export const CalendarGrid: React.FC = () => {
           <option value={0}>周日开始</option>
           <option value={1}>周一开始</option>
         </select>
+        <button
+          onClick={() => setShowMonthTitle(!showMonthTitle)}
+          style={{
+            border: "1px solid #D7D9E0",
+            padding: "7px 15px",
+            borderRadius: "6px",
+            background: "#FFFFFF",
+            marginLeft: "10px",
+            fontSize: "14px",
+            cursor: "pointer",
+          }}
+        >
+          {showMonthTitle ? "隐藏月份" : "显示月份"}
+        </button>
+        <button
+          onClick={handleDownloadAllImages}
+          disabled={isDownloading}
+          style={{
+            border: "1px solid #D7D9E0",
+            padding: "7px 15px",
+            borderRadius: "6px",
+            background: "#FFFFFF",
+            marginLeft: "10px",
+            fontSize: "14px",
+            cursor: isDownloading ? "not-allowed" : "pointer",
+            opacity: isDownloading ? 0.6 : 1,
+          }}
+        >
+          {isDownloading ? "生成中..." : "下载图片"}
+        </button>
       </div>
 
       <div id="body" style={{ overflow: "hidden" }}>
@@ -196,28 +275,30 @@ export const CalendarGrid: React.FC = () => {
               height: "334px",
               float: "left",
               listStyle: "none",
-              backgroundColor: "#FAFAFA",
+              // backgroundColor: "#FAFAFA",
               margin: "10px",
               padding: 0,
             }}
           >
-            <h3
-              style={{
-                position: "absolute",
-                left: 0,
-                top: 0,
-                fontSize: "80px",
-                width: "100%",
-                height: "334px",
-                textAlign: "center",
-                lineHeight: "334px",
-                color: "#333",
-                opacity: 0.1,
-                margin: 0,
-              }}
-            >
-              {monthIndex + 1}月
-            </h3>
+            {showMonthTitle && (
+              <h3
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  top: 0,
+                  fontSize: "80px",
+                  width: "100%",
+                  height: "334px",
+                  textAlign: "center",
+                  lineHeight: "334px",
+                  color: "#333",
+                  opacity: 0.1,
+                  margin: 0,
+                }}
+              >
+                {monthIndex + 1}月
+              </h3>
+            )}
 
             {/* 星期标题 */}
             {weekDays.map((day, index) => (
