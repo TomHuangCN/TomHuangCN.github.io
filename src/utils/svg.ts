@@ -195,7 +195,7 @@ export const isValidSvg = (svgString: string): boolean => {
     const doc = parser.parseFromString(svgString, "image/svg+xml");
     const svgElement = doc.querySelector("svg");
     return svgElement !== null && !doc.querySelector("parsererror");
-  } catch (error) {
+  } catch {
     return false;
   }
 };
