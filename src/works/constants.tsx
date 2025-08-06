@@ -1,5 +1,6 @@
 import CJ_MVTCP001 from "./CJ-MVTCP001/CJ-MVTCP001";
 import CJ_MVTCP002 from "./CJ-MVTCP002/CJ-MVTCP002";
+import { CalendarGridGen } from "./calendar-grid-gen/calendar-grid-gen";
 import React from "react";
 
 export interface IWork {
@@ -41,6 +42,12 @@ export const useWorks = (): IWork[] => {
           link: "https://youmind.site/IOoX8F52nYuTDw",
         },
       ],
+    },
+    {
+      id: "calendar-grid-gen",
+      name: "日历网格生成器",
+      desc: "使用 lunar-javascript 生成包含农历、节日、节气的日历网格",
+      content: CalendarGridGen,
     },
   ];
 };
