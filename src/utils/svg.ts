@@ -3,6 +3,8 @@
  * 封装SVG相关的操作
  */
 
+import { generateFontDefinitions } from "./font-loader";
+
 export interface SvgOptions {
   width?: number;
   height?: number;
@@ -31,6 +33,9 @@ export const createSvgFromElement = (
   const finalHeight = (height || rect.height) * scale;
   const htmlContent = element.outerHTML;
 
+  // 生成字体定义（只包含实际使用的字体）
+  const fontDefinitions = generateFontDefinitions(htmlContent);
+
   // 构建样式
   const baseStyles = `
     * { 
@@ -44,7 +49,7 @@ export const createSvgFromElement = (
     : "";
 
   const combinedStyles =
-    `${baseStyles} ${backgroundStyle} ${customStyles}`.trim();
+    `${fontDefinitions} ${baseStyles} ${backgroundStyle} ${customStyles}`.trim();
 
   const svg = `
     <svg xmlns="http://www.w3.org/2000/svg" width="${finalWidth}" height="${finalHeight}" viewBox="0 0 ${finalWidth / scale} ${finalHeight / scale}">

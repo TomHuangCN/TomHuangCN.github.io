@@ -6,6 +6,7 @@ import WorksList from "./pages/works-list";
 import WorkDetail from "./pages/work-detail";
 import Cooperation from "./pages/cooperation";
 import DataManagement from "./pages/data-management";
+import { autoPreloadFonts } from "./utils/font-loader";
 
 const Main: React.FC = () => (
   <BrowserRouter>
@@ -20,6 +21,9 @@ const Main: React.FC = () => (
     </Routes>
   </BrowserRouter>
 );
+
+// 自动预加载字体
+autoPreloadFonts();
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
