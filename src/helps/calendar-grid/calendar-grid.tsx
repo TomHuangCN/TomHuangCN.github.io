@@ -10,6 +10,7 @@ export const CalendarGrid: React.FC = () => {
   const [year, setYear] = useState<number>(new Date().getFullYear());
   const [startDay, setStartDay] = useState<number>(0);
   const [showMonthTitle, setShowMonthTitle] = useState<boolean>(false);
+  const [showOtherMonthDays, setShowOtherMonthDays] = useState<boolean>(false);
   const [selectedFont, setSelectedFont] = useState<string>(
     fontOptions[0].value
   );
@@ -59,6 +60,8 @@ export const CalendarGrid: React.FC = () => {
         setStartDay={setStartDay}
         showMonthTitle={showMonthTitle}
         setShowMonthTitle={setShowMonthTitle}
+        showOtherMonthDays={showOtherMonthDays}
+        setShowOtherMonthDays={setShowOtherMonthDays}
         selectedFont={selectedFont}
         setSelectedFont={setSelectedFont}
         isDownloading={isDownloading}
@@ -72,6 +75,7 @@ export const CalendarGrid: React.FC = () => {
             monthData={monthData}
             monthIndex={monthIndex}
             showMonthTitle={showMonthTitle}
+            showOtherMonthDays={showOtherMonthDays}
             startDay={startDay}
             selectedFont={selectedFont}
           />

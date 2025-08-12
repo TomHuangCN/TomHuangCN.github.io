@@ -7,7 +7,10 @@ import {
   getRestDayColor,
 } from "./utils";
 
-export const CalendarDay: React.FC<CalendarDayProps> = ({ dayData }) => {
+export const CalendarDay: React.FC<CalendarDayProps> = ({
+  dayData,
+  showOtherMonthDays,
+}) => {
   const dayClasses = getDayClasses(dayData);
   const dayText = getDayText(dayData);
   const textColor = getDayColor(dayData);
@@ -28,6 +31,8 @@ export const CalendarDay: React.FC<CalendarDayProps> = ({ dayData }) => {
         fontWeight: "normal",
         color: "#444",
         opacity: !dayData.isCurrentMonth ? 0.3 : 1,
+        visibility:
+          !showOtherMonthDays && !dayData.isCurrentMonth ? "hidden" : "visible",
       }}
     >
       {dayData.solar.getDay()}

@@ -26,6 +26,8 @@ export interface CalendarControlsProps {
   setStartDay: (startDay: number) => void;
   showMonthTitle: boolean;
   setShowMonthTitle: (show: boolean) => void;
+  showOtherMonthDays: boolean;
+  setShowOtherMonthDays: (show: boolean) => void;
   selectedFont: string;
   setSelectedFont: (font: string) => void;
   isDownloading: boolean;
@@ -36,6 +38,7 @@ export interface CalendarMonthProps {
   monthData: DayData[];
   monthIndex: number;
   showMonthTitle: boolean;
+  showOtherMonthDays: boolean;
   startDay: number;
   selectedFont: string;
 }
@@ -43,4 +46,5 @@ export interface CalendarMonthProps {
 export interface CalendarDayProps {
   dayData: DayData;
   startDay: number;
+  showOtherMonthDays: boolean;
 }

@@ -46,7 +46,7 @@ export const useWorks = (): IWork[] => {
     {
       id: "calendar-grid-gen",
       name: "日历网格生成器",
-      desc: "使用 lunar-javascript 生成包含农历、节日、节气的日历网格",
+      desc: "生成包含农历、节日、节气的日历网格，支持下载为图片作为素材。如有需要新增的字体，请联系作者提出。免费可商用的字体参考：https://freefonts.space/。",
       content: CalendarGridGen,
     },
   ];

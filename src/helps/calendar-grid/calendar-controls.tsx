@@ -9,6 +9,8 @@ export const CalendarControls: React.FC<CalendarControlsProps> = ({
   setStartDay,
   showMonthTitle,
   setShowMonthTitle,
+  showOtherMonthDays,
+  setShowOtherMonthDays,
   selectedFont,
   setSelectedFont,
   isDownloading,
@@ -94,6 +96,24 @@ export const CalendarControls: React.FC<CalendarControlsProps> = ({
           }}
         >
           {showMonthTitle ? "隐藏月份" : "显示月份"}
+        </button>
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+        <button
+          onClick={() => setShowOtherMonthDays(!showOtherMonthDays)}
+          style={{
+            ...commonStyles.button,
+            minWidth: "90px",
+            borderRadius: "5px",
+            padding: "4px 12px",
+            fontSize: "15px",
+            background: showOtherMonthDays ? "#e6f7ff" : "#f0f0f0",
+            color: showOtherMonthDays ? "#1890ff" : "#606266",
+            border: showOtherMonthDays ? "1px solid #91d5ff" : "1px solid #d9d9d9",
+            transition: "all 0.2s",
+          }}
+        >
+          {showOtherMonthDays ? "隐藏非该月" : "显示非该月"}
         </button>
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
