@@ -9,7 +9,7 @@ import { DayData } from "./types";
 export const CalendarGrid: React.FC = () => {
   const [year, setYear] = useState<number>(new Date().getFullYear());
   const [startDay, setStartDay] = useState<number>(0);
-  const [showMonthTitle, setShowMonthTitle] = useState<boolean>(true);
+  const [showMonthTitle, setShowMonthTitle] = useState<boolean>(false);
   const [selectedFont, setSelectedFont] = useState<string>(
     fontOptions[0].value
   );
