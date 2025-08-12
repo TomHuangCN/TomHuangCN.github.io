@@ -1,5 +1,5 @@
-import CJ_MVTCP001 from "./CJ-MVTCP001/CJ-MVTCP001";
-import CJ_MVTCP002 from "./CJ-MVTCP002/CJ-MVTCP002";
+import CJ_MVTTP001 from "./CJ-MVTTP001/CJ-MVTTP001";
+import CJ_MVTTP002 from "./CJ-MVTTP002/CJ-MVTTP002";
 import { CalendarGridGen } from "./calendar-grid-gen/calendar-grid-gen";
 import React from "react";
 
@@ -19,10 +19,10 @@ export const useWorks = (): IWork[] => {
   return [
     {
       id: "monthly-calendar-gen",
-      name: "月历 CJ-MVTCP001",
+      name: "月历 CJ-MVTTP001",
       desc: "图的印刷尺寸是：153mm * 225mm，按 DPI 300 印刷，像素尺寸至少 1807 × 2657",
-      content: CJ_MVTCP001,
-      illustration: "/assets/CJ-MVTCP001_illustration.png",
+      content: CJ_MVTTP001,
+      illustration: "/assets/CJ-MVTTP001_illustration.png",
       tips: [
         {
           content: "产品编号的含义",
@@ -32,10 +32,10 @@ export const useWorks = (): IWork[] => {
     },
     {
       id: "monthly-calendar-gen-002",
-      name: "月历 CJ-MVTCP002",
+      name: "月历 CJ-MVTTP002",
       desc: "图的印刷尺寸是：145mm * 215mm，按 DPI 300 印刷，像素尺寸至少 1713 × 2540",
-      content: CJ_MVTCP002,
-      illustration: "/assets/CJ-MVTCP002_illustration.png",
+      content: CJ_MVTTP002,
+      illustration: "/assets/CJ-MVTTP002_illustration.png",
       tips: [
         {
           content: "产品编号的含义",

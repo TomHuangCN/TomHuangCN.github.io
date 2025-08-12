@@ -4,11 +4,11 @@ import {
   CalendarRendererConfig,
 } from "../../helps/calendar-demo/calendar-renderer-base";
 
-export class CJMVTCP002Renderer extends BaseCalendarRenderer {
+export class CJMVTTP002Renderer extends BaseCalendarRenderer {
   constructor(images: CalendarImage[]) {
     const config: CalendarRendererConfig = {
-      bgImagePath: "/assets/CJ-MVTCP002-calendar-bg.png",
-      ringImagePath: "/assets/CJ-MVTCP002-calendar-ring.png",
+      bgImagePath: "/assets/CJ-MVTTP002-calendar-bg.png",
+      ringImagePath: "/assets/CJ-MVTTP002-calendar-ring.png",
       perspectiveImage1Coords: [
         [239, 154], // 左上
         [531, 136], // 右上

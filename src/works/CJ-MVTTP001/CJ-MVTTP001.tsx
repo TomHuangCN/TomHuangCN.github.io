@@ -1,9 +1,9 @@
 import CalendarDemo from "../../helps/calendar-demo/calendar-demo";
 import { useCallback, useState, useRef } from "react";
 import type { CalendarImage } from "../../helps/calendar-demo/calendar-demo";
-import { CJMVTCP002Renderer } from "./CJ-MVTCP002-renderer";
+import { CJMVTTP001Renderer } from "./CJ-MVTTP001-renderer";
 
-export default function CJ_MVTCP002() {
+export default function CJ_MVTTP001() {
   const [isLoading, setIsLoading] = useState(false);
   const canvasRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -20,7 +20,7 @@ export default function CJ_MVTCP002() {
     setIsLoading(true);
 
     // 异步渲染
-    const renderer = new CJMVTCP002Renderer(imgs);
+    const renderer = new CJMVTTP001Renderer(imgs);
     renderer
       .render()
       .then(canvases => {
@@ -62,7 +62,7 @@ export default function CJ_MVTCP002() {
     <CalendarDemo
       maxImages={13}
       renderPage={renderPage}
-      storeName="CJ_MVTCP002"
+      storeName="CJ_MVTTP001"
     />
   );
 }
