@@ -25,8 +25,8 @@ export const CalendarDay: React.FC<CalendarDayProps> = ({ dayData }) => {
         textAlign: "center",
         marginTop: "6px",
         lineHeight: "1.2",
-        fontWeight: dayData.isToday ? "bold" : "normal",
-        color: dayData.isToday ? "#1f80a9" : "#444",
+        fontWeight: "normal",
+        color: "#444",
         opacity: !dayData.isCurrentMonth ? 0.3 : 1,
       }}
     >

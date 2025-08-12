@@ -1,43 +1,4 @@
 /* 字体定义 */
-@font-face {
-  font-family: 'Noto Sans SC';
-  src: url('/fonts/NotoSansSC-Regular.otf') format('opentype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Noto Serif SC';
-  src: url('/fonts/NotoSerifSC-Regular.otf') format('opentype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Source Han Sans CN';
-  src: url('/fonts/SourceHanSansCN-Regular.otf') format('opentype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Source Han Serif CN';
-  src: url('/fonts/SourceHanSerifCN-Regular.otf') format('opentype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'LXGW WenKai';
-  src: url('/fonts/LXGWWenKai-Regular.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
 
 /* 手写体字体定义 */
 @font-face {
@@ -51,14 +12,6 @@
 @font-face {
   font-family: 'Han Yi Shou Xie Ti';
   src: url('/fonts/handwriting/HanYiShouXieTi.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Kai Ti';
-  src: url('/fonts/handwriting/KaiTi.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;

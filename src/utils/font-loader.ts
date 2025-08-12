@@ -5,14 +5,8 @@
 
 // 字体映射表
 const fontMap: Record<string, string> = {
-  "Noto Sans SC": "/fonts/NotoSansSC-Regular.otf",
-  "Noto Serif SC": "/fonts/NotoSerifSC-Regular.otf",
-  "Source Han Sans CN": "/fonts/SourceHanSansCN-Regular.otf",
-  "Source Han Serif CN": "/fonts/SourceHanSerifCN-Regular.otf",
-  "LXGW WenKai": "/fonts/LXGWWenKai-Regular.ttf",
   "Ma Shan Zheng": "/fonts/handwriting/MaShanZheng-Regular.ttf",
   "Han Yi Shou Xie Ti": "/fonts/handwriting/HanYiShouXieTi.ttf",
-  "Kai Ti": "/fonts/handwriting/KaiTi.ttf",
   Xiaolai: "/fonts/handwriting/Xiaolai-Regular.ttf",
 };
 
