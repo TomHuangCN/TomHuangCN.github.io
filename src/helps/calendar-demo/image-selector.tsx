@@ -5,6 +5,7 @@ interface ImageSelectorProps {
   images: CalendarImage[];
   setImages: React.Dispatch<React.SetStateAction<CalendarImage[]>>;
   maxImages: number;
+  aspectRatio: number; // 接收宽高比参数
   onImageReplace?: (images: CalendarImage[]) => void;
 }
 
@@ -20,6 +21,7 @@ export default function ImageSelector({
   images,
   setImages,
   maxImages,
+  aspectRatio,
   onImageReplace,
 }: ImageSelectorProps) {
   const [isDragOver, setIsDragOver] = React.useState(false);
@@ -30,13 +32,17 @@ export default function ImageSelector({
       if (!files) return;
       const arr = Array.from(files).slice(0, maxImages);
       Promise.all(arr.map(f => fileToUrl(f))).then(urls => {
-        const newImages = urls.map((url, i) => ({ url, file: arr[i] }));
+        const newImages = urls.map((url, i) => ({
+          url,
+          file: arr[i],
+          aspectRatio,
+        }));
         setImages(newImages);
         // 批量上传时立即通知父组件更新存储
         onImageReplace?.(newImages);
       });
     },
-    [maxImages, setImages, onImageReplace]
+    [maxImages, setImages, onImageReplace, aspectRatio]
   );
 
   // 单张替换 - 优化版本
@@ -44,14 +50,14 @@ export default function ImageSelector({
     (idx: number, file: File) => {
       fileToUrl(file).then(url => {
         const newImages = images.map((img, i) =>
-          i === idx ? { url, file } : img
+          i === idx ? { url, file, aspectRatio } : img
         );
         setImages(newImages);
         // 单张替换时通知父组件更新存储（会触发防抖）
         onImageReplace?.(newImages);
       });
     },
-    [images, setImages, onImageReplace]
+    [images, setImages, onImageReplace, aspectRatio]
   );
 
   // 拖拽事件处理
@@ -118,7 +124,7 @@ export default function ImageSelector({
           key={i}
           style={{
             width: 60,
-            height: 80,
+            height: 60 / aspectRatio,
             border: "1px solid #ccc",
             borderRadius: 4,
             overflow: "hidden",
@@ -151,7 +157,7 @@ export default function ImageSelector({
               style={{
                 color: "#aaa",
                 fontSize: 12,
-                lineHeight: "80px",
+                lineHeight: `${60 / aspectRatio}px`,
                 textAlign: "center",
                 display: "block",
               }}

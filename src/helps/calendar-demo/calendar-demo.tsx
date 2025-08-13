@@ -17,10 +17,12 @@ import { CalendarStorage, Calendar } from "./calendar-demo-storage";
 export interface CalendarImage {
   url: string;
   file?: File;
+  aspectRatio?: number; // 宽高比
 }
 
 interface CalendarDemoProps {
   maxImages?: number;
+  aspectRatio?: number; // 添加宽高比参数
   renderPage?: (imgs: CalendarImage[]) => React.ReactNode;
   storeName?: string;
 }
@@ -28,6 +30,7 @@ interface CalendarDemoProps {
 // 主组件
 function CalendarDemo({
   maxImages = 13,
+  aspectRatio = 0.75, // 默认宽高比
   renderPage,
   storeName = "calendars",
 }: CalendarDemoProps) {
@@ -110,6 +113,13 @@ function CalendarDemo({
     [selectedId, storage]
   );
 
+  // 新建日历
+  const handleCreateNew = useCallback(() => {
+    setSelectedId(null);
+    setImages([]);
+    setIsGenerated(false);
+  }, []);
+
   // 处理单张图片替换 - 优化版本
   const handleImageReplace = useCallback(
     async (newImages: CalendarImage[]) => {
@@ -172,8 +182,11 @@ function CalendarDemo({
       {/* 上：日历选择 */}
       <CalendarSelector
         calendars={calendars}
+        selectedId={selectedId}
+        aspectRatio={aspectRatio}
         onSelect={handleSelect}
         onDelete={handleDelete}
+        onCreateNew={handleCreateNew}
       />
       {/* 中：原图选择 */}
       <ImageSelector
@@ -181,6 +194,7 @@ function CalendarDemo({
         setImages={setImages}
         maxImages={maxImages}
         onImageReplace={handleImageReplace}
+        aspectRatio={aspectRatio}
       />
       <button onClick={handleGenerate} style={{ marginBottom: 16 }}>
         生成日历

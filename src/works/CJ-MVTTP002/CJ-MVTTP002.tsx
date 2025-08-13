@@ -61,6 +61,7 @@ export default function CJ_MVTTP002() {
   return (
     <CalendarDemo
       maxImages={13}
+      aspectRatio={145 / 215} // CJ-MVTTP002 的宽高比
       renderPage={renderPage}
       storeName="CJ_MVTTP002"
     />
