@@ -1,6 +1,161 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { CalendarControlsProps } from "./types";
 import { fontOptions, commonStyles } from "./constants";
+import { fontStatusManager } from "./font-status-manager";
+
+// 字体选择器组件
+const FontSelector: React.FC<{
+  selectedFont: string;
+  onFontSelect: (font: string) => void;
+}> = ({ selectedFont, onFontSelect }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [fonts, setFonts] = useState(fontOptions);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // 订阅字体状态变化
+  useEffect(() => {
+    const unsubscribe = fontStatusManager.subscribe(setFonts);
+    return unsubscribe;
+  }, []);
+
+  // 点击外部关闭下拉菜单
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const selectedFontOption = fonts.find(font => font.value === selectedFont);
+
+  return (
+    <div ref={dropdownRef} style={{ position: "relative" }}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        style={{
+          ...commonStyles.select,
+          minWidth: "120px",
+          borderRadius: "5px",
+          padding: "4px 8px",
+          textAlign: "left",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          background: "#FFFFFF",
+        }}
+      >
+        <span>{selectedFontOption?.displayName || "选择字体"}</span>
+        <span style={{ fontSize: "12px", color: "#999" }}>
+          {isOpen ? "▲" : "▼"}
+        </span>
+      </button>
+
+      {isOpen && (
+        <div
+          style={{
+            position: "absolute",
+            top: "100%",
+            left: 0,
+            right: 0,
+            background: "#FFFFFF",
+            border: "1px solid #D7D9E0",
+            borderRadius: "5px",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+            zIndex: 1000,
+            maxHeight: "300px",
+            overflowY: "auto",
+          }}
+        >
+          {fonts.map(font => (
+            <div
+              key={font.name}
+              onClick={() => {
+                onFontSelect(font.value);
+                setIsOpen(false);
+              }}
+              style={{
+                padding: "8px 12px",
+                cursor: font.isLoaded ? "pointer" : "not-allowed",
+                background:
+                  font.value === selectedFont ? "#f0f8ff" : "transparent",
+                color: font.isLoaded ? "#333" : "#999",
+                borderBottom: "1px solid #f0f0f0",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                fontSize: "14px",
+                transition: "background-color 0.2s",
+                ...(font.value === selectedFont && {
+                  background: "#e6f7ff",
+                  color: "#1890ff",
+                }),
+              }}
+              onMouseEnter={e => {
+                if (font.isLoaded) {
+                  e.currentTarget.style.background = "#f5f5f5";
+                }
+              }}
+              onMouseLeave={e => {
+                if (font.value === selectedFont) {
+                  e.currentTarget.style.background = "#e6f7ff";
+                } else {
+                  e.currentTarget.style.background = "transparent";
+                }
+              }}
+            >
+              <span>{font.displayName}</span>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px",
+                }}
+              >
+                {font.isLoading && (
+                  <div
+                    style={{
+                      width: "12px",
+                      height: "12px",
+                      border: "2px solid #f3f3f3",
+                      borderTop: "2px solid #1890ff",
+                      borderRadius: "50%",
+                      animation: "spin 1s linear infinite",
+                    }}
+                  />
+                )}
+                {!font.isLoading && !font.isLoaded && (
+                  <span style={{ fontSize: "12px", color: "#ccc" }}>
+                    未加载
+                  </span>
+                )}
+                {!font.isLoading && font.isLoaded && (
+                  <span style={{ fontSize: "12px", color: "#52c41a" }}>✓</span>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <style>
+        {`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}
+      </style>
+    </div>
+  );
+};
 
 export const CalendarControls: React.FC<CalendarControlsProps> = ({
   year,
@@ -109,7 +264,9 @@ export const CalendarControls: React.FC<CalendarControlsProps> = ({
             fontSize: "15px",
             background: showOtherMonthDays ? "#e6f7ff" : "#f0f0f0",
             color: showOtherMonthDays ? "#1890ff" : "#606266",
-            border: showOtherMonthDays ? "1px solid #91d5ff" : "1px solid #d9d9d9",
+            border: showOtherMonthDays
+              ? "1px solid #91d5ff"
+              : "1px solid #d9d9d9",
             transition: "all 0.2s",
           }}
         >
@@ -123,23 +280,10 @@ export const CalendarControls: React.FC<CalendarControlsProps> = ({
         >
           字体
         </label>
-        <select
-          id="font-select"
-          value={selectedFont}
-          onChange={e => setSelectedFont(e.target.value)}
-          style={{
-            ...commonStyles.select,
-            minWidth: "120px",
-            borderRadius: "5px",
-            padding: "4px 8px",
-          }}
-        >
-          {fontOptions.map(font => (
-            <option key={font.name} value={font.value}>
-              {font.displayName}
-            </option>
-          ))}
-        </select>
+        <FontSelector
+          selectedFont={selectedFont}
+          onFontSelect={setSelectedFont}
+        />
       </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>

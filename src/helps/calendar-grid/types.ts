@@ -17,6 +17,8 @@ export interface FontOption {
   name: string;
   value: string;
   displayName: string;
+  isLoading?: boolean;
+  isLoaded?: boolean;
 }
 
 export interface CalendarControlsProps {

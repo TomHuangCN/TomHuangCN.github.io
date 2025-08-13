@@ -3,8 +3,13 @@ export { CalendarGrid } from "./calendar-grid";
 
 // 子组件
 export { CalendarControls } from "./calendar-controls";
-export { CalendarMonth } from "./calendar-month";
 export { CalendarDay } from "./calendar-day";
+
+// 字体状态管理
+export { fontStatusManager } from "./font-status-manager";
+
+// 测试组件
+export { FontStatusTest } from "./font-status-test";
 
 // 类型定义
 export type {

@@ -5,9 +5,10 @@
 
 // 字体映射表
 const fontMap: Record<string, string> = {
-  "Ma Shan Zheng": "/fonts/handwriting/MaShanZheng-Regular.ttf",
-  "Han Yi Shou Xie Ti": "/fonts/handwriting/HanYiShouXieTi.ttf",
-  Xiaolai: "/fonts/handwriting/Xiaolai-Regular.ttf",
+  "Ma Shan Zheng": "/fonts/MaShanZheng-Regular.ttf",
+  Xiaolai: "/fonts/Xiaolai-Regular.ttf",
+  "VonwaonBitmap-12px": "/fonts/VonwaonBitmap-12px.ttf",
+  千图小兔体: "/fonts/千图小兔体.ttf",
 };
 
 // 字体缓存 - 存储 base64 编码的字体数据

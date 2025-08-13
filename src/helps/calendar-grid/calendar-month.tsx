@@ -68,9 +68,9 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = ({
 
       {/* 日期 */}
       {monthData.map((dayData, dayIndex) => (
-        <CalendarDay 
-          key={dayIndex} 
-          dayData={dayData} 
+        <CalendarDay
+          key={dayIndex}
+          dayData={dayData}
           startDay={startDay}
           showOtherMonthDays={showOtherMonthDays}
         />
