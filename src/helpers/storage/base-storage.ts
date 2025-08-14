@@ -1,21 +1,13 @@
-// 通用 IndexedDB Storage 基类
-export interface StorageData {
-  id: string;
+// ============================================================================
+// 基础存储类
+// ============================================================================
 
-  [key: string]: unknown;
-}
+import type { StorageData, StorageConfig, ExportData } from './types';
 
-export interface StorageConfig {
-  dbName: string;
-  storeName: string;
-  version?: number;
-  maxItems?: number;
-}
-
-// 修正：将 BaseStorageMap 泛型化，避免 unknown 类型报错
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type BaseStorageMap = Map<string, BaseStorage<any>>;
-
+/**
+ * IndexedDB 存储基类
+ * 提供基本的 CRUD 操作和数据库管理功能
+ */
 export abstract class BaseStorage<T extends StorageData> {
   protected readonly config: StorageConfig;
   protected db: IDBDatabase | null = null;
@@ -28,7 +20,13 @@ export abstract class BaseStorage<T extends StorageData> {
     };
   }
 
-  // 初始化数据库
+  // --------------------------------------------------------------------------
+  // 数据库初始化
+  // --------------------------------------------------------------------------
+
+  /**
+   * 初始化数据库连接
+   */
   protected async initDB(): Promise<IDBDatabase> {
     if (this.db) return this.db;
 
@@ -54,7 +52,13 @@ export abstract class BaseStorage<T extends StorageData> {
     });
   }
 
-  // 保存数据
+  // --------------------------------------------------------------------------
+  // 基本 CRUD 操作
+  // --------------------------------------------------------------------------
+
+  /**
+   * 保存数据
+   */
   async save(data: T): Promise<boolean> {
     try {
       const db = await this.initDB();
@@ -83,7 +87,9 @@ export abstract class BaseStorage<T extends StorageData> {
     }
   }
 
-  // 获取单个数据
+  /**
+   * 获取单个数据
+   */
   async get(id: string): Promise<T | null> {
     try {
       const db = await this.initDB();
@@ -104,7 +110,9 @@ export abstract class BaseStorage<T extends StorageData> {
     }
   }
 
-  // 获取所有数据
+  /**
+   * 获取所有数据
+   */
   async getAll(): Promise<T[]> {
     try {
       const db = await this.initDB();
@@ -125,7 +133,9 @@ export abstract class BaseStorage<T extends StorageData> {
     }
   }
 
-  // 删除数据
+  /**
+   * 删除数据
+   */
   async delete(id: string): Promise<boolean> {
     try {
       const db = await this.initDB();
@@ -147,7 +157,9 @@ export abstract class BaseStorage<T extends StorageData> {
     }
   }
 
-  // 清空所有数据
+  /**
+   * 清空所有数据
+   */
   async clear(): Promise<void> {
     try {
       const db = await this.initDB();
@@ -168,7 +180,13 @@ export abstract class BaseStorage<T extends StorageData> {
     }
   }
 
-  // 检查是否存在
+  // --------------------------------------------------------------------------
+  // 查询和统计操作
+  // --------------------------------------------------------------------------
+
+  /**
+   * 检查数据是否存在
+   */
   async exists(id: string): Promise<boolean> {
     try {
       const db = await this.initDB();
@@ -187,7 +205,9 @@ export abstract class BaseStorage<T extends StorageData> {
     }
   }
 
-  // 获取数据数量
+  /**
+   * 获取数据数量
+   */
   async count(): Promise<number> {
     try {
       const db = await this.initDB();
@@ -206,7 +226,13 @@ export abstract class BaseStorage<T extends StorageData> {
     }
   }
 
-  // 清理旧数据
+  // --------------------------------------------------------------------------
+  // 数据维护操作
+  // --------------------------------------------------------------------------
+
+  /**
+   * 清理旧数据，保持数据量在限制范围内
+   */
   protected async cleanupOldData(): Promise<void> {
     try {
       const allData = await this.getAll();
@@ -229,11 +255,17 @@ export abstract class BaseStorage<T extends StorageData> {
     }
   }
 
-  // 导出数据
+  // --------------------------------------------------------------------------
+  // 数据导入导出操作
+  // --------------------------------------------------------------------------
+
+  /**
+   * 导出数据
+   */
   async exportData(): Promise<string> {
     try {
       const data = await this.getAll();
-      const exportData = {
+      const exportData: ExportData = {
         version: "1.0",
         timestamp: Date.now(),
         storeName: this.config.storeName,
@@ -246,7 +278,9 @@ export abstract class BaseStorage<T extends StorageData> {
     }
   }
 
-  // 导入数据
+  /**
+   * 导入数据
+   */
   async importData(jsonData: string): Promise<boolean> {
     try {
       const importData = JSON.parse(jsonData);
@@ -273,105 +307,3 @@ export abstract class BaseStorage<T extends StorageData> {
     }
   }
 }
-
-// Storage 管理器
-export class StorageManager {
-  private static instance: StorageManager;
-  // 修正：使用 BaseStorageMap 泛型，避免 unknown 类型报错
-  private storages: BaseStorageMap = new Map();
-
-  private constructor() {}
-
-  static getInstance(): StorageManager {
-    if (!StorageManager.instance) {
-      StorageManager.instance = new StorageManager();
-    }
-    return StorageManager.instance;
-  }
-
-  // 注册 storage
-  register<T extends StorageData>(name: string, storage: BaseStorage<T>): void {
-    this.storages.set(name, storage);
-  }
-
-  // 获取 storage
-  get<T extends StorageData>(name: string): BaseStorage<T> | undefined {
-    return this.storages.get(name) as BaseStorage<T> | undefined;
-  }
-
-  // 获取所有 storage 名称
-  getAllStorageNames(): string[] {
-    return Array.from(this.storages.keys());
-  }
-
-  // 导出所有数据
-  async exportAllData(): Promise<string> {
-    try {
-      const allData: Record<string, string> = {};
-
-      for (const [name, storage] of this.storages) {
-        allData[name] = await storage.exportData();
-      }
-
-      const exportData = {
-        version: "1.0",
-        timestamp: Date.now(),
-        storages: allData,
-      };
-
-      return JSON.stringify(exportData, null, 2);
-    } catch (error) {
-      console.error("导出所有数据失败:", error);
-      throw error;
-    }
-  }
-
-  // 导入所有数据
-  async importAllData(jsonData: string): Promise<boolean> {
-    try {
-      const importData = JSON.parse(jsonData);
-
-      if (!importData.storages || typeof importData.storages !== "object") {
-        throw new Error("无效的数据格式");
-      }
-
-      for (const [name, data] of Object.entries(importData.storages)) {
-        const storage = this.storages.get(name);
-        if (storage && typeof data === "string") {
-          await storage.importData(data);
-        }
-      }
-
-      return true;
-    } catch (error) {
-      console.error("导入所有数据失败:", error);
-      return false;
-    }
-  }
-
-  // 下载数据文件
-  downloadData(filename: string, data: string): void {
-    const blob = new Blob([data], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
-
-  // 读取文件数据
-  readFileData(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsText(file);
-    });
-  }
-}
-
-// 导出单例实例
-export const storageManager = StorageManager.getInstance();

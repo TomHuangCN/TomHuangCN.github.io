@@ -1,9 +1,6 @@
-import {
-  BaseStorage,
-  StorageData,
-  StorageConfig,
-  storageManager,
-} from "../../utils/storage";
+import type { StorageData, StorageConfig } from "../storage/types";
+import { BaseStorage } from "../storage/base-storage";
+import { storageManager } from "../storage/storage-manager";
 
 // 日历存储工具对象
 export interface Calendar extends StorageData {

@@ -1,8 +1,8 @@
-import { CalendarImage } from "../../helps/calendar-demo/calendar-demo";
+import { CalendarImage } from "../../helpers/calendar-demo/calendar-demo";
 import {
   BaseCalendarRenderer,
   CalendarRendererConfig,
-} from "../../helps/calendar-demo/calendar-renderer-base";
+} from "../../helpers/calendar-demo/calendar-renderer-base";
 
 export class CJMVTTP001Renderer extends BaseCalendarRenderer {
   constructor(images: CalendarImage[]) {

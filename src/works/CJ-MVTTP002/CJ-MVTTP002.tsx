@@ -1,6 +1,6 @@
-import CalendarDemo from "../../helps/calendar-demo/calendar-demo";
+import CalendarDemo from "../../helpers/calendar-demo/calendar-demo";
 import { useCallback, useState, useRef } from "react";
-import type { CalendarImage } from "../../helps/calendar-demo/calendar-demo";
+import type { CalendarImage } from "../../helpers/calendar-demo/calendar-demo";
 import { CJMVTTP002Renderer } from "./CJ-MVTTP002-renderer";
 
 export default function CJ_MVTTP002() {
