@@ -9,7 +9,7 @@ export { CalendarDay } from "./calendar-day";
 export { fontStatusManager } from "./font-status-manager";
 
 // 测试组件
-export { FontStatusTest } from "./font-status-test";
+
 
 // 类型定义
 export type {

@@ -25,8 +25,8 @@ class CalendarStorage extends BaseStorage<Calendar> {
     super(config);
     this.imageStoreName = `${storeName}_images`;
 
-    // 注册到 storage manager
-    storageManager.register("calendar", this);
+    // 注册到 storage manager，使用唯一的名称
+    storageManager.register(storeName, this);
   }
 
   // 重写初始化数据库方法，添加图片存储
@@ -377,6 +377,50 @@ class CalendarStorage extends BaseStorage<Calendar> {
     } catch (error) {
       console.error("获取日历数量失败:", error);
       return 0;
+    }
+  }
+
+  // 重写导出数据方法，处理图片数据
+  async exportData(): Promise<string> {
+    try {
+      const calendars = await this.getAll();
+      const exportData = {
+        version: "1.0",
+        timestamp: Date.now(),
+        storeName: this.config.storeName,
+        data: calendars,
+      };
+      return JSON.stringify(exportData, null, 2);
+    } catch (error) {
+      console.error("导出数据失败:", error);
+      throw error;
+    }
+  }
+
+  // 重写导入数据方法，处理图片数据
+  async importData(jsonData: string): Promise<boolean> {
+    try {
+      const importData = JSON.parse(jsonData);
+
+      // 验证数据格式
+      if (!importData.data || !Array.isArray(importData.data)) {
+        throw new Error("无效的数据格式");
+      }
+
+      // 清空现有数据
+      await this.clear();
+
+      // 导入新数据
+      for (const calendar of importData.data) {
+        if (calendar.id && calendar.cover && calendar.pages) {
+          await this.save(calendar);
+        }
+      }
+
+      return true;
+    } catch (error) {
+      console.error("导入数据失败:", error);
+      return false;
     }
   }
 }

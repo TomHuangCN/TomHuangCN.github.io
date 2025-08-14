@@ -5,7 +5,6 @@ import { downloadAllImages } from "./download-service";
 import { CalendarControls } from "./calendar-controls";
 import { CalendarMonth } from "./calendar-month";
 import { DayData } from "./types";
-import { FontStatusTest } from "./font-status-test";
 
 export const CalendarGrid: React.FC = () => {
   const [year, setYear] = useState<number>(new Date().getFullYear());
@@ -54,9 +53,6 @@ export const CalendarGrid: React.FC = () => {
         width: "900px",
       }}
     >
-      {/* 字体状态测试组件 */}
-      <FontStatusTest />
-      
       <CalendarControls
         year={year}
         setYear={setYear}
