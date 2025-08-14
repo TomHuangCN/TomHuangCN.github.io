@@ -7,7 +7,7 @@ import { CalendarMonth } from "./calendar-month";
 import { DayData } from "./types";
 
 export const CalendarGrid: React.FC = () => {
-  const [year, setYear] = useState<number>(new Date().getFullYear());
+  const [year, setYear] = useState<number>(2026);
   const [startDay, setStartDay] = useState<number>(0);
   const [showMonthTitle, setShowMonthTitle] = useState<boolean>(false);
   const [showOtherMonthDays, setShowOtherMonthDays] = useState<boolean>(false);
