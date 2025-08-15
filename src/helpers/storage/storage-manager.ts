@@ -2,9 +2,8 @@
 // 存储管理器
 // ============================================================================
 
-import type { StorageData, AllExportData } from './types';
-import { BaseStorage } from './base-storage';
-import { generateTimestampedFilename } from './utils';
+import type { StorageData, AllExportData } from "./types";
+import { BaseStorage } from "./base-storage";
 
 /**
  * 存储管理器
@@ -52,6 +51,39 @@ export class StorageManager {
   }
 
   // --------------------------------------------------------------------------
+  // 数据压缩
+  // --------------------------------------------------------------------------
+
+  /**
+   * 压缩数据
+   */
+  private compressData(data: string): string {
+    try {
+      // 使用简单的压缩：移除多余空格和换行
+      const compressed = data
+        .replace(/\s+/g, " ")
+        .replace(/"\s*:\s*"/g, '":"')
+        .replace(/"\s*,\s*"/g, '","')
+        .replace(/"\s*}\s*"/g, '"}"')
+        .replace(/"\s*]\s*"/g, '"]"');
+
+      // 如果压缩后数据更大，返回原始数据
+      return compressed.length < data.length ? compressed : data;
+    } catch (error) {
+      console.warn("压缩失败，使用原始数据:", error);
+      return data;
+    }
+  }
+
+  /**
+   * 解压数据
+   */
+  private decompressData(compressedData: string): string {
+    // 简单压缩不需要解压，直接返回
+    return compressedData;
+  }
+
+  // --------------------------------------------------------------------------
   // 批量数据操作
   // --------------------------------------------------------------------------
 
@@ -67,12 +99,14 @@ export class StorageManager {
       }
 
       const exportData: AllExportData = {
-        version: "1.0",
+        version: "2.0",
         timestamp: Date.now(),
+        compressed: true,
         storages: allData,
       };
 
-      return JSON.stringify(exportData, null, 2);
+      const jsonData = JSON.stringify(exportData, null, 2);
+      return this.compressData(jsonData);
     } catch (error) {
       console.error("导出所有数据失败:", error);
       throw error;
@@ -82,18 +116,45 @@ export class StorageManager {
   /**
    * 导入所有存储的数据
    */
-  async importAllData(jsonData: string): Promise<boolean> {
+  async importAllData(data: string): Promise<boolean> {
     try {
-      const importData = JSON.parse(jsonData);
+      let jsonData: string;
+      let importData: AllExportData;
 
+      // 尝试解压数据
+      try {
+        jsonData = this.decompressData(data);
+        importData = JSON.parse(jsonData);
+      } catch {
+        // 如果解压失败，尝试直接解析（兼容旧版本）
+        try {
+          importData = JSON.parse(data);
+        } catch {
+          throw new Error("无效的数据格式");
+        }
+      }
+
+      // 检查数据版本和格式
       if (!importData.storages || typeof importData.storages !== "object") {
         throw new Error("无效的数据格式");
       }
 
-      for (const [name, data] of Object.entries(importData.storages)) {
-        const storage = this.storages.get(name);
-        if (storage && typeof data === "string") {
-          await storage.importData(data);
+      // 处理不同版本的数据
+      if (importData.version === "2.0" && importData.compressed) {
+        // 新版本：数据已解压，直接使用
+        for (const [name, storageData] of Object.entries(importData.storages)) {
+          const storage = this.storages.get(name);
+          if (storage && typeof storageData === "string") {
+            await storage.importData(storageData);
+          }
+        }
+      } else {
+        // 旧版本：数据可能未压缩，直接使用
+        for (const [name, storageData] of Object.entries(importData.storages)) {
+          const storage = this.storages.get(name);
+          if (storage && typeof storageData === "string") {
+            await storage.importData(storageData);
+          }
         }
       }
 
@@ -112,13 +173,12 @@ export class StorageManager {
    * 下载数据文件
    */
   downloadData(filename: string, data: string): void {
-    const finalFilename = generateTimestampedFilename(filename);
     const blob = new Blob([data], { type: "application/json" });
     const url = URL.createObjectURL(blob);
 
     const link = document.createElement("a");
     link.href = url;
-    link.download = finalFilename;
+    link.download = filename;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

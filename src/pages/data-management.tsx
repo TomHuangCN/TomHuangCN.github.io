@@ -1,6 +1,36 @@
 import React, { useRef, useState } from "react";
 import { storageManager } from "../helpers/storage";
 
+export function formatDateTimeForFilename(date: Date): string {
+  const pad = (n: number) => n.toString().padStart(2, "0");
+  return (
+    date.getFullYear() +
+    "-" +
+    pad(date.getMonth() + 1) +
+    "-" +
+    pad(date.getDate()) +
+    "_" +
+    pad(date.getHours()) +
+    "-" +
+    pad(date.getMinutes()) +
+    "-" +
+    pad(date.getSeconds())
+  );
+}
+
+/**
+ * 生成带时间戳的文件名
+ */
+export function generateTimestampedFilename(filename: string): string {
+  const now = new Date();
+  const formatted = formatDateTimeForFilename(now);
+
+  if (filename.endsWith(".json")) {
+    return filename.replace(/\.json$/, "") + "_" + formatted + ".json";
+  }
+  return filename + "_" + formatted + ".json";
+}
+
 interface ProgressState {
   isVisible: boolean;
   progress: number;
@@ -42,13 +72,12 @@ const DataManagement: React.FC = () => {
       const data = await storageManager.exportAllData();
 
       updateProgress(70, "生成文件...");
-      const timestamp = new Date()
-        .toISOString()
-        .slice(0, 19)
-        .replace(/:/g, "-");
 
       updateProgress(90, "下载文件...");
-      storageManager.downloadData(`storage-backup-${timestamp}.json`, data);
+      storageManager.downloadData(
+        `${generateTimestampedFilename("storage-backup")}.json`,
+        data
+      );
 
       updateProgress(100, "导出完成！");
       setTimeout(() => {

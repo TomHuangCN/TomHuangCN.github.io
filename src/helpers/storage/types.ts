@@ -24,5 +24,6 @@ export interface ExportData {
 export interface AllExportData {
   version: string;
   timestamp: number;
+  compressed?: boolean;
   storages: Record<string, string>;
 }

@@ -2,7 +2,7 @@
 // 基础存储类
 // ============================================================================
 
-import type { StorageData, StorageConfig, ExportData } from './types';
+import type { StorageData, StorageConfig, ExportData } from "./types";
 
 /**
  * IndexedDB 存储基类
