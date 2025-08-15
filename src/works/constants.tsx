@@ -18,7 +18,7 @@ export interface IWork {
 export const useWorks = (): IWork[] => {
   return [
     {
-      id: "monthly-calendar-gen",
+      id: "CJ-MVTTP001",
       name: "月历 CJ-MVTTP001",
       desc: "图的印刷尺寸是：155mm * 215mm，按 DPI 300 印刷，像素尺寸至少 1838 × 2547",
       content: CJ_MVTTP001,
@@ -31,7 +31,7 @@ export const useWorks = (): IWork[] => {
       ],
     },
     {
-      id: "monthly-calendar-gen-002",
+      id: "CJ-MVTTP002",
       name: "月历 CJ-MVTTP002",
       desc: "图的印刷尺寸是：145mm * 215mm，按 DPI 300 印刷，像素尺寸至少 1713 × 2540",
       content: CJ_MVTTP002,

@@ -162,11 +162,111 @@ export abstract class BaseCalendarRenderer
    * @param images 最多6张图片
    * @returns HTMLCanvasElement
    */
+  /**
+   * 渲染内页大图（均分布局，严格保持间距，canvas宽度与_bgImage一致，高度自适应）
+   * @param images 最多6张图片
+   * @returns HTMLCanvasElement
+   */
   protected _renderInnerPage(images: CalendarImage[]): HTMLCanvasElement {
     const { _bgImage } = this;
+    const count = images.length;
+    if (count === 0) {
+      // 空内容直接返回空白canvas
+      const emptyCanvas = document.createElement("canvas");
+      emptyCanvas.width = _bgImage.width;
+      emptyCanvas.height = 400;
+      return emptyCanvas;
+    }
+
+    // 布局参数
+    const marginX = 32; // 左右边距
+    const marginY = 64; // 顶部/底部边距
+    const rowGap = 24; // 行间距
+    const colGap = 24; // 图片间距
+
+    // 均分两行
+    const rows = 2;
+    const rowCounts: number[] = [];
+    if (count <= 3) {
+      rowCounts.push(count, 0);
+    } else {
+      rowCounts.push(Math.ceil(count / 2), Math.floor(count / 2));
+    }
+
+    // 计算每行图片的最大可用宽度
+    const canvasWidth = _bgImage.width;
+    const row1Count = rowCounts[0];
+    const row2Count = rowCounts[1];
+
+    // 先假设图片高度一致，计算高度
+    // 先加载所有图片，获取原始宽高
+    type ImgInfo = { img: HTMLImageElement; w: number; h: number; url: string };
+    const imgInfos: ImgInfo[] = [];
+    for (let i = 0; i < count; i++) {
+      const imgObj = images[i];
+      if (!imgObj || !imgObj.url) continue;
+      const img = new window.Image();
+      img.src = imgObj.url;
+      imgInfos.push({ img, w: 0, h: 0, url: imgObj.url });
+    }
+
+    // 计算每行的最大高度，使得所有图片均分宽度且保持比例
+    // 先假设每行图片高度一样，宽度均分
+    function calcRowHeight(rowImgInfos: ImgInfo[], rowCount: number): number {
+      if (rowCount === 0) return 0;
+      const availableWidth =
+        canvasWidth - marginX * 2 - colGap * (rowCount - 1);
+      // 先用图片原始宽高比，求出在均分宽度下的最大高度
+      let minScale = 1;
+      for (let i = 0; i < rowCount; i++) {
+        const info = rowImgInfos[i];
+        if (!info) continue;
+        // 先用图片原始宽高
+        info.w = info.img.naturalWidth || 1;
+        info.h = info.img.naturalHeight || 1;
+        // 计算宽度均分下的缩放比例
+        const targetW = availableWidth / rowCount;
+        const scale = Math.min(targetW / info.w, 1);
+        if (scale < minScale) minScale = scale;
+      }
+      // 取最小缩放比例，保证所有图片都能放下
+      // 但我们还要保证高度不能超过最大高度
+      let maxH = 0;
+      for (let i = 0; i < rowCount; i++) {
+        const info = rowImgInfos[i];
+        if (!info) continue;
+        const targetW = availableWidth / rowCount;
+        const scale = Math.min(targetW / info.w, 1);
+        const h = Math.round(info.h * scale);
+        if (h > maxH) maxH = h;
+      }
+      return maxH;
+    }
+
+    // 先同步获取图片原始宽高（如果已加载），否则用默认值
+    for (let i = 0; i < imgInfos.length; i++) {
+      const info = imgInfos[i];
+      info.w = info.img.naturalWidth || 800;
+      info.h = info.img.naturalHeight || 600;
+    }
+
+    // 计算每行的图片高度
+    const row1Imgs = imgInfos.slice(0, row1Count);
+    const row2Imgs = imgInfos.slice(row1Count, row1Count + row2Count);
+    const row1Height = row1Count > 0 ? calcRowHeight(row1Imgs, row1Count) : 0;
+    const row2Height = row2Count > 0 ? calcRowHeight(row2Imgs, row2Count) : 0;
+
+    // 计算canvas高度
+    const canvasHeight =
+      marginY +
+      row1Height +
+      (row2Count > 0 ? rowGap + row2Height : 0) +
+      marginY;
+
+    // 创建canvas
     const canvas = document.createElement("canvas");
-    canvas.width = _bgImage.width;
-    canvas.height = _bgImage.height;
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
     const ctx = canvas.getContext("2d");
     if (!ctx) throw new Error("无法获取 canvas 2D 上下文");
 
@@ -174,102 +274,51 @@ export abstract class BaseCalendarRenderer
     ctx.fillStyle = "#fff";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // 分两行渲染
-    const count = images.length;
-    const rows = 2;
-    // 计算每行图片数量
-    const row1Count = Math.ceil(count / 2);
-    const row2Count = count - row1Count;
+    // 绘制每一行
+    let imgIdx = 0;
+    let y = marginY;
+    for (let row = 0; row < rows; row++) {
+      const thisRowCount = rowCounts[row];
+      if (thisRowCount === 0) continue;
+      const availableWidth =
+        canvasWidth - marginX * 2 - colGap * (thisRowCount - 1);
+      const rowImgs = imgInfos.slice(imgIdx, imgIdx + thisRowCount);
 
-    // 布局参数
-    const marginX = 32; // 左右边距
-    const marginY = 64; // 顶部/底部边距
-    const rowGap = 24; // 行间距
-    const gap = 24; // 图片间距
+      // 计算每张图片的缩放后宽高
+      const drawSizes: { w: number; h: number }[] = [];
+      let maxH = 0;
+      for (let i = 0; i < thisRowCount; i++) {
+        const info = rowImgs[i];
+        const targetW = availableWidth / thisRowCount;
+        const scale = Math.min(targetW / info.w, 1);
+        const w = Math.round(info.w * scale);
+        const h = Math.round(info.h * scale);
+        drawSizes.push({ w, h });
+        if (h > maxH) maxH = h;
+      }
 
-    // 计算每行的高度
-    const availableHeight = canvas.height - marginY * 2 - rowGap;
-    const imgHeight = Math.floor(availableHeight / rows);
+      // 计算每张图片的x坐标，保证间距严格
+      let x = marginX;
+      for (let i = 0; i < thisRowCount; i++) {
+        const info = rowImgs[i];
+        const { w, h } = drawSizes[i];
+        // 垂直居中
+        const drawY = y + Math.floor((maxH - h) / 2);
+        // 水平居中在格子内
+        const drawX = x + Math.floor((availableWidth / thisRowCount - w) / 2);
 
-    // 第一行
-    if (row1Count > 0) {
-      const availableWidth1 =
-        canvas.width - marginX * 2 - gap * (row1Count - 1);
-      const imgWidth1 = Math.floor(availableWidth1 / row1Count);
-      for (let i = 0; i < row1Count; i++) {
-        const imgObj = images[i];
-        if (!imgObj || !imgObj.url) continue;
-        const img = new window.Image();
-        img.src = imgObj.url;
-
-        // 保持图片比例缩放
-        let drawW = imgWidth1,
-          drawH = imgHeight;
-        if (img.width > 0 && img.height > 0) {
-          const scale = Math.min(
-            imgWidth1 / img.width,
-            imgHeight / img.height,
-            1
-          );
-          drawW = Math.round(img.width * scale);
-          drawH = Math.round(img.height * scale);
-        }
-
-        // 计算目标绘制区域
-        const x =
-          marginX + i * (imgWidth1 + gap) + Math.floor((imgWidth1 - drawW) / 2);
-        const y = marginY + Math.floor((imgHeight - drawH) / 2);
-
-        // 立即绘制（图片已加载时），否则等图片加载后再绘制
-        if (img.complete && img.naturalWidth > 0) {
-          ctx.drawImage(img, x, y, drawW, drawH);
+        // 立即绘制或等图片加载后绘制
+        if (info.img.complete && info.img.naturalWidth > 0) {
+          ctx.drawImage(info.img, drawX, drawY, w, h);
         } else {
-          img.onload = () => {
-            ctx.drawImage(img, x, y, drawW, drawH);
+          info.img.onload = () => {
+            ctx.drawImage(info.img, drawX, drawY, w, h);
           };
         }
+        x += availableWidth / thisRowCount + colGap;
       }
-    }
-
-    // 第二行
-    if (row2Count > 0) {
-      const availableWidth2 =
-        canvas.width - marginX * 2 - gap * (row2Count - 1);
-      const imgWidth2 = Math.floor(availableWidth2 / row2Count);
-      for (let i = 0; i < row2Count; i++) {
-        const imgObj = images[row1Count + i];
-        if (!imgObj || !imgObj.url) continue;
-        const img = new window.Image();
-        img.src = imgObj.url;
-
-        // 保持图片比例缩放
-        let drawW = imgWidth2,
-          drawH = imgHeight;
-        if (img.width > 0 && img.height > 0) {
-          const scale = Math.min(
-            imgWidth2 / img.width,
-            imgHeight / img.height,
-            1
-          );
-          drawW = Math.round(img.width * scale);
-          drawH = Math.round(img.height * scale);
-        }
-
-        // 计算目标绘制区域
-        const x =
-          marginX + i * (imgWidth2 + gap) + Math.floor((imgWidth2 - drawW) / 2);
-        const y =
-          marginY + imgHeight + rowGap + Math.floor((imgHeight - drawH) / 2);
-
-        // 立即绘制（图片已加载时），否则等图片加载后再绘制
-        if (img.complete && img.naturalWidth > 0) {
-          ctx.drawImage(img, x, y, drawW, drawH);
-        } else {
-          img.onload = () => {
-            ctx.drawImage(img, x, y, drawW, drawH);
-          };
-        }
-      }
+      y += maxH + rowGap;
+      imgIdx += thisRowCount;
     }
 
     // 绑定canvas点击事件
