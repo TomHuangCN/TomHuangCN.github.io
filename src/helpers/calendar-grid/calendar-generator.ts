@@ -50,7 +50,7 @@ export const generateCalendarData = (
 
     return newCalendarData;
   } catch (error) {
-    console.error("生成日历数据错误:", error);
+    console.error("生成样机数据错误:", error);
     return [];
   }
 };

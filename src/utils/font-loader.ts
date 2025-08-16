@@ -3,7 +3,6 @@
  * 用于在应用启动时预加载所有字体到内存中，避免导出时字体加载延迟
  */
 
-// 字体映射表
 const fontMap: Record<string, string> = {
   "Ma Shan Zheng": "/fonts/MaShanZheng-Regular.ttf",
   Xiaolai: "/fonts/Xiaolai-Regular.ttf",
@@ -11,19 +10,12 @@ const fontMap: Record<string, string> = {
   千图小兔体: "/fonts/千图小兔体.ttf",
 };
 
-// 字体缓存 - 存储 base64 编码的字体数据
 const fontCache = new Map<string, string>();
-
-// 加载状态
 let isLoading = false;
 let isLoaded = false;
 const loadCallbacks: Array<() => void> = [];
 
-/**
- * 下载字体文件并转换为 base64 格式
- */
 const loadFontToBase64 = async (fontFamily: string): Promise<string | null> => {
-  // 检查缓存
   if (fontCache.has(fontFamily)) {
     return fontCache.get(fontFamily) || null;
   }
@@ -32,40 +24,31 @@ const loadFontToBase64 = async (fontFamily: string): Promise<string | null> => {
   if (!fontPath) return null;
 
   try {
-    // 构建绝对路径URL
     const baseUrl = window.location.origin;
     const absoluteUrl = `${baseUrl}${fontPath}`;
-
-    // 下载字体文件
     const response = await fetch(absoluteUrl);
+
     if (!response.ok) {
       throw new Error(
         `字体文件下载失败: ${response.status} ${response.statusText}`
       );
     }
 
-    // 获取字体文件数据
     const arrayBuffer = await response.arrayBuffer();
-
-    // 转换为 base64 - 使用更安全的方法处理大文件
     const uint8Array = new Uint8Array(arrayBuffer);
     let binaryString = "";
+
     for (let i = 0; i < uint8Array.length; i++) {
       binaryString += String.fromCharCode(uint8Array[i]);
     }
-    const base64 = btoa(binaryString);
 
-    // 根据文件扩展名判断格式
+    const base64 = btoa(binaryString);
     const format = fontPath.toLowerCase().endsWith(".ttf")
       ? "truetype"
       : "opentype";
-
-    // 构建 data URL
     const dataUrl = `data:font/${format};base64,${base64}`;
 
-    // 缓存结果
     fontCache.set(fontFamily, dataUrl);
-
     console.log(
       `字体 ${fontFamily} 已预加载 (${(arrayBuffer.byteLength / 1024).toFixed(1)}KB)`
     );
@@ -77,13 +60,8 @@ const loadFontToBase64 = async (fontFamily: string): Promise<string | null> => {
   }
 };
 
-/**
- * 预加载所有字体
- */
 export const preloadAllFonts = async (): Promise<void> => {
-  if (isLoaded) {
-    return Promise.resolve();
-  }
+  if (isLoaded) return Promise.resolve();
 
   if (isLoading) {
     return new Promise<void>(resolve => {
@@ -96,18 +74,13 @@ export const preloadAllFonts = async (): Promise<void> => {
 
   try {
     const fontFamilies = Object.keys(fontMap);
-
-    // 并行加载所有字体
-    const loadPromises = fontFamilies.map(async fontFamily => {
-      return await loadFontToBase64(fontFamily);
-    });
-
-    await Promise.all(loadPromises);
+    await Promise.all(
+      fontFamilies.map(fontFamily => loadFontToBase64(fontFamily))
+    );
 
     isLoaded = true;
     console.log(`字体预加载完成，共加载 ${fontFamilies.length} 个字体`);
 
-    // 执行所有等待的回调
     loadCallbacks.forEach(callback => callback());
     loadCallbacks.length = 0;
   } catch (error) {
@@ -172,19 +145,12 @@ export const clearFontCache = (): void => {
   console.log("字体缓存已清除");
 };
 
-/**
- * 分析HTML内容中使用的字体
- */
 export const analyzeUsedFonts = (htmlContent: string): Set<string> => {
   const usedFonts = new Set<string>();
-
-  // 创建临时DOM元素来解析HTML
   const tempDiv = document.createElement("div");
   tempDiv.innerHTML = htmlContent;
 
-  // 递归遍历所有元素，检查font-family样式
   const traverseElements = (element: Element) => {
-    // 检查内联样式
     const inlineFontFamily = element.getAttribute("style");
     if (inlineFontFamily) {
       const fontFamilyMatch = inlineFontFamily.match(/font-family:\s*([^;]+)/i);
@@ -201,7 +167,6 @@ export const analyzeUsedFonts = (htmlContent: string): Set<string> => {
           );
 
         fonts.forEach(font => {
-          // 检查是否是我们支持的字体
           if (Object.keys(fontMap).includes(font)) {
             usedFonts.add(font);
           }
@@ -209,20 +174,14 @@ export const analyzeUsedFonts = (htmlContent: string): Set<string> => {
       }
     }
 
-    // 检查class属性，查找可能使用字体的CSS类
     const className = element.getAttribute("class");
     if (className) {
-      // 这里可以添加一些常见的字体类名检查
-      // 例如：如果类名包含特定字体的标识
       const classNames = className.split(" ");
       classNames.forEach(cls => {
-        // 检查类名是否包含字体相关的关键词
         if (
           cls.toLowerCase().includes("font-") ||
           cls.toLowerCase().includes("text-")
         ) {
-          // 这里可以添加更多的字体类名映射逻辑
-          // 暂时先检查所有支持的字体
           Object.keys(fontMap).forEach(fontFamily => {
             if (
               cls
@@ -236,44 +195,31 @@ export const analyzeUsedFonts = (htmlContent: string): Set<string> => {
       });
     }
 
-    // 递归检查子元素
     Array.from(element.children).forEach(child => {
       traverseElements(child);
     });
   };
 
-  // 开始遍历
   traverseElements(tempDiv);
-
   return usedFonts;
 };
 
-/**
- * 生成字体CSS定义（只包含实际使用的字体）
- */
 export const generateFontDefinitions = (htmlContent?: string): string => {
-  let fontFamilies: string[];
+  const fontFamilies = htmlContent
+    ? Array.from(analyzeUsedFonts(htmlContent))
+    : Object.keys(fontMap);
 
-  if (htmlContent) {
-    // 分析HTML内容中使用的字体
-    const usedFonts = analyzeUsedFonts(htmlContent);
-    fontFamilies = Array.from(usedFonts);
-  } else {
-    // 如果没有提供HTML内容，则使用所有字体（向后兼容）
-    fontFamilies = Object.keys(fontMap);
-  }
+  return fontFamilies
+    .map(fontFamily => {
+      const fontDataUrl = fontCache.get(fontFamily);
+      if (!fontDataUrl) return "";
 
-  let fontDefinitions = "";
-
-  fontFamilies.forEach(fontFamily => {
-    const fontDataUrl = fontCache.get(fontFamily);
-    if (fontDataUrl) {
       const fontPath = fontMap[fontFamily];
       const format = fontPath?.toLowerCase().endsWith(".ttf")
         ? "truetype"
         : "opentype";
 
-      fontDefinitions += `
+      return `
         @font-face {
           font-family: '${fontFamily}';
           src: url('${fontDataUrl}') format('${format}');
@@ -282,23 +228,18 @@ export const generateFontDefinitions = (htmlContent?: string): string => {
           font-display: swap;
         }
       `;
-    }
-  });
-
-  return fontDefinitions;
+    })
+    .filter(Boolean)
+    .join("");
 };
 
-/**
- * 在页面加载时自动预加载字体
- */
 export const autoPreloadFonts = (): void => {
-  // 等待页面加载完成后开始预加载
+  const startPreload = () => preloadAllFonts().catch(console.error);
+
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () => {
-      preloadAllFonts().catch(console.error);
-    });
+    document.addEventListener("DOMContentLoaded", startPreload);
   } else {
-    preloadAllFonts().catch(console.error);
+    startPreload();
   }
 };
 

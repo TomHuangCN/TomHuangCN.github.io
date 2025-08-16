@@ -87,6 +87,57 @@ export abstract class BaseCalendarRenderer
   }
 
   /**
+   * 异步透视渲染一张图片到指定四边形
+   */
+  protected async _drawPerspectiveImageAsync(
+    ctx: CanvasRenderingContext2D,
+    imgUrl: string,
+    dstQuad: [number, number][],
+    canvasWidth: number,
+    canvasHeight: number
+  ): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const img = new window.Image();
+
+      img.onload = () => {
+        try {
+          const tempCanvas = document.createElement("canvas");
+          tempCanvas.width = img.width;
+          tempCanvas.height = img.height;
+          const tempCtx = tempCanvas.getContext("2d");
+          if (tempCtx) {
+            tempCtx.drawImage(img, 0, 0);
+
+            const srcQuad: [number, number][] = [
+              [0, 0],
+              [img.width, 0],
+              [img.width, img.height],
+              [0, img.height],
+            ];
+
+            const transformed = perspectiveTransform(
+              tempCanvas,
+              srcQuad,
+              dstQuad,
+              canvasWidth,
+              canvasHeight
+            );
+            ctx.drawImage(transformed, 0, 0);
+            resolve();
+          } else {
+            reject(new Error("无法获取临时canvas的2D上下文"));
+          }
+        } catch (error) {
+          reject(error);
+        }
+      };
+
+      img.onerror = () => reject(new Error(`图片加载失败: ${imgUrl}`));
+      img.src = imgUrl;
+    });
+  }
+
+  /**
    * 渲染底部内页图片（大图，顶部间距更大，从一月开始，总共12张），分三行渲染
    * canvas: 传入的画布（已扩展高度）
    * images: 内页图片数组
@@ -167,7 +218,9 @@ export abstract class BaseCalendarRenderer
    * @param images 最多6张图片
    * @returns HTMLCanvasElement
    */
-  protected _renderInnerPage(images: CalendarImage[]): HTMLCanvasElement {
+  protected async _renderInnerPage(
+    images: CalendarImage[]
+  ): Promise<HTMLCanvasElement> {
     const { _bgImage } = this;
     const count = images.length;
     if (count === 0) {
@@ -198,17 +251,30 @@ export abstract class BaseCalendarRenderer
     const row1Count = rowCounts[0];
     const row2Count = rowCounts[1];
 
-    // 先假设图片高度一致，计算高度
-    // 先加载所有图片，获取原始宽高
+    // 先加载所有图片，等待加载完成后再获取原始宽高
     type ImgInfo = { img: HTMLImageElement; w: number; h: number; url: string };
     const imgInfos: ImgInfo[] = [];
+
+    // 创建图片加载Promise数组
+    const imageLoadPromises: Promise<void>[] = [];
+
     for (let i = 0; i < count; i++) {
       const imgObj = images[i];
       if (!imgObj || !imgObj.url) continue;
+
       const img = new window.Image();
+      const loadPromise = new Promise<void>((resolve, reject) => {
+        img.onload = () => resolve();
+        img.onerror = () => reject(new Error(`图片加载失败: ${imgObj.url}`));
+      });
+
       img.src = imgObj.url;
       imgInfos.push({ img, w: 0, h: 0, url: imgObj.url });
+      imageLoadPromises.push(loadPromise);
     }
+
+    // 等待所有图片加载完成
+    await Promise.all(imageLoadPromises);
 
     // 计算每行的最大高度，使得所有图片均分宽度且保持比例
     // 先假设每行图片高度一样，宽度均分
@@ -343,7 +409,7 @@ export abstract class BaseCalendarRenderer
     };
   }
 
-  protected _renderCover() {
+  protected async _renderCover(): Promise<HTMLCanvasElement> {
     const { _bgImage, _ringImage, _images, _config } = this;
 
     // 扩展底部空白区域高度（更大）
@@ -362,29 +428,37 @@ export abstract class BaseCalendarRenderer
     // 先绘制背景图（在顶部）
     ctx.drawImage(_bgImage, 0, 0);
 
+    // 等待所有透视图片绘制完成
+    const perspectivePromises: Promise<void>[] = [];
+
     // 透视渲染 _images[0]
     if (_images && _images[0] && _images[0].url) {
-      this._drawPerspectiveImage(
+      const promise1 = this._drawPerspectiveImageAsync(
         ctx,
         _images[0].url,
         _config.perspectiveImage1Coords,
         _bgImage.width,
         _bgImage.height
       );
+      perspectivePromises.push(promise1);
     }
 
     // 透视渲染 _images[1] 到指定坐标
     if (_images && _images[1] && _images[1].url) {
-      this._drawPerspectiveImage(
+      const promise2 = this._drawPerspectiveImageAsync(
         ctx,
         _images[1].url,
         _config.perspectiveImage2Coords,
         _bgImage.width,
         _bgImage.height
       );
+      perspectivePromises.push(promise2);
     }
 
-    // 绘制环形图
+    // 等待所有透视图片绘制完成
+    await Promise.all(perspectivePromises);
+
+    // 绘制环形图（确保在所有透视图片之后绘制）
     ctx.drawImage(_ringImage, 0, 0);
 
     // 渲染底部内页图片（在扩展区域，3行大图，从一月开始，最多12张）
@@ -399,7 +473,7 @@ export abstract class BaseCalendarRenderer
 
   async render(): Promise<HTMLCanvasElement[]> {
     await this._init();
-    const cover = this._renderCover();
+    const cover = await this._renderCover();
 
     if (!cover) {
       throw new Error("渲染封面时发生错误，canvas 未生成。");
@@ -410,8 +484,8 @@ export abstract class BaseCalendarRenderer
     const page1Images = innerImages.slice(0, 6);
     const page2Images = innerImages.slice(6, 12);
 
-    const innerPage1 = this._renderInnerPage(page1Images);
-    const innerPage2 = this._renderInnerPage(page2Images);
+    const innerPage1 = await this._renderInnerPage(page1Images);
+    const innerPage2 = await this._renderInnerPage(page2Images);
 
     return [cover, innerPage1, innerPage2];
   }

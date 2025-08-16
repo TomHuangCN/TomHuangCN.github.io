@@ -8,15 +8,21 @@ import Cooperation from "./pages/cooperation";
 import DataManagement from "./pages/data-management";
 import { autoPreloadFonts } from "./utils/font-loader";
 
+const routes = [
+  { path: "/", element: <Navigate to="/works" replace /> },
+  { path: "/works", element: <WorksList /> },
+  { path: "/works/:id", element: <WorkDetail /> },
+  { path: "/cooperation", element: <Cooperation /> },
+  { path: "/data-management", element: <DataManagement /> },
+];
+
 const Main: React.FC = () => (
   <BrowserRouter>
     <Routes>
       <Route path="/" element={<App />}>
-        <Route index element={<Navigate to="/works" replace />} />
-        <Route path="works" element={<WorksList />} />
-        <Route path="works/:id" element={<WorkDetail />} />
-        <Route path="cooperation" element={<Cooperation />} />
-        <Route path="data-management" element={<DataManagement />} />
+        {routes.map(({ path, element }) => (
+          <Route key={path} path={path} element={element} />
+        ))}
       </Route>
     </Routes>
   </BrowserRouter>

@@ -45,7 +45,7 @@ function CalendarDemo({
   const [selectedId, setSelectedId] = useState<string | null>(null);
   // 加载状态
   const [loading, setLoading] = useState(true);
-  // 是否已生成日历
+  // 是否已生成样机
   const [isGenerated, setIsGenerated] = useState(false);
 
   // 防抖定时器引用
@@ -66,7 +66,7 @@ function CalendarDemo({
     loadCalendars();
   }, [storage]);
 
-  // 生成日历并存储到 IndexedDB
+  // 生成样机并存储到 IndexedDB
   const handleGenerate = useCallback(async () => {
     if (images.length < maxImages || images.some(img => !img.url)) return;
     const id = Date.now().toString();
@@ -196,8 +196,30 @@ function CalendarDemo({
         onImageReplace={handleImageReplace}
         aspectRatio={aspectRatio}
       />
-      <button onClick={handleGenerate} style={{ marginBottom: 16 }}>
-        生成日历
+      <button
+        onClick={handleGenerate}
+        disabled={images.length < maxImages || isGenerated}
+        style={{
+          marginBottom: 16,
+          padding: "8px 16px",
+          fontSize: "14px",
+          cursor:
+            images.length < maxImages || isGenerated
+              ? "not-allowed"
+              : "pointer",
+          opacity: images.length < maxImages || isGenerated ? 0.6 : 1,
+          backgroundColor:
+            images.length < maxImages || isGenerated ? "#ccc" : "#007bff",
+          color: "white",
+          border: "none",
+          borderRadius: "4px",
+        }}
+      >
+        {images.length < maxImages
+          ? `请选择${maxImages}张图片`
+          : isGenerated
+            ? "样机已生成"
+            : "生成样机"}
       </button>
       {/* 下：日历渲染 */}
       {isGenerated && (

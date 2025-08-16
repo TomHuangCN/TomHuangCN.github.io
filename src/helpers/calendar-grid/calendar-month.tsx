@@ -58,7 +58,6 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = ({
             lineHeight: "33px",
             fontSize: "12px",
             color: "#333333",
-            borderBottom: "1px solid #E3E3E3",
             textAlign: "center",
           }}
         >

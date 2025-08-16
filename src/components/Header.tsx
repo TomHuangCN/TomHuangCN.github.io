@@ -13,29 +13,85 @@ export const SearchContext = createContext<SearchContextType>({
   setKeyword: () => {},
 });
 
-const headerStyle: React.CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  height: 56,
-  padding: "0 24px",
-  background: "#f5f5f5",
-  borderBottom: "1px solid #eee",
-};
-const leftStyle: React.CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  cursor: "pointer",
-};
-const centerStyle: React.CSSProperties = {
-  flex: 1,
-  display: "flex",
-  justifyContent: "center",
-};
-const rightStyle: React.CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-};
+const styles = {
+  header: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    height: 56,
+    padding: "0 24px",
+    background: "#f5f5f5",
+    borderBottom: "1px solid #eee",
+  },
+  left: {
+    display: "flex",
+    alignItems: "center",
+    cursor: "pointer",
+  },
+  center: {
+    flex: 1,
+    display: "flex",
+    justifyContent: "center",
+  },
+  right: {
+    display: "flex",
+    alignItems: "center",
+  },
+  searchContainer: {
+    position: "relative" as const,
+    width: 240,
+  },
+  searchInput: {
+    width: "100%",
+    padding: 6,
+    borderRadius: 4,
+    border: "1px solid #ccc",
+  },
+  dropdown: {
+    position: "absolute" as const,
+    top: 36,
+    left: 0,
+    width: "100%",
+    background: "#fff",
+    border: "1px solid #eee",
+    borderRadius: 4,
+    boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+    zIndex: 10,
+    margin: 0,
+    padding: 0,
+    listStyle: "none" as const,
+    maxHeight: 220,
+    overflowY: "auto" as const,
+  },
+  dropdownItem: {
+    padding: "8px 12px",
+    cursor: "pointer",
+  },
+  itemName: {
+    fontWeight: 500,
+  },
+  itemDesc: {
+    fontSize: 12,
+    color: "#888",
+  },
+  button: {
+    padding: "6px 12px",
+    margin: "0 8px",
+    border: "1px solid #ccc",
+    borderRadius: "4px",
+    background: "#fff",
+    cursor: "pointer",
+    fontSize: "12px",
+  },
+  rightButton: {
+    padding: "6px 12px",
+    border: "1px solid #ccc",
+    borderRadius: "4px",
+    background: "#fff",
+    cursor: "pointer",
+    fontSize: "12px",
+  },
+} as const;
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
@@ -43,15 +99,14 @@ const Header: React.FC = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const WORKS = useWorks();
 
-  // 搜索匹配
-  const filteredWorks = WORKS.filter(
-    w =>
-      keyword &&
-      (w.name.toLowerCase().includes(keyword.toLowerCase()) ||
-        w.desc.toLowerCase().includes(keyword.toLowerCase()))
-  );
+  const filteredWorks = keyword
+    ? WORKS.filter(
+        work =>
+          work.name.toLowerCase().includes(keyword.toLowerCase()) ||
+          work.desc.toLowerCase().includes(keyword.toLowerCase())
+      )
+    : [];
 
-  // 处理点击跳转
   const handleSelect = (id: string) => {
     setShowDropdown(false);
     setKeyword("");
@@ -59,8 +114,8 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header style={headerStyle}>
-      <div style={leftStyle} onClick={() => navigate("/")}>
+    <header style={styles.header}>
+      <div style={styles.left} onClick={() => navigate("/")}>
         <span>
           <span style={{ color: "#e57373" }}>Y</span>ou{" "}
           <span style={{ color: "#64b5f6" }}>H</span>ave{" "}
@@ -69,8 +124,8 @@ const Header: React.FC = () => {
           <span style={{ color: "#ba68c8" }}>E</span>ye
         </span>
       </div>
-      <div style={centerStyle}>
-        <div style={{ position: "relative", width: 240 }}>
+      <div style={styles.center}>
+        <div style={styles.searchContainer}>
           <input
             type="text"
             placeholder="搜索占位"
@@ -81,71 +136,34 @@ const Header: React.FC = () => {
             }}
             onFocus={() => keyword && setShowDropdown(true)}
             onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
-            style={{
-              width: "100%",
-              padding: 6,
-              borderRadius: 4,
-              border: "1px solid #ccc",
-            }}
+            style={styles.searchInput}
           />
           {showDropdown && filteredWorks.length > 0 && (
-            <ul
-              style={{
-                position: "absolute",
-                top: 36,
-                left: 0,
-                width: "100%",
-                background: "#fff",
-                border: "1px solid #eee",
-                borderRadius: 4,
-                boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-                zIndex: 10,
-                margin: 0,
-                padding: 0,
-                listStyle: "none",
-                maxHeight: 220,
-                overflowY: "auto",
-              }}
-            >
-              {filteredWorks.map(w => (
+            <ul style={styles.dropdown}>
+              {filteredWorks.map(work => (
                 <li
-                  key={w.id}
-                  onMouseDown={() => handleSelect(w.id)}
-                  style={{ padding: "8px 12px", cursor: "pointer" }}
+                  key={work.id}
+                  onMouseDown={() => handleSelect(work.id)}
+                  style={styles.dropdownItem}
                 >
-                  <div style={{ fontWeight: 500 }}>{w.name}</div>
-                  <div style={{ fontSize: 12, color: "#888" }}>{w.desc}</div>
+                  <div style={styles.itemName}>{work.name}</div>
+                  <div style={styles.itemDesc}>{work.desc}</div>
                 </li>
               ))}
             </ul>
           )}
         </div>
       </div>
-      <div style={rightStyle}>
+      <div style={styles.right}>
         <button
           onClick={() => navigate("/data-management")}
-          style={{
-            padding: "6px 12px",
-            margin: "0 8px",
-            border: "1px solid #ccc",
-            borderRadius: "4px",
-            background: "#fff",
-            cursor: "pointer",
-            fontSize: "12px",
-          }}
+          style={styles.button}
         >
           数据管理
         </button>
         <button
           onClick={() => navigate("/cooperation")}
-          style={{
-            padding: "6px 12px",
-            border: "1px solid #ccc",
-            borderRadius: "4px",
-            background: "#fff",
-            cursor: "pointer",
-            fontSize: "12px",
-          }}
+          style={styles.rightButton}
         >
           业务合作
         </button>

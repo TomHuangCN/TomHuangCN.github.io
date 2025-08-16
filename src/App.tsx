@@ -1,29 +1,36 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import Header, { SearchContext } from "./components/Header";
+import Header, { SearchContext } from "./components/header";
 import Sidebar from "./components/sidebar";
 import { useState } from "react";
 
-const appStyle: React.CSSProperties = {
-  display: "flex",
-  flexDirection: "column",
-  height: "100vh",
-};
-const mainStyle: React.CSSProperties = {
-  display: "flex",
-  flex: 1,
-  minHeight: 0,
-};
+const styles = {
+  app: {
+    display: "flex",
+    flexDirection: "column" as const,
+    height: "100vh",
+  },
+  main: {
+    display: "flex",
+    flex: 1,
+    minHeight: 0,
+  },
+  content: {
+    flex: 1,
+    padding: 24,
+    overflow: "auto" as const,
+  },
+} as const;
 
 const App: React.FC = () => {
   const [keyword, setKeyword] = useState("");
   return (
     <SearchContext.Provider value={{ keyword, setKeyword }}>
-      <div style={appStyle}>
+      <div style={styles.app}>
         <Header />
-        <div style={mainStyle}>
+        <div style={styles.main}>
           <Sidebar />
-          <div style={{ flex: 1, padding: 24, overflow: "auto" }}>
+          <div style={styles.content}>
             <Outlet />
           </div>
         </div>

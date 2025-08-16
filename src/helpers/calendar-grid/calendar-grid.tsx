@@ -17,7 +17,7 @@ export const CalendarGrid: React.FC = () => {
   const [calendarData, setCalendarData] = useState<DayData[][]>([]);
   const [isDownloading, setIsDownloading] = useState<boolean>(false);
 
-  // 生成日历数据
+  // 生成样机数据
   const generateCalendar = useCallback(
     (targetYear: number, weekStart: number) => {
       const data = generateCalendarData(targetYear, weekStart);
@@ -26,7 +26,7 @@ export const CalendarGrid: React.FC = () => {
     []
   );
 
-  // 当年份或起始日变化时重新生成日历
+  // 当年份或起始日变化时重新生成样机
   useEffect(() => {
     generateCalendar(year, startDay);
   }, [year, startDay, generateCalendar]);
