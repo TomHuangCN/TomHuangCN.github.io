@@ -1,7 +1,7 @@
 import CalendarDemo from "../../helpers/calendar-demo/calendar-demo";
 import { useCallback, useState, useRef, useEffect } from "react";
 import type { CalendarImage } from "../../helpers/calendar-demo/calendar-demo";
-import { CJMVTTP001Renderer } from "./CJ-MVTTP001-renderer";
+import { CJMVTTP001Poster } from "./CJ-MVTTP001-poster";
 
 export default function CJ_MVTTP001() {
   const [isLoading, setIsLoading] = useState(false);
@@ -13,9 +13,9 @@ export default function CJ_MVTTP001() {
     if (currentImages.length === 0) return;
 
     setIsLoading(true);
-    const renderer = new CJMVTTP001Renderer(currentImages);
+    const poster = new CJMVTTP001Poster(currentImages);
 
-    renderer
+    poster
       .render()
       .then(canvases => {
         // 将 canvas 元素添加到容器中

@@ -1,12 +1,12 @@
 import { CalendarImage } from "../../helpers/calendar-demo/calendar-demo";
 import {
-  BaseCalendarRenderer,
-  CalendarRendererConfig,
-} from "../../helpers/calendar-demo/calendar-renderer-base";
+  BaseCalendarPoster,
+  CalendarPosterConfig,
+} from "../../helpers/calendar-demo/calendar-poster-base";
 
-export class CJMVTTP002Renderer extends BaseCalendarRenderer {
+export class CJMVTTP002Poster extends BaseCalendarPoster {
   constructor(images: CalendarImage[]) {
-    const config: CalendarRendererConfig = {
+    const config: CalendarPosterConfig = {
       bgImagePath: "/assets/CJ-MVTTP002-calendar-bg.png",
       ringImagePath: "/assets/CJ-MVTTP002-calendar-ring.png",
       perspectiveImage1Coords: [

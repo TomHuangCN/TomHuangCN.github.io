@@ -1,12 +1,12 @@
 import React from "react";
 import type { CalendarImage } from "./calendar-demo";
 
-interface CalendarRendererProps {
+interface CalendarPosterProps {
   images: CalendarImage[];
   renderPage?: (imgs: CalendarImage[]) => React.ReactNode;
 }
 
-function CalendarRenderer({ images, renderPage }: CalendarRendererProps) {
+function CalendarPoster({ images, renderPage }: CalendarPosterProps) {
   return (
     <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
       {renderPage
@@ -35,8 +35,8 @@ function CalendarRenderer({ images, renderPage }: CalendarRendererProps) {
 }
 
 // 使用 React.memo 避免不必要的重渲染
-export default React.memo(CalendarRenderer, (prevProps, nextProps) => {
-  // 只有当图片数组真正发生变化时才重新渲染
+export default React.memo(CalendarPoster, (prevProps, nextProps) => {
+  // 检查图片数组长度是否发生变化
   if (prevProps.images.length !== nextProps.images.length) {
     return false;
   }

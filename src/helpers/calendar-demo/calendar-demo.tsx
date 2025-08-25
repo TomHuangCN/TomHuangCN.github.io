@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import CalendarSelector from "./calendar-selector";
 import ImageSelector from "./image-selector";
-import CalendarRenderer from "./calendar-renderer";
+import CalendarPoster from "./calendar-poster";
 import { CalendarStorage, Calendar } from "./calendar-demo-storage";
 
 // 工具函数：file 转 url
@@ -196,34 +196,42 @@ function CalendarDemo({
         onImageReplace={handleImageReplace}
         aspectRatio={aspectRatio}
       />
-      <button
-        onClick={handleGenerate}
-        disabled={images.length < maxImages || isGenerated}
+      <div
         style={{
-          marginBottom: 16,
-          padding: "8px 16px",
-          fontSize: "14px",
-          cursor:
-            images.length < maxImages || isGenerated
-              ? "not-allowed"
-              : "pointer",
-          opacity: images.length < maxImages || isGenerated ? 0.6 : 1,
-          backgroundColor:
-            images.length < maxImages || isGenerated ? "#ccc" : "#007bff",
-          color: "white",
-          border: "none",
-          borderRadius: "4px",
+          display: "flex",
+          alignItems: "center",
+          gap: "16px",
+          marginBottom: "16px",
         }}
       >
-        {images.length < maxImages
-          ? `请选择${maxImages}张图片`
-          : isGenerated
-            ? "样机已生成"
-            : "生成样机"}
-      </button>
+        <button
+          onClick={handleGenerate}
+          disabled={images.length < maxImages || isGenerated}
+          style={{
+            padding: "8px 16px",
+            fontSize: "14px",
+            cursor:
+              images.length < maxImages || isGenerated
+                ? "not-allowed"
+                : "pointer",
+            opacity: images.length < maxImages || isGenerated ? 0.6 : 1,
+            backgroundColor:
+              images.length < maxImages || isGenerated ? "#ccc" : "#007bff",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+          }}
+        >
+          {images.length < maxImages
+            ? `请选择${maxImages}张图片`
+            : isGenerated
+              ? "样机已生成"
+              : "生成样机"}
+        </button>
+      </div>
       {/* 下：日历渲染 */}
       {isGenerated && (
-        <CalendarRenderer images={images} renderPage={renderPage} />
+        <CalendarPoster images={images} renderPage={renderPage} />
       )}
     </div>
   );

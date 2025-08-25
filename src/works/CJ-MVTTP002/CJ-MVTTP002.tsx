@@ -1,7 +1,7 @@
 import CalendarDemo from "../../helpers/calendar-demo/calendar-demo";
 import { useCallback, useState, useRef, useEffect } from "react";
 import type { CalendarImage } from "../../helpers/calendar-demo/calendar-demo";
-import { CJMVTTP002Renderer } from "./CJ-MVTTP002-renderer";
+import { CJMVTTP002Poster } from "./CJ-MVTTP002-poster";
 
 export default function CJ_MVTTP002() {
   const [isLoading, setIsLoading] = useState(false);
@@ -13,9 +13,9 @@ export default function CJ_MVTTP002() {
     if (currentImages.length === 0) return;
 
     setIsLoading(true);
-    const renderer = new CJMVTTP002Renderer(currentImages);
+    const poster = new CJMVTTP002Poster(currentImages);
 
-    renderer
+    poster
       .render()
       .then(canvases => {
         // 将 canvas 元素添加到容器中
@@ -35,36 +35,41 @@ export default function CJ_MVTTP002() {
       });
   }, [currentImages]);
 
-  const renderPage = useCallback((imgs: CalendarImage[]) => {
-    // 只有当有图片时才进行渲染
-    if (!imgs || imgs.length === 0) {
+  const renderPage = useCallback(
+    (imgs: CalendarImage[]) => {
+      // 只有当有图片时才进行渲染
+      if (!imgs || imgs.length === 0) {
+        return (
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <div>请先选择图片</div>
+          </div>
+        );
+      }
+
+      // 更新当前图片，触发 useEffect 进行渲染
+      setCurrentImages(imgs);
+
+      // 返回容器 div
       return (
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          <div>请先选择图片</div>
+        <div
+          style={{ display: "flex", gap: 8, flexWrap: "wrap", width: "100%" }}
+        >
+          {isLoading && <div>正在渲染...</div>}
+          <div
+            ref={el => {
+              canvasRefs.current[0] = el;
+            }}
+            style={{
+              border: "1px solid #eee",
+              borderRadius: 4,
+              minHeight: 200,
+            }}
+          />
         </div>
       );
-    }
-
-    // 更新当前图片，触发 useEffect 进行渲染
-    setCurrentImages(imgs);
-
-    // 返回容器 div
-    return (
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", width: "100%" }}>
-        {isLoading && <div>正在渲染...</div>}
-        <div
-          ref={el => {
-            canvasRefs.current[0] = el;
-          }}
-          style={{
-            border: "1px solid #eee",
-            borderRadius: 4,
-            minHeight: 200,
-          }}
-        />
-      </div>
-    );
-  }, [isLoading]);
+    },
+    [isLoading]
+  );
 
   return (
     <CalendarDemo
