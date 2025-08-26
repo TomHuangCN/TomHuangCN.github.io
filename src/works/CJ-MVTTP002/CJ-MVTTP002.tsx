@@ -1,7 +1,7 @@
 import CalendarDemo from "../../helpers/calendar-demo/calendar-demo";
 import { useCallback, useState, useRef, useEffect } from "react";
 import type { CalendarImage } from "../../helpers/calendar-demo/calendar-demo";
-import { CJMVTTP002Poster } from "./CJ-MVTTP002-poster";
+import { CJMVTTP002Poster } from "./cj-mvttp002-poster";
 
 export default function CJ_MVTTP002() {
   const [isLoading, setIsLoading] = useState(false);
