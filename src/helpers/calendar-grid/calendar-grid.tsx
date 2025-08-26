@@ -46,11 +46,13 @@ export const CalendarGrid: React.FC = () => {
   return (
     <div
       id="calendar"
+      className="calendar-container"
       style={{
         margin: "0 auto",
         padding: 0,
         boxSizing: "border-box",
         width: "900px",
+        maxWidth: "100%",
       }}
     >
       <CalendarControls

@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import Header, { SearchContext } from "./components/header";
 import Sidebar from "./components/sidebar";
 import { useState } from "react";
+import "./styles/responsive.css";
 
 const styles = {
   app: {
@@ -30,9 +31,9 @@ const App: React.FC = () => {
         <Header />
         <div style={styles.main}>
           <Sidebar />
-          <div style={styles.content}>
-            <Outlet />
-          </div>
+                  <div style={styles.content} className="main-content">
+          <Outlet />
+        </div>
         </div>
       </div>
     </SearchContext.Provider>

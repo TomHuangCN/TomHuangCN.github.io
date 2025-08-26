@@ -1,0 +1,143 @@
+/* 响应式断点 */
+:root {
+  --mobile-breakpoint: 768px;
+  --tablet-breakpoint: 1024px;
+  --desktop-breakpoint: 1200px;
+}
+
+/* 移动端基础样式 */
+@media (max-width: 768px) {
+  /* 隐藏桌面端侧边栏 */
+  .sidebar-desktop {
+    display: none !important;
+  }
+  
+  /* 显示移动端侧边栏 */
+  .sidebar-mobile {
+    display: block !important;
+  }
+  
+  /* 调整主内容区域 */
+  .main-content {
+    padding: 16px !important;
+  }
+  
+  /* 调整头部样式 */
+  .header-mobile {
+    padding: 0 16px !important;
+  }
+  
+  /* 搜索框移动端优化 */
+  .search-container-mobile {
+    width: 100% !important;
+    max-width: 280px !important;
+  }
+  
+  /* 汉堡菜单按钮 */
+  .hamburger-menu {
+    display: block !important;
+  }
+  
+  /* 隐藏桌面端按钮 */
+  .desktop-buttons {
+    display: none !important;
+  }
+  
+  /* 作品列表移动端优化 */
+  .works-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+  
+  .work-card {
+    padding: 16px !important;
+    margin-bottom: 12px !important;
+  }
+  
+  /* 头部标题移动端优化 */
+  .header-title {
+    font-size: 16px !important;
+    line-height: 1.2 !important;
+  }
+  
+  /* 搜索框移动端优化 */
+  .search-input-mobile {
+    font-size: 16px !important;
+    padding: 8px 12px !important;
+  }
+  
+  /* 图片模态框移动端优化 */
+  .modal-close-button {
+    top: 16px !important;
+    right: 16px !important;
+    width: 44px !important;
+    height: 44px !important;
+  }
+  
+  /* 日历组件移动端优化 */
+  .calendar-container {
+    width: 100% !important;
+    padding: 0 16px !important;
+  }
+  
+  /* 日历控制按钮移动端优化 */
+  .calendar-controls {
+    flex-direction: column !important;
+    gap: 12px !important;
+    padding: 16px !important;
+  }
+  
+  .calendar-controls button {
+    min-height: 44px !important;
+    font-size: 16px !important;
+  }
+}
+
+/* 平板端样式 */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .sidebar-desktop {
+    width: 160px !important;
+  }
+  
+  .main-content {
+    padding: 20px !important;
+  }
+}
+
+/* 桌面端样式 */
+@media (min-width: 1025px) {
+  .sidebar-mobile {
+    display: none !important;
+  }
+  
+  .hamburger-menu {
+    display: none !important;
+  }
+}
+
+/* 通用响应式工具类 */
+.hidden-mobile {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .hidden-mobile {
+    display: block;
+  }
+  
+  .hidden-desktop {
+    display: none;
+  }
+}
+
+/* 移动端触摸优化 */
+@media (max-width: 768px) {
+  button, a, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  input, textarea, select {
+    font-size: 16px; /* 防止iOS缩放 */
+  }
+}

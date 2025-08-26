@@ -59,21 +59,24 @@ const ImageModal: React.FC<ImageModalProps> = ({
           onClick={onClose}
           style={{
             position: "absolute",
-            top: -40,
-            right: 0,
+            top: "-40px",
+            right: "0",
             background: "rgba(255, 255, 255, 0.2)",
             border: "none",
             color: "white",
             fontSize: "24px",
-            width: "32px",
-            height: "32px",
+            width: "44px",
+            height: "44px",
             borderRadius: "50%",
             cursor: "pointer",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             zIndex: 1001,
+            minWidth: "44px",
+            minHeight: "44px",
           }}
+          className="modal-close-button"
         >
           ×
         </button>

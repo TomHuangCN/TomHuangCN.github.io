@@ -29,7 +29,7 @@ const Sidebar: React.FC = () => {
   const WORKS = useWorks();
 
   return (
-    <nav style={styles.sidebar}>
+    <nav style={styles.sidebar} className="sidebar-desktop">
       <NavLink
         to="/works"
         style={({ isActive }) => ({

@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { createContext, useState, useContext } from "react";
 import { useWorks } from "../works/constants";
+import MobileSidebar from "./mobile-sidebar";
 
 export interface SearchContextType {
   keyword: string;
@@ -91,12 +92,28 @@ const styles = {
     cursor: "pointer",
     fontSize: "12px",
   },
+  hamburgerMenu: {
+    display: "none",
+    background: "none",
+    border: "none",
+    fontSize: "20px",
+    cursor: "pointer",
+    padding: "8px",
+    color: "#333",
+    marginRight: "16px",
+  },
+  mobileSearchContainer: {
+    position: "relative" as const,
+    width: "100%",
+    maxWidth: 280,
+  },
 } as const;
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
   const { keyword, setKeyword } = useContext(SearchContext);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const WORKS = useWorks();
 
   const filteredWorks = keyword
@@ -114,61 +131,83 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header style={styles.header}>
-      <div style={styles.left} onClick={() => navigate("/")}>
-        <span>
-          <span style={{ color: "#e57373" }}>Y</span>ou{" "}
-          <span style={{ color: "#64b5f6" }}>H</span>ave{" "}
-          <span style={{ color: "#81c784" }}>A</span>{" "}
-          <span style={{ color: "#ffd54f" }}>G</span>ood{" "}
-          <span style={{ color: "#ba68c8" }}>E</span>ye
-        </span>
-      </div>
-      <div style={styles.center}>
-        <div style={styles.searchContainer}>
-          <input
-            type="text"
-            placeholder="搜索占位"
-            value={keyword}
-            onChange={e => {
-              setKeyword(e.target.value);
-              setShowDropdown(true);
-            }}
-            onFocus={() => keyword && setShowDropdown(true)}
-            onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
-            style={styles.searchInput}
-          />
-          {showDropdown && filteredWorks.length > 0 && (
-            <ul style={styles.dropdown}>
-              {filteredWorks.map(work => (
-                <li
-                  key={work.id}
-                  onMouseDown={() => handleSelect(work.id)}
-                  style={styles.dropdownItem}
-                >
-                  <div style={styles.itemName}>{work.name}</div>
-                  <div style={styles.itemDesc}>{work.desc}</div>
-                </li>
-              ))}
-            </ul>
-          )}
+    <>
+      <header style={styles.header}>
+        <div style={styles.left}>
+          <button
+            style={styles.hamburgerMenu}
+            onClick={() => setIsMobileSidebarOpen(true)}
+            className="hamburger-menu"
+          >
+            ☰
+          </button>
+          <div onClick={() => navigate("/")} className="header-title">
+            <span>
+              <span style={{ color: "#e57373" }}>Y</span>ou{" "}
+              <span style={{ color: "#64b5f6" }}>H</span>ave{" "}
+              <span style={{ color: "#81c784" }}>A</span>{" "}
+              <span style={{ color: "#ffd54f" }}>G</span>ood{" "}
+              <span style={{ color: "#ba68c8" }}>E</span>ye
+            </span>
+          </div>
         </div>
-      </div>
-      <div style={styles.right}>
-        <button
-          onClick={() => navigate("/data-management")}
-          style={styles.button}
-        >
-          数据管理
-        </button>
-        <button
-          onClick={() => navigate("/cooperation")}
-          style={styles.rightButton}
-        >
-          业务合作
-        </button>
-      </div>
-    </header>
+        
+        <div style={styles.center}>
+          <div 
+            style={styles.searchContainer} 
+            className="search-container-mobile"
+          >
+            <input
+              type="text"
+              placeholder="搜索作品..."
+              value={keyword}
+              onChange={e => {
+                setKeyword(e.target.value);
+                setShowDropdown(true);
+              }}
+              onFocus={() => keyword && setShowDropdown(true)}
+              onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
+              style={styles.searchInput}
+              className="search-input-mobile"
+            />
+            {showDropdown && filteredWorks.length > 0 && (
+              <ul style={styles.dropdown}>
+                {filteredWorks.map(work => (
+                  <li
+                    key={work.id}
+                    onMouseDown={() => handleSelect(work.id)}
+                    style={styles.dropdownItem}
+                  >
+                    <div style={styles.itemName}>{work.name}</div>
+                    <div style={styles.itemDesc}>{work.desc}</div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+        
+        <div style={styles.right} className="desktop-buttons">
+          <button
+            onClick={() => navigate("/data-management")}
+            style={styles.button}
+          >
+            控制台
+          </button>
+          <button
+            onClick={() => navigate("/cooperation")}
+            style={styles.rightButton}
+          >
+            业务合作
+          </button>
+        </div>
+      </header>
+      
+      <MobileSidebar 
+        isOpen={isMobileSidebarOpen}
+        onClose={() => setIsMobileSidebarOpen(false)}
+      />
+    </>
   );
 };
 
