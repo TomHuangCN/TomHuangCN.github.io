@@ -151,10 +151,10 @@ const Header: React.FC = () => {
             </span>
           </div>
         </div>
-        
+
         <div style={styles.center}>
-          <div 
-            style={styles.searchContainer} 
+          <div
+            style={styles.searchContainer}
             className="search-container-mobile"
           >
             <input
@@ -186,7 +186,7 @@ const Header: React.FC = () => {
             )}
           </div>
         </div>
-        
+
         <div style={styles.right} className="desktop-buttons">
           <button
             onClick={() => navigate("/data-management")}
@@ -202,8 +202,8 @@ const Header: React.FC = () => {
           </button>
         </div>
       </header>
-      
-      <MobileSidebar 
+
+      <MobileSidebar
         isOpen={isMobileSidebarOpen}
         onClose={() => setIsMobileSidebarOpen(false)}
       />
