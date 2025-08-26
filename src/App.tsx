@@ -31,9 +31,9 @@ const App: React.FC = () => {
         <Header />
         <div style={styles.main}>
           <Sidebar />
-                  <div style={styles.content} className="main-content">
-          <Outlet />
-        </div>
+          <div style={styles.content} className="main-content">
+            <Outlet />
+          </div>
         </div>
       </div>
     </SearchContext.Provider>

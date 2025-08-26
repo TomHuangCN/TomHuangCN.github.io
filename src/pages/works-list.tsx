@@ -11,10 +11,10 @@ const WorksList: React.FC = () => {
   return (
     <div>
       <h2>作品合集</h2>
-      <ul 
+      <ul
         className="works-grid"
-        style={{ 
-          listStyle: "none", 
+        style={{
+          listStyle: "none",
           padding: 0,
           display: "grid",
           gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
@@ -22,10 +22,10 @@ const WorksList: React.FC = () => {
         }}
       >
         {filteredWorks.map(work => (
-          <li 
-            key={work.id} 
+          <li
+            key={work.id}
             className="work-card"
-            style={{ 
+            style={{
               marginBottom: 16,
               padding: "20px",
               border: "1px solid #eee",
@@ -45,8 +45,8 @@ const WorksList: React.FC = () => {
             >
               <Link
                 to={`/works/${work.id}`}
-                style={{ 
-                  fontSize: "18px", 
+                style={{
+                  fontSize: "18px",
                   fontWeight: 500,
                   color: "#1890ff",
                   textDecoration: "none",
@@ -55,11 +55,13 @@ const WorksList: React.FC = () => {
                 {work.name}
               </Link>
             </div>
-            <div style={{ 
-              color: "#666", 
-              fontSize: "14px",
-              lineHeight: "1.5",
-            }}>
+            <div
+              style={{
+                color: "#666",
+                fontSize: "14px",
+                lineHeight: "1.5",
+              }}
+            >
               {work.desc}
             </div>
           </li>

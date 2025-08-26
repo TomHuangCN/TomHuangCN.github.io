@@ -8,7 +8,7 @@ export interface TooltipProps {
 
 const Tooltip: React.FC<TooltipProps> = ({ content, link, children }) => {
   const [showMobileTooltip, setShowMobileTooltip] = useState(false);
-  
+
   const handleClick = (e: React.MouseEvent) => {
     if (link) {
       e.preventDefault();
@@ -60,7 +60,7 @@ const Tooltip: React.FC<TooltipProps> = ({ content, link, children }) => {
       >
         {children || "?"}
       </span>
-      
+
       {/* 移动端工具提示 */}
       {showMobileTooltip && !link && (
         <div

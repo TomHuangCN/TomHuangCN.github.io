@@ -21,7 +21,7 @@ export async function loadBackgroundImages(
 ): Promise<{ bgImage: HTMLImageElement; ringImage: HTMLImageElement }> {
   const [bgImage, ringImage] = await Promise.all([
     loadImage(bgImagePath),
-    loadImage(ringImagePath)
+    loadImage(ringImagePath),
   ]);
 
   return { bgImage, ringImage };
@@ -30,7 +30,9 @@ export async function loadBackgroundImages(
 /**
  * 预加载所有用户图片
  */
-export async function preloadUserImages(images: CalendarImage[]): Promise<HTMLImageElement[]> {
+export async function preloadUserImages(
+  images: CalendarImage[]
+): Promise<HTMLImageElement[]> {
   const imageLoadPromises: Promise<HTMLImageElement>[] = [];
 
   for (const imgObj of images) {
@@ -57,7 +59,7 @@ export async function loadAllImages(
   const [bgImage, ringImage, loadedImages] = await Promise.all([
     loadImage(bgImagePath),
     loadImage(ringImagePath),
-    preloadUserImages(images)
+    preloadUserImages(images),
   ]);
 
   return { bgImage, ringImage, loadedImages };

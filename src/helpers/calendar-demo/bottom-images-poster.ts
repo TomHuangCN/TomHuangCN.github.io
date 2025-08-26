@@ -30,13 +30,16 @@ export function drawBottomInnerImages(
     gap: 8, // 图片间横向间距，缩小
     rowGap: 12, // 行间距，缩小
     rows: 1,
-    cols: 12
+    cols: 12,
   };
 
   // 计算每张图片的最大宽高
   const availableWidth = canvas.width - config.gap * (config.cols + 1);
   const availableHeight =
-    extraHeight - config.marginTop - config.marginBottom - config.rowGap * (config.rows - 1);
+    extraHeight -
+    config.marginTop -
+    config.marginBottom -
+    config.rowGap * (config.rows - 1);
   const imgWidth = Math.floor(availableWidth / config.cols);
   const imgHeight = Math.floor(availableHeight / config.rows);
 

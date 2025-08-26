@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 interface ResponsiveState {
   isMobile: boolean;
@@ -21,7 +21,7 @@ export const useResponsive = (): ResponsiveState => {
     const handleResize = () => {
       const width = window.innerWidth;
       const height = window.innerHeight;
-      
+
       setResponsiveState({
         isMobile: width <= 768,
         isTablet: width > 768 && width <= 1024,
@@ -35,11 +35,11 @@ export const useResponsive = (): ResponsiveState => {
     handleResize();
 
     // 监听窗口大小变化
-    window.addEventListener('resize', handleResize);
-    
+    window.addEventListener("resize", handleResize);
+
     // 清理事件监听器
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
@@ -65,10 +65,10 @@ export const useMediaQuery = (query: string): boolean => {
       setMatches(event.matches);
     };
 
-    mediaQuery.addEventListener('change', handleChange);
-    
+    mediaQuery.addEventListener("change", handleChange);
+
     return () => {
-      mediaQuery.removeEventListener('change', handleChange);
+      mediaQuery.removeEventListener("change", handleChange);
     };
   }, [query]);
 

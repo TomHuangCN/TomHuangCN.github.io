@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useWorks } from "../works/constants";
 import { NavLink } from "react-router-dom";
 
@@ -102,14 +102,14 @@ const MobileSidebar: React.FC<MobileSidebarProps> = ({ isOpen, onClose }) => {
 
   return (
     <div style={styles.overlay} onClick={onClose}>
-      <div style={styles.sidebar} onClick={(e) => e.stopPropagation()}>
+      <div style={styles.sidebar} onClick={e => e.stopPropagation()}>
         <div style={styles.header}>
           <h3 style={styles.title}>导航菜单</h3>
           <button style={styles.closeButton} onClick={onClose}>
             ✕
           </button>
         </div>
-        
+
         <nav style={styles.nav}>
           <NavLink
             to="/works"
@@ -121,7 +121,7 @@ const MobileSidebar: React.FC<MobileSidebarProps> = ({ isOpen, onClose }) => {
           >
             作品合集
           </NavLink>
-          
+
           {WORKS.map(work => (
             <div key={work.id} style={styles.workItem}>
               <NavLink
