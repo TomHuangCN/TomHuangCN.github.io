@@ -6,6 +6,7 @@ import { fileURLToPath } from "url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
+  base: "https://cdn.jsdelivr.net/gh/TomHuangCN/TomHuangCN.github.io",
   plugins: [react()],
   build: {
     rollupOptions: {

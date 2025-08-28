@@ -17,11 +17,11 @@ export interface IWork {
 
 const works: IWork[] = [
   {
-    id: "CJ-MVTTP001",
-    name: "月历 CJ-MVTTP001",
-    desc: "图的印刷尺寸是：155mm * 215mm，按 DPI 300 印刷，像素尺寸至少 1838 × 2547",
+    id: "cj-mvttp001",
+    name: "CJ-MVTTP001",
+    desc: "CJ-MVTTP001 日历海报",
     content: CJ_MVTTP001,
-    illustration: "/assets/CJ-MVTTP001_illustration.png",
+    illustration: "./assets/CJ-MVTTP001_illustration.png",
     tips: [
       {
         content: "产品编号的含义",
@@ -30,11 +30,11 @@ const works: IWork[] = [
     ],
   },
   {
-    id: "CJ-MVTTP002",
-    name: "月历 CJ-MVTTP002",
-    desc: "图的印刷尺寸是：145mm * 215mm，按 DPI 300 印刷，像素尺寸至少 1713 × 2540",
+    id: "cj-mvttp002",
+    name: "CJ-MVTTP002",
+    desc: "CJ-MVTTP002 日历海报",
     content: CJ_MVTTP002,
-    illustration: "/assets/CJ-MVTTP002_illustration.png",
+    illustration: "./assets/CJ-MVTTP002_illustration.png",
     tips: [
       {
         content: "产品编号的含义",
