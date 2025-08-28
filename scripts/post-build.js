@@ -3,20 +3,14 @@
 import { readFileSync, writeFileSync, readdirSync, statSync } from "fs";
 import { join, extname } from "path";
 
-const CDN_BASE =
-  "https://cdn.jsdelivr.net/gh/TomHuangCN/TomHuangCN.github.io@gh-pages";
+const CDN_BASE = "https://cdn.jsdelivr.net/gh/TomHuangCN/TomHuangCN.github.io@gh-pages";
 const DIST_DIR = "./dist";
 
-// 需要替换的资源路径模式
-const ASSET_PATTERNS = [/"\/assets\//g, /'\/assets\//g, /\/assets\//g];
-
-// 替换函数
+// 替换函数 - 只替换以 /assets/ 开头的绝对路径
 function replaceAssetPaths(content) {
-  let result = content;
-  ASSET_PATTERNS.forEach(pattern => {
-    result = result.replace(pattern, `"${CDN_BASE}/assets/`);
-  });
-  return result;
+  // 使用正则表达式精确匹配以 /assets/ 开头的路径
+  // 避免重复替换和错误的路径生成
+  return content.replace(/(["'])\/assets\//g, `$1${CDN_BASE}/assets/`);
 }
 
 // 处理单个文件
