@@ -21,7 +21,7 @@ const works: IWork[] = [
     name: "CJ-MVTTP001",
     desc: "CJ-MVTTP001 日历海报",
     content: CJ_MVTTP001,
-    illustration: "./assets/CJ-MVTTP001_illustration.png",
+    illustration: "/assets/CJ-MVTTP001_illustration.png",
     tips: [
       {
         content: "产品编号的含义",
@@ -34,7 +34,7 @@ const works: IWork[] = [
     name: "CJ-MVTTP002",
     desc: "CJ-MVTTP002 日历海报",
     content: CJ_MVTTP002,
-    illustration: "./assets/CJ-MVTTP002_illustration.png",
+    illustration: "/assets/CJ-MVTTP002_illustration.png",
     tips: [
       {
         content: "产品编号的含义",

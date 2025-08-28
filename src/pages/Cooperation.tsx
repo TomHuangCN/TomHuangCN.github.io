@@ -8,7 +8,7 @@ const Cooperation: React.FC = () => {
       <div style={{ marginTop: "24px" }}>
         <p>添加微信：</p>
         <img
-          src="./assets/wechat-qr.png"
+          src="/assets/wechat-qr.png"
           alt="微信二维码"
           className="w-32 h-32 mx-auto mb-4"
         />
