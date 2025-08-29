@@ -1,9 +1,11 @@
 #!/usr/bin/env node
+/* eslint-env node */
 
 import { readFileSync, writeFileSync, readdirSync, statSync } from "fs";
 import { join, extname } from "path";
 
-const CDN_BASE = "https://cdn.jsdelivr.net/gh/TomHuangCN/TomHuangCN.github.io@gh-pages";
+const CDN_BASE =
+  "https://cdn.jsdelivr.net.cn/gh/TomHuangCN/TomHuangCN.github.io@gh-pages";
 const DIST_DIR = "./dist";
 
 // 替换函数 - 只替换以 /assets/ 开头的绝对路径

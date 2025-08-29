@@ -31,6 +31,7 @@ export default [
       globals: {
         ...globals.browser,
         ...globals.es2021,
+        ...globals.node,
         __REACT_DEVTOOLS_GLOBAL_HOOK__: "readonly",
       },
       parserOptions: {
