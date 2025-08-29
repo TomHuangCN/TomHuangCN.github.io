@@ -19,7 +19,7 @@ const works: IWork[] = [
   {
     id: "cj-mvttp001",
     name: "CJ-MVTTP001",
-    desc: "CJ-MVTTP001 日历海报",
+    desc: "图的印刷尺寸是：155mm * 215mm，按 DPI 300 印刷，像素尺寸至少 1838 × 2547",
     content: CJ_MVTTP001,
     illustration: "/assets/CJ-MVTTP001_illustration.png",
     tips: [
@@ -32,7 +32,7 @@ const works: IWork[] = [
   {
     id: "cj-mvttp002",
     name: "CJ-MVTTP002",
-    desc: "CJ-MVTTP002 日历海报",
+    desc: "图的印刷尺寸是：145mm * 215mm，按 DPI 300 印刷，像素尺寸至少 1713 × 2540",
     content: CJ_MVTTP002,
     illustration: "/assets/CJ-MVTTP002_illustration.png",
     tips: [
