@@ -3,7 +3,7 @@
 /* 手写体字体定义 */
 @font-face {
   font-family: 'Ma Shan Zheng';
-  src: url('/fonts/MaShanZheng-Regular.ttf') format('truetype');
+  src: url('/assets/fonts/MaShanZheng-Regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -11,7 +11,7 @@
 
 @font-face {
   font-family: 'Xiaolai';
-  src: url('/fonts/Xiaolai-Regular.ttf') format('truetype');
+  src: url('/assets/fonts/Xiaolai-Regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -19,7 +19,7 @@
 
 @font-face {
   font-family: 'VonwaonBitmap-12px';
-  src: url('/fonts/VonwaonBitmap-12px.ttf') format('truetype');
+  src: url('/assets/fonts/VonwaonBitmap-12px.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -27,7 +27,7 @@
 
 @font-face {
   font-family: '千图小兔体';
-  src: url('/fonts/千图小兔体.ttf') format('truetype');
+  src: url('/assets/fonts/千图小兔体.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
