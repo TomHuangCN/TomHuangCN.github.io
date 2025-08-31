@@ -22,7 +22,8 @@ export interface CalendarImage {
 
 interface CalendarDemoProps {
   maxImages?: number;
-  aspectRatio?: number; // 添加宽高比参数
+  width: number; // 像素宽度
+  height: number; // 像素高度
   renderPage?: (imgs: CalendarImage[]) => React.ReactNode;
   storeName?: string;
 }
@@ -30,10 +31,14 @@ interface CalendarDemoProps {
 // 主组件
 function CalendarDemo({
   maxImages = 13,
-  aspectRatio = 0.75, // 默认宽高比
+  width,
+  height,
   renderPage,
   storeName = "calendars",
 }: CalendarDemoProps) {
+  // 在组件内部计算宽高比
+  const aspectRatio = width / height;
+
   // 创建存储实例
   const [storage] = useState(() => new CalendarStorage(storeName));
 

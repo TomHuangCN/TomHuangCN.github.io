@@ -3,6 +3,9 @@ import { useCallback, useState, useRef, useEffect } from "react";
 import type { CalendarImage } from "../../helpers/calendar-demo/calendar-demo";
 import { CJMVTTP002Poster } from "./cj-mvttp002-poster";
 
+export const CJ_MVTTP002_WIDTH = 1713;
+export const CJ_MVTTP002_HEIGHT = 2540;
+
 export default function CJ_MVTTP002() {
   const [isLoading, setIsLoading] = useState(false);
   const canvasRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -74,7 +77,8 @@ export default function CJ_MVTTP002() {
   return (
     <CalendarDemo
       maxImages={13}
-      aspectRatio={145 / 215} // CJ-MVTTP002 的宽高比
+      width={CJ_MVTTP002_WIDTH}
+      height={CJ_MVTTP002_HEIGHT}
       renderPage={renderPage}
       storeName="CJ_MVTTP002"
     />
