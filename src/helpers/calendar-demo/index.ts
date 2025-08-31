@@ -9,5 +9,5 @@ export * from "./inner-page-poster";
 export * from "./bottom-images-poster";
 
 // 类型定义
-export type { CalendarImage } from "./calendar-demo";
+export type { CalendarPicture } from "./calendar-demo";
 export type { ICalendarDemoShowRenderer } from "./calendar-demo-show-renderer";

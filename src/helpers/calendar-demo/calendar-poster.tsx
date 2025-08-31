@@ -1,17 +1,17 @@
 import React from "react";
-import type { CalendarImage } from "./calendar-demo";
+import type { CalendarPicture } from "./calendar-demo";
 
 interface CalendarPosterProps {
-  images: CalendarImage[];
-  renderPage?: (imgs: CalendarImage[]) => React.ReactNode;
+  pictures: CalendarPicture[];
+  renderPoster?: (imgs: CalendarPicture[]) => React.ReactNode;
 }
 
-function CalendarPoster({ images, renderPage }: CalendarPosterProps) {
+function CalendarPoster({ pictures, renderPoster }: CalendarPosterProps) {
   return (
     <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-      {renderPage
-        ? renderPage(images)
-        : images.map((img, i) => (
+      {renderPoster
+        ? renderPoster(pictures)
+        : pictures.map((img, i) => (
             <div
               key={i}
               style={{
@@ -37,12 +37,12 @@ function CalendarPoster({ images, renderPage }: CalendarPosterProps) {
 // 使用 React.memo 避免不必要的重渲染
 export default React.memo(CalendarPoster, (prevProps, nextProps) => {
   // 检查图片数组长度是否发生变化
-  if (prevProps.images.length !== nextProps.images.length) {
+  if (prevProps.pictures.length !== nextProps.pictures.length) {
     return false;
   }
 
   // 检查每个图片的 URL 是否发生变化
-  return prevProps.images.every(
-    (img, index) => img.url === nextProps.images[index]?.url
+  return prevProps.pictures.every(
+    (img, index) => img.url === nextProps.pictures[index]?.url
   );
 });

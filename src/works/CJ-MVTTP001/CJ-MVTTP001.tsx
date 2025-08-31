@@ -1,6 +1,6 @@
 import CalendarDemo from "../../helpers/calendar-demo/calendar-demo";
 import { useCallback, useState, useRef, useEffect } from "react";
-import type { CalendarImage } from "../../helpers/calendar-demo/calendar-demo";
+import type { CalendarPicture } from "../../helpers/calendar-demo/calendar-demo";
 import { CJMVTTP001Poster } from "./cj-mvttp001-poster";
 
 export const CJ_MVTTP001_WIDTH = 1838;
@@ -9,14 +9,14 @@ export const CJ_MVTTP001_HEIGHT = 2547;
 export default function CJ_MVTTP001() {
   const [isLoading, setIsLoading] = useState(false);
   const canvasRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const [currentImages, setCurrentImages] = useState<CalendarImage[]>([]);
+  const [currentPictures, setCurrentPictures] = useState<CalendarPicture[]>([]);
 
   // 使用 useEffect 来处理异步渲染，避免在渲染过程中调用 setState
   useEffect(() => {
-    if (currentImages.length === 0) return;
+    if (currentPictures.length === 0) return;
 
     setIsLoading(true);
-    const poster = new CJMVTTP001Poster(currentImages);
+    const poster = new CJMVTTP001Poster(currentPictures);
 
     poster
       .render()
@@ -36,10 +36,10 @@ export default function CJ_MVTTP001() {
         console.error("渲染失败:", error);
         setIsLoading(false);
       });
-  }, [currentImages]);
+  }, [currentPictures]);
 
-  const renderPage = useCallback(
-    (imgs: CalendarImage[]) => {
+  const renderPoster = useCallback(
+    (imgs: CalendarPicture[]) => {
       // 只有当有图片时才进行渲染
       if (!imgs || imgs.length === 0) {
         return (
@@ -50,7 +50,7 @@ export default function CJ_MVTTP001() {
       }
 
       // 更新当前图片，触发 useEffect 进行渲染
-      setCurrentImages(imgs);
+      setCurrentPictures(imgs);
 
       // 返回容器 div
       return (
@@ -76,10 +76,10 @@ export default function CJ_MVTTP001() {
 
   return (
     <CalendarDemo
-      maxImages={13}
-      width={CJ_MVTTP001_WIDTH}
-      height={CJ_MVTTP001_HEIGHT}
-      renderPage={renderPage}
+      maxPages={13}
+      pageWidth={CJ_MVTTP001_WIDTH}
+      pageHeight={CJ_MVTTP001_HEIGHT}
+      renderPoster={renderPoster}
       storeName="CJ_MVTTP001"
     />
   );

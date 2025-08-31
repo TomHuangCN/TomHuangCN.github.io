@@ -1,4 +1,4 @@
-import { CalendarImage } from "./calendar-demo";
+import { CalendarPicture } from "./calendar-demo";
 import { ICalendarDemoShowRenderer } from "./calendar-demo-show-renderer";
 import { loadAllImages } from "./image-loader";
 import { drawPerspectiveImageAsync } from "./calendar-poster-utils";
@@ -19,7 +19,7 @@ export abstract class BaseCalendarPoster implements ICalendarDemoShowRenderer {
   protected _loadedImages: HTMLImageElement[] = [];
 
   constructor(
-    protected _images: CalendarImage[],
+    protected _images: CalendarPicture[],
     protected _config: CalendarPosterConfig
   ) {}
 

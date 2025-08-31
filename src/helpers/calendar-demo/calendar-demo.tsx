@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import CalendarSelector from "./calendar-selector";
-import ImageSelector from "./image-selector";
+import PictureSelector from "./picture-selector";
 import CalendarPoster from "./calendar-poster";
 import { CalendarStorage, Calendar } from "./calendar-demo-storage";
 
@@ -14,30 +14,30 @@ import { CalendarStorage, Calendar } from "./calendar-demo-storage";
 // }
 
 // 类型定义
-export interface CalendarImage {
+export interface CalendarPicture {
   url: string;
   file?: File;
   aspectRatio?: number; // 宽高比
 }
 
 interface CalendarDemoProps {
-  maxImages?: number;
-  width: number; // 像素宽度
-  height: number; // 像素高度
-  renderPage?: (imgs: CalendarImage[]) => React.ReactNode;
+  maxPages?: number;
+  pageWidth: number; // 像素宽度
+  pageHeight: number; // 像素高度
+  renderPoster?: (imgs: CalendarPicture[]) => React.ReactNode;
   storeName?: string;
 }
 
 // 主组件
 function CalendarDemo({
-  maxImages = 13,
-  width,
-  height,
-  renderPage,
+  maxPages = 13,
+  pageWidth,
+  pageHeight,
+  renderPoster,
   storeName = "calendars",
 }: CalendarDemoProps) {
   // 在组件内部计算宽高比
-  const aspectRatio = width / height;
+  const aspectRatio = pageWidth / pageHeight;
 
   // 创建存储实例
   const [storage] = useState(() => new CalendarStorage(storeName));
@@ -45,7 +45,7 @@ function CalendarDemo({
   // 日历列表
   const [calendars, setCalendars] = useState<Calendar[]>([]);
   // 当前编辑的图片
-  const [images, setImages] = useState<CalendarImage[]>([]);
+  const [pictures, setPictures] = useState<CalendarPicture[]>([]);
   // 当前选中的日历 id
   const [selectedId, setSelectedId] = useState<string | null>(null);
   // 加载状态
@@ -73,10 +73,10 @@ function CalendarDemo({
 
   // 生成样机并存储到 IndexedDB
   const handleGenerate = useCallback(async () => {
-    if (images.length < maxImages || images.some(img => !img.url)) return;
+    if (pictures.length < maxPages || pictures.some(img => !img.url)) return;
     const id = Date.now().toString();
-    const cover = images[0].url;
-    const pages = images.map(img => img.url);
+    const cover = pictures[0].url;
+    const pages = pictures.map(img => img.url);
     const cal: Calendar = { id, cover, pages };
 
     const success = await storage.save(cal);
@@ -89,12 +89,12 @@ function CalendarDemo({
     } else {
       alert("保存失败，请重试");
     }
-  }, [images, maxImages, storage]);
+  }, [pictures, maxPages, storage]);
 
   // 选择日历
   const handleSelect = useCallback((cal: Calendar) => {
     setSelectedId(cal.id);
-    setImages(cal.pages.map((url: string) => ({ url })));
+    setPictures(cal.pages.map((url: string) => ({ url })));
     setIsGenerated(true);
   }, []);
 
@@ -107,12 +107,13 @@ function CalendarDemo({
         setCalendars(allCalendars);
         if (selectedId === id) {
           setSelectedId(null);
-          setImages([]);
+          setPictures([]);
           setIsGenerated(false);
         }
       } catch (error) {
         console.error("删除日历失败:", error);
-        alert("删除失败，请重试");
+      } finally {
+        setLoading(false);
       }
     },
     [selectedId, storage]
@@ -121,14 +122,14 @@ function CalendarDemo({
   // 新建日历
   const handleCreateNew = useCallback(() => {
     setSelectedId(null);
-    setImages([]);
+    setPictures([]);
     setIsGenerated(false);
   }, []);
 
   // 处理单张图片替换 - 优化版本
-  const handleImageReplace = useCallback(
-    async (newImages: CalendarImage[]) => {
-      if (selectedId && newImages.length > 0) {
+  const handlePictureReplace = useCallback(
+    async (newPictures: CalendarPicture[]) => {
+      if (selectedId && newPictures.length > 0) {
         // 清除之前的定时器
         if (debounceTimerRef.current) {
           clearTimeout(debounceTimerRef.current);
@@ -138,8 +139,8 @@ function CalendarDemo({
         debounceTimerRef.current = setTimeout(async () => {
           try {
             // 更新当前日历的图片
-            const cover = newImages[0].url;
-            const pages = newImages.map(img => img.url);
+            const cover = newPictures[0].url;
+            const pages = newPictures.map(img => img.url);
             const updatedCalendar: Calendar = { id: selectedId, cover, pages };
 
             const success = await storage.save(updatedCalendar);
@@ -194,11 +195,11 @@ function CalendarDemo({
         onCreateNew={handleCreateNew}
       />
       {/* 中：原图选择 */}
-      <ImageSelector
-        images={images}
-        setImages={setImages}
-        maxImages={maxImages}
-        onImageReplace={handleImageReplace}
+      <PictureSelector
+        pictures={pictures}
+        setPictures={setPictures}
+        maxPages={maxPages}
+        onPictureReplace={handlePictureReplace}
         aspectRatio={aspectRatio}
       />
       <div
@@ -211,24 +212,24 @@ function CalendarDemo({
       >
         <button
           onClick={handleGenerate}
-          disabled={images.length < maxImages || isGenerated}
+          disabled={pictures.length < maxPages || isGenerated}
           style={{
             padding: "8px 16px",
             fontSize: "14px",
             cursor:
-              images.length < maxImages || isGenerated
+              pictures.length < maxPages || isGenerated
                 ? "not-allowed"
                 : "pointer",
-            opacity: images.length < maxImages || isGenerated ? 0.6 : 1,
+            opacity: pictures.length < maxPages || isGenerated ? 0.6 : 1,
             backgroundColor:
-              images.length < maxImages || isGenerated ? "#ccc" : "#007bff",
+              pictures.length < maxPages || isGenerated ? "#ccc" : "#007bff",
             color: "white",
             border: "none",
             borderRadius: "4px",
           }}
         >
-          {images.length < maxImages
-            ? `请选择${maxImages}张图片`
+          {pictures.length < maxPages
+            ? `请选择${maxPages}张图片`
             : isGenerated
               ? "样机已生成"
               : "生成样机"}
@@ -236,7 +237,7 @@ function CalendarDemo({
       </div>
       {/* 下：日历渲染 */}
       {isGenerated && (
-        <CalendarPoster images={images} renderPage={renderPage} />
+        <CalendarPoster pictures={pictures} renderPoster={renderPoster} />
       )}
     </div>
   );
