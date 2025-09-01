@@ -1,11 +1,11 @@
-import { CalendarPicture } from "../../helpers/calendar-demo/calendar-demo";
+import type { PageImage } from "../../helpers/calendar-demo/types";
 import {
   BaseCalendarPoster,
   CalendarPosterConfig,
 } from "../../helpers/calendar-demo/calendar-poster-base";
 
 export class CJMVTTP002Poster extends BaseCalendarPoster {
-  constructor(images: CalendarPicture[]) {
+  constructor(images: PageImage[]) {
     const config: CalendarPosterConfig = {
       bgImagePath: "/assets/CJ-MVTTP002-calendar-bg.png",
       ringImagePath: "/assets/CJ-MVTTP002-calendar-ring.png",

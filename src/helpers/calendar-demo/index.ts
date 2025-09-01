@@ -8,6 +8,12 @@ export * from "./image-loader";
 export * from "./inner-page-poster";
 export * from "./bottom-images-poster";
 
+// 模板相关
+export { TemplateSelector } from "./template-selector";
+export { TemplateEditor } from "./template-editor";
+export { TemplateStorage } from "./template-storage";
+export * from "./template-utils";
+export * from "./types";
+
 // 类型定义
-export type { CalendarPicture } from "./calendar-demo";
-export type { ICalendarDemoShowRenderer } from "./calendar-demo-show-renderer";
+export * from "./types";

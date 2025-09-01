@@ -7,6 +7,8 @@ interface PictureSelectorProps {
   maxPages: number;
   aspectRatio: number; // 接收宽高比参数
   onPictureReplace?: (pictures: CalendarPicture[]) => void;
+  templateMode?: boolean;
+  templateAspectRatio?: number; // 模板模式下的宽高比
 }
 
 function fileToUrl(file: File): Promise<string> {
@@ -23,8 +25,13 @@ export default function PictureSelector({
   maxPages,
   aspectRatio,
   onPictureReplace,
+  templateMode = false,
+  templateAspectRatio,
 }: PictureSelectorProps) {
   const [isDragOver, setIsDragOver] = React.useState(false);
+
+  // 使用模板模式下的宽高比或默认宽高比
+  const currentAspectRatio = templateMode && templateAspectRatio ? templateAspectRatio : aspectRatio;
 
   // 批量上传
   const handleFiles = useCallback(
@@ -35,14 +42,14 @@ export default function PictureSelector({
         const newPictures = urls.map((url, i) => ({
           url,
           file: arr[i],
-          aspectRatio,
+          aspectRatio: currentAspectRatio,
         }));
         setPictures(newPictures);
         // 批量上传时立即通知父组件更新存储
         onPictureReplace?.(newPictures);
       });
     },
-    [maxPages, setPictures, onPictureReplace, aspectRatio]
+    [maxPages, setPictures, onPictureReplace, currentAspectRatio]
   );
 
   // 单张替换 - 优化版本
@@ -50,14 +57,14 @@ export default function PictureSelector({
     (idx: number, file: File) => {
       fileToUrl(file).then(url => {
         const newPictures = pictures.map((img, i) =>
-          i === idx ? { url, file, aspectRatio } : img
+          i === idx ? { url, file, aspectRatio: currentAspectRatio } : img
         );
         setPictures(newPictures);
         // 单张替换时通知父组件更新存储（会触发防抖）
         onPictureReplace?.(newPictures);
       });
     },
-    [pictures, setPictures, onPictureReplace, aspectRatio]
+    [pictures, setPictures, onPictureReplace, currentAspectRatio]
   );
 
   // 拖拽事件处理

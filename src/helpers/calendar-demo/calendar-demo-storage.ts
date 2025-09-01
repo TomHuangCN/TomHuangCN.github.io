@@ -1,12 +1,10 @@
 import type { StorageData, StorageConfig } from "../storage/types";
 import { BaseStorage } from "../storage/base-storage";
 import { storageManager } from "../storage/storage-manager";
+import type { Calendar } from "./types";
 
-// 日历存储工具对象
-export interface Calendar extends StorageData {
-  cover: string;
-  pages: string[];
-}
+// 扩展 Calendar 接口以兼容 StorageData
+export interface CalendarStorageData extends Calendar, StorageData {}
 
 class CalendarStorage extends BaseStorage<Calendar> {
   private readonly imageStoreName: string;
@@ -166,6 +164,7 @@ class CalendarStorage extends BaseStorage<Calendar> {
         coverId: `cover_${calendar.id}`,
         pageIds: calendar.pages.map((_, i) => `page_${calendar.id}_${i}`),
         pageCount: calendar.pages.length,
+        templateId: calendar.templateId, // 添加 templateId 字段
       };
 
       return new Promise((resolve, reject) => {
@@ -227,6 +226,7 @@ class CalendarStorage extends BaseStorage<Calendar> {
               id: data.id,
               cover,
               pages,
+              templateId: data.templateId, // 恢复 templateId 字段
             });
           } catch (error) {
             reject(error);

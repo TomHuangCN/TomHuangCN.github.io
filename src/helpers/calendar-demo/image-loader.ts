@@ -1,4 +1,4 @@
-import { CalendarPicture } from "./calendar-demo";
+import type { PageImage } from "./types";
 
 /**
  * 加载单张图片
@@ -31,13 +31,13 @@ export async function loadBackgroundImages(
  * 预加载所有用户图片
  */
 export async function preloadUserImages(
-  images: CalendarPicture[]
+  images: PageImage[]
 ): Promise<HTMLImageElement[]> {
   const imageLoadPromises: Promise<HTMLImageElement>[] = [];
 
   for (const imgObj of images) {
-    if (imgObj && imgObj.url) {
-      imageLoadPromises.push(loadImage(imgObj.url));
+    if (imgObj && imgObj.image) {
+      imageLoadPromises.push(loadImage(imgObj.image));
     }
   }
 
@@ -48,7 +48,7 @@ export async function preloadUserImages(
  * 加载所有图片（背景图、环形图、用户图片）
  */
 export async function loadAllImages(
-  images: CalendarPicture[],
+  images: PageImage[],
   bgImagePath: string,
   ringImagePath: string
 ): Promise<{

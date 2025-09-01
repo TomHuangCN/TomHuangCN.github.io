@@ -1,6 +1,6 @@
 import CalendarDemo from "../../helpers/calendar-demo/calendar-demo";
 import { useCallback, useState, useRef, useEffect } from "react";
-import type { CalendarPicture } from "../../helpers/calendar-demo/calendar-demo";
+import type { PageImage } from "../../helpers/calendar-demo/types";
 import { CJMVTTP001Poster } from "./cj-mvttp001-poster";
 
 export const CJ_MVTTP001_WIDTH = 1838;
@@ -9,9 +9,9 @@ export const CJ_MVTTP001_HEIGHT = 2547;
 export default function CJ_MVTTP001() {
   const [isLoading, setIsLoading] = useState(false);
   const canvasRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const [currentPictures, setCurrentPictures] = useState<CalendarPicture[]>([]);
+  const [currentPictures, setCurrentPictures] = useState<PageImage[]>([]);
 
-  // 使用 useEffect 来处理异步渲染，避免在渲染过程中调用 setState
+  // 当图片变化时渲染样机
   useEffect(() => {
     if (currentPictures.length === 0) return;
 
@@ -21,7 +21,6 @@ export default function CJ_MVTTP001() {
     poster
       .render()
       .then(canvases => {
-        // 将 canvas 元素添加到容器中
         const container = canvasRefs.current[0];
         if (container) {
           container.innerHTML = "";
@@ -39,8 +38,7 @@ export default function CJ_MVTTP001() {
   }, [currentPictures]);
 
   const renderPoster = useCallback(
-    (imgs: CalendarPicture[]) => {
-      // 只有当有图片时才进行渲染
+    (imgs: PageImage[]) => {
       if (!imgs || imgs.length === 0) {
         return (
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -49,10 +47,11 @@ export default function CJ_MVTTP001() {
         );
       }
 
-      // 更新当前图片，触发 useEffect 进行渲染
-      setCurrentPictures(imgs);
+      // 使用 setTimeout 延迟状态更新，避免在渲染过程中调用 setState
+      setTimeout(() => {
+        setCurrentPictures(imgs);
+      }, 0);
 
-      // 返回容器 div
       return (
         <div
           style={{ display: "flex", gap: 8, flexWrap: "wrap", width: "100%" }}
