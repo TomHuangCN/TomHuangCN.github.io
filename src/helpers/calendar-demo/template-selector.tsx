@@ -95,7 +95,7 @@ export default function TemplateSelector({
             minWidth: "200px",
           }}
         >
-          <option value="new">创建新模板</option>
+          <option value="new">空</option>
           {templates.map(template => (
             <option key={template.id} value={template.id}>
               {template.name}

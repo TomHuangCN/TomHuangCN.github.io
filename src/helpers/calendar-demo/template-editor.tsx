@@ -68,9 +68,10 @@ function PageEditor({ page, onUpdate }: PageEditorProps) {
       style={{
         border: "1px solid #ddd",
         borderRadius: "8px",
-        padding: "16px",
+        padding: "12px",
         backgroundColor: "#f9f9f9",
         height: "fit-content",
+        minWidth: "200px",
       }}
     >
       <div
@@ -120,7 +121,7 @@ function PageEditor({ page, onUpdate }: PageEditorProps) {
         >
           <div style={{ position: "relative" }}>
             {(() => {
-              const maxPreviewSize = 120; // 最大预览尺寸
+              const maxPreviewSize = 100; // 最大预览尺寸（调整为更小的尺寸以适应一行4个）
               const pageAspectRatio = page.width / page.height;
 
               let previewWidth, previewHeight;
@@ -426,7 +427,7 @@ export default function TemplateEditor({
           backgroundColor: "white",
           borderRadius: "8px",
           padding: "24px",
-          maxWidth: "800px",
+          maxWidth: "1000px",
           maxHeight: "90vh",
           overflow: "auto",
           width: "90%",
@@ -514,8 +515,8 @@ export default function TemplateEditor({
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(3, 1fr)",
-              gap: "16px",
+              gridTemplateColumns: "repeat(4, 1fr)",
+              gap: "12px",
             }}
           >
             {pages.map((page, index) => (

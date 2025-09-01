@@ -199,7 +199,7 @@ function CalendarDemo({
   );
 
   // 新建日历
-  const handleCreateNew = useCallback(() => {
+  const handleCreateNew = useCallback(async () => {
     setSwitchingLoading(true);
     try {
       setSelectedId(null);
@@ -207,25 +207,28 @@ function CalendarDemo({
       setIsGenerated(false);
       setSelectedTemplateId(null);
       setPageImages([]);
+
+      // 保存空模板选择状态
+      const newConfig = { ...templateConfig, selectedTemplateId: null };
+      await templateStorage.saveConfig(newConfig);
+      setTemplateConfig(newConfig);
     } catch (error) {
       console.error("新建日历失败:", error);
       alert("新建日历失败，请重试");
     } finally {
       setSwitchingLoading(false);
     }
-  }, []);
+  }, [templateConfig, templateStorage]);
 
   // 模板相关处理函数
   const handleTemplateSelect = useCallback(
     async (templateId: string | null) => {
       setSelectedTemplateId(templateId);
 
-      if (templateId) {
-        // 保存配置
-        const newConfig = { ...templateConfig, selectedTemplateId: templateId };
-        await templateStorage.saveConfig(newConfig);
-        setTemplateConfig(newConfig);
-      }
+      // 保存配置，包括空模板的选择
+      const newConfig = { ...templateConfig, selectedTemplateId: templateId };
+      await templateStorage.saveConfig(newConfig);
+      setTemplateConfig(newConfig);
     },
     [templateConfig, templateStorage]
   );
@@ -289,9 +292,12 @@ function CalendarDemo({
           const allTemplates = await templateStorage.getAll();
           setTemplates(allTemplates);
 
-          // 如果删除的是当前选中的模板，清除选择
+          // 如果删除的是当前选中的模板，清除选择并保存配置
           if (selectedTemplateId === templateId) {
             setSelectedTemplateId(null);
+            const newConfig = { ...templateConfig, selectedTemplateId: null };
+            await templateStorage.saveConfig(newConfig);
+            setTemplateConfig(newConfig);
           }
         } else {
           alert("删除模板失败，请重试");
@@ -301,7 +307,7 @@ function CalendarDemo({
         alert("删除模板失败，请重试");
       }
     },
-    [templateStorage, selectedTemplateId]
+    [templateStorage, selectedTemplateId, templateConfig]
   );
 
   // 当模板或图片变化时，重新生成页面图片
