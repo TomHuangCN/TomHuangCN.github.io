@@ -1,4 +1,4 @@
-import { CalendarImage } from "./calendar-demo";
+import type { PageImage } from "./types";
 import { ICalendarDemoShowRenderer } from "./calendar-demo-show-renderer";
 import { loadAllImages } from "./image-loader";
 import { drawPerspectiveImageAsync } from "./calendar-poster-utils";
@@ -19,7 +19,7 @@ export abstract class BaseCalendarPoster implements ICalendarDemoShowRenderer {
   protected _loadedImages: HTMLImageElement[] = [];
 
   constructor(
-    protected _images: CalendarImage[],
+    protected _images: PageImage[],
     protected _config: CalendarPosterConfig
   ) {}
 
@@ -60,7 +60,7 @@ export abstract class BaseCalendarPoster implements ICalendarDemoShowRenderer {
     const perspectivePromises: Promise<void>[] = [];
 
     // 透视渲染 _images[0]
-    if (_images && _images[0] && _images[0].url) {
+    if (_images && _images[0] && _images[0].image) {
       const promise1 = drawPerspectiveImageAsync(
         ctx,
         this._loadedImages[0],
@@ -72,7 +72,7 @@ export abstract class BaseCalendarPoster implements ICalendarDemoShowRenderer {
     }
 
     // 透视渲染 _images[1] 到指定坐标
-    if (_images && _images[1] && _images[1].url) {
+    if (_images && _images[1] && _images[1].image) {
       const promise2 = drawPerspectiveImageAsync(
         ctx,
         this._loadedImages[1],

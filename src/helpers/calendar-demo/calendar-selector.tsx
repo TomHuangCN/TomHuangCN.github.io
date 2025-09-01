@@ -7,6 +7,8 @@ interface CalendarSelectorProps {
   onSelect: (cal: Calendar) => void;
   onDelete: (id: string) => void;
   onCreateNew: () => void;
+  onTemplateSync?: (templateId: string | null) => void; // 同步模板选择
+  loading?: boolean; // 切换日历时的 loading 状态
 }
 
 export default function CalendarSelector({
@@ -16,13 +18,69 @@ export default function CalendarSelector({
   onSelect,
   onDelete,
   onCreateNew,
+  onTemplateSync,
+  loading = false,
 }: CalendarSelectorProps) {
   return (
     <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+      <style>
+        {`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}
+      </style>
+      {/* Loading 状态显示 */}
+      {loading && (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            border: "1px solid #ddd",
+            borderRadius: 4,
+            width: 80,
+            height: 80 / aspectRatio,
+            backgroundColor: "#f8f9fa",
+            color: "#666",
+            fontSize: 12,
+            textAlign: "center",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 4,
+            }}
+          >
+            <div
+              style={{
+                width: 16,
+                height: 16,
+                border: "2px solid #007bff",
+                borderTop: "2px solid transparent",
+                borderRadius: "50%",
+                animation: "spin 1s linear infinite",
+              }}
+            />
+            <span>切换中...</span>
+          </div>
+        </div>
+      )}
+
       {/* 新建日历按钮 - 只在有日历时显示 */}
       {calendars.length > 0 && (
         <div
-          onClick={onCreateNew}
+          onClick={() => {
+            onCreateNew();
+            // 新建日历时清除模板选择
+            if (onTemplateSync) {
+              onTemplateSync(null);
+            }
+          }}
           style={{
             display: "flex",
             alignItems: "center",
@@ -66,7 +124,15 @@ export default function CalendarSelector({
             boxShadow:
               selectedId === cal.id ? "0 0 8px rgba(0, 123, 255, 0.3)" : "none",
           }}
-          onClick={() => onSelect(cal)}
+          onClick={() => {
+            onSelect(cal);
+            // 同步切换对应的模板
+            if (onTemplateSync && cal.templateId) {
+              onTemplateSync(cal.templateId);
+            } else if (onTemplateSync) {
+              onTemplateSync(null);
+            }
+          }}
         >
           <img
             src={cal.cover}

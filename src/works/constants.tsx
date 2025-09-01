@@ -1,6 +1,12 @@
 import React from "react";
-import CJ_MVTTP001 from "./cj-mvttp001/cj-mvttp001";
-import CJ_MVTTP002 from "./cj-mvttp002/cj-mvttp002";
+import CJ_MVTTP001, {
+  CJ_MVTTP001_HEIGHT,
+  CJ_MVTTP001_WIDTH,
+} from "./cj-mvttp001/cj-mvttp001";
+import CJ_MVTTP002, {
+  CJ_MVTTP002_HEIGHT,
+  CJ_MVTTP002_WIDTH,
+} from "./cj-mvttp002/cj-mvttp002";
 import { CalendarGridGen } from "./calendar-grid-gen/calendar-grid-gen";
 
 export interface IWork {
@@ -19,7 +25,7 @@ const works: IWork[] = [
   {
     id: "cj-mvttp001",
     name: "CJ-MVTTP001",
-    desc: "图的印刷尺寸是：155mm * 215mm，按 DPI 300 印刷，像素尺寸至少 1838 × 2547",
+    desc: `图的印刷尺寸是：155mm * 215mm，按 DPI 300 印刷，像素尺寸至少 ${CJ_MVTTP001_WIDTH} × ${CJ_MVTTP001_HEIGHT}`,
     content: CJ_MVTTP001,
     illustration: "/assets/CJ-MVTTP001_illustration.png",
     tips: [
@@ -32,7 +38,7 @@ const works: IWork[] = [
   {
     id: "cj-mvttp002",
     name: "CJ-MVTTP002",
-    desc: "图的印刷尺寸是：145mm * 215mm，按 DPI 300 印刷，像素尺寸至少 1713 × 2540",
+    desc: `图的印刷尺寸是：145mm * 215mm，按 DPI 300 印刷，像素尺寸至少 ${CJ_MVTTP002_WIDTH} × ${CJ_MVTTP002_HEIGHT}`,
     content: CJ_MVTTP002,
     illustration: "/assets/CJ-MVTTP002_illustration.png",
     tips: [

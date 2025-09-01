@@ -1,12 +1,14 @@
 import React, { useCallback } from "react";
-import type { CalendarImage } from "./calendar-demo";
+import type { CalendarPicture } from "./calendar-demo";
 
-interface ImageSelectorProps {
-  images: CalendarImage[];
-  setImages: React.Dispatch<React.SetStateAction<CalendarImage[]>>;
-  maxImages: number;
+interface PictureSelectorProps {
+  pictures: CalendarPicture[];
+  setPictures: React.Dispatch<React.SetStateAction<CalendarPicture[]>>;
+  maxPages: number;
   aspectRatio: number; // 接收宽高比参数
-  onImageReplace?: (images: CalendarImage[]) => void;
+  onPictureReplace?: (pictures: CalendarPicture[]) => void;
+  templateMode?: boolean;
+  templateAspectRatio?: number; // 模板模式下的宽高比
 }
 
 function fileToUrl(file: File): Promise<string> {
@@ -17,47 +19,52 @@ function fileToUrl(file: File): Promise<string> {
   });
 }
 
-export default function ImageSelector({
-  images,
-  setImages,
-  maxImages,
+export default function PictureSelector({
+  pictures,
+  setPictures,
+  maxPages,
   aspectRatio,
-  onImageReplace,
-}: ImageSelectorProps) {
+  onPictureReplace,
+  templateMode = false,
+  templateAspectRatio,
+}: PictureSelectorProps) {
   const [isDragOver, setIsDragOver] = React.useState(false);
+
+  // 使用模板模式下的宽高比或默认宽高比
+  const currentAspectRatio = templateMode && templateAspectRatio ? templateAspectRatio : aspectRatio;
 
   // 批量上传
   const handleFiles = useCallback(
     (files: FileList | null) => {
       if (!files) return;
-      const arr = Array.from(files).slice(0, maxImages);
+      const arr = Array.from(files).slice(0, maxPages);
       Promise.all(arr.map(f => fileToUrl(f))).then(urls => {
-        const newImages = urls.map((url, i) => ({
+        const newPictures = urls.map((url, i) => ({
           url,
           file: arr[i],
-          aspectRatio,
+          aspectRatio: currentAspectRatio,
         }));
-        setImages(newImages);
+        setPictures(newPictures);
         // 批量上传时立即通知父组件更新存储
-        onImageReplace?.(newImages);
+        onPictureReplace?.(newPictures);
       });
     },
-    [maxImages, setImages, onImageReplace, aspectRatio]
+    [maxPages, setPictures, onPictureReplace, currentAspectRatio]
   );
 
   // 单张替换 - 优化版本
   const handleReplace = useCallback(
     (idx: number, file: File) => {
       fileToUrl(file).then(url => {
-        const newImages = images.map((img, i) =>
-          i === idx ? { url, file, aspectRatio } : img
+        const newPictures = pictures.map((img, i) =>
+          i === idx ? { url, file, aspectRatio: currentAspectRatio } : img
         );
-        setImages(newImages);
+        setPictures(newPictures);
         // 单张替换时通知父组件更新存储（会触发防抖）
-        onImageReplace?.(newImages);
+        onPictureReplace?.(newPictures);
       });
     },
-    [images, setImages, onImageReplace, aspectRatio]
+    [pictures, setPictures, onPictureReplace, currentAspectRatio]
   );
 
   // 拖拽事件处理
@@ -119,7 +126,7 @@ export default function ImageSelector({
           onChange={e => handleFiles(e.target.files)}
         />
       </label>
-      {Array.from({ length: maxImages }).map((_, i) => (
+      {Array.from({ length: maxPages }).map((_, i) => (
         <div
           key={i}
           style={{
@@ -131,10 +138,10 @@ export default function ImageSelector({
             position: "relative",
           }}
         >
-          {images[i]?.url ? (
+          {pictures[i]?.url ? (
             <>
               <img
-                src={images[i].url}
+                src={pictures[i].url}
                 alt="img"
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />

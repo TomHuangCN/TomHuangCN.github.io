@@ -5,7 +5,7 @@ import App from "./app";
 import WorksList from "./pages/works-list";
 import WorkDetail from "./pages/work-detail";
 import Cooperation from "./pages/cooperation";
-import DataManagement from "./pages/data-management";
+import Console from "./pages/console";
 import { autoPreloadFonts } from "./utils/font-loader";
 
 const routes = [
@@ -13,7 +13,7 @@ const routes = [
   { path: "/works", element: <WorksList /> },
   { path: "/works/:id", element: <WorkDetail /> },
   { path: "/cooperation", element: <Cooperation /> },
-  { path: "/data-management", element: <DataManagement /> },
+          { path: "/console", element: <Console /> },
 ];
 
 const Main: React.FC = () => (

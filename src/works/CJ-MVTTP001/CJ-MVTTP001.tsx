@@ -1,24 +1,26 @@
 import CalendarDemo from "../../helpers/calendar-demo/calendar-demo";
 import { useCallback, useState, useRef, useEffect } from "react";
-import type { CalendarImage } from "../../helpers/calendar-demo/calendar-demo";
+import type { PageImage } from "../../helpers/calendar-demo/types";
 import { CJMVTTP001Poster } from "./cj-mvttp001-poster";
+
+export const CJ_MVTTP001_WIDTH = 1838;
+export const CJ_MVTTP001_HEIGHT = 2547;
 
 export default function CJ_MVTTP001() {
   const [isLoading, setIsLoading] = useState(false);
   const canvasRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const [currentImages, setCurrentImages] = useState<CalendarImage[]>([]);
+  const [currentPictures, setCurrentPictures] = useState<PageImage[]>([]);
 
-  // 使用 useEffect 来处理异步渲染，避免在渲染过程中调用 setState
+  // 当图片变化时渲染样机
   useEffect(() => {
-    if (currentImages.length === 0) return;
+    if (currentPictures.length === 0) return;
 
     setIsLoading(true);
-    const poster = new CJMVTTP001Poster(currentImages);
+    const poster = new CJMVTTP001Poster(currentPictures);
 
     poster
       .render()
       .then(canvases => {
-        // 将 canvas 元素添加到容器中
         const container = canvasRefs.current[0];
         if (container) {
           container.innerHTML = "";
@@ -33,11 +35,10 @@ export default function CJ_MVTTP001() {
         console.error("渲染失败:", error);
         setIsLoading(false);
       });
-  }, [currentImages]);
+  }, [currentPictures]);
 
-  const renderPage = useCallback(
-    (imgs: CalendarImage[]) => {
-      // 只有当有图片时才进行渲染
+  const renderPoster = useCallback(
+    (imgs: PageImage[]) => {
       if (!imgs || imgs.length === 0) {
         return (
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -46,10 +47,11 @@ export default function CJ_MVTTP001() {
         );
       }
 
-      // 更新当前图片，触发 useEffect 进行渲染
-      setCurrentImages(imgs);
+      // 使用 setTimeout 延迟状态更新，避免在渲染过程中调用 setState
+      setTimeout(() => {
+        setCurrentPictures(imgs);
+      }, 0);
 
-      // 返回容器 div
       return (
         <div
           style={{ display: "flex", gap: 8, flexWrap: "wrap", width: "100%" }}
@@ -73,9 +75,10 @@ export default function CJ_MVTTP001() {
 
   return (
     <CalendarDemo
-      maxImages={13}
-      aspectRatio={155 / 215} // CJ-MVTTP001 的宽高比
-      renderPage={renderPage}
+      maxPages={13}
+      pageWidth={CJ_MVTTP001_WIDTH}
+      pageHeight={CJ_MVTTP001_HEIGHT}
+      renderPoster={renderPoster}
       storeName="CJ_MVTTP001"
     />
   );
