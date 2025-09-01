@@ -24,9 +24,9 @@ const loadFontToBase64 = async (fontFamily: string): Promise<string | null> => {
   if (!fontPath) return null;
 
   try {
-    const baseUrl = window.location.origin;
+    // const baseUrl = window.location.origin;
     // const absoluteUrl = `${baseUrl}${fontPath}`;
-    const response = await fetch(baseUrl);
+    const response = await fetch(fontPath);
 
     if (!response.ok) {
       throw new Error(
