@@ -8,6 +8,10 @@ import CJ_MVTTP002, {
   CJ_MVTTP002_WIDTH,
 } from "./cj-mvttp002/cj-mvttp002";
 import { CalendarGridGen } from "./calendar-grid-gen/calendar-grid-gen";
+import CJ_MHVAR001, {
+  CJ_MHVAR001_HEIGHT,
+  CJ_MHVAR001_WIDTH,
+} from "./cj-mhvar001/cj-mhvar001";
 
 export interface IWork {
   id: string;
@@ -29,10 +33,10 @@ const works: IWork[] = [
     content: CJ_MVTTP001,
     illustration: "/assets/CJ-MVTTP001_illustration.png",
     tips: [
-      {
-        content: "产品编号的含义",
-        link: "https://youmind.site/IOoX8F52nYuTDw",
-      },
+      // {
+      //   content: "产品编号的含义",
+      //   link: "https://youmind.site/IOoX8F52nYuTDw",
+      // },
     ],
   },
   {
@@ -42,11 +46,19 @@ const works: IWork[] = [
     content: CJ_MVTTP002,
     illustration: "/assets/CJ-MVTTP002_illustration.png",
     tips: [
-      {
-        content: "产品编号的含义",
-        link: "https://youmind.site/IOoX8F52nYuTDw",
-      },
+      // {
+      //   content: "产品编号的含义",
+      //   link: "https://youmind.site/IOoX8F52nYuTDw",
+      // },
     ],
+  },
+  {
+    id: "cj-mhvar001",
+    name: "CJ-MHVAR001",
+    desc: `图的印刷尺寸是：170mm * 120mm，按 DPI 300 印刷，像素尺寸至少 ${CJ_MHVAR001_WIDTH} × ${CJ_MHVAR001_HEIGHT}`,
+    content: CJ_MHVAR001,
+    illustration: "/assets/CJ-MHVAR001_illustration.jpg",
+    tips: [],
   },
   {
     id: "calendar-grid-gen",

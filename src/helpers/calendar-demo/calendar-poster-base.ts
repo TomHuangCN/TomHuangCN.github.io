@@ -1,5 +1,7 @@
 import type { PageImage } from "./types";
-import { ICalendarDemoShowRenderer } from "./calendar-demo-show-renderer";
+export interface ICalendarDemoShowRenderer {
+  render(): Promise<HTMLCanvasElement[]>;
+}
 import { loadAllImages } from "./image-loader";
 import { drawPerspectiveImageAsync } from "./calendar-poster-utils";
 import { renderInnerPage } from "./inner-page-poster";
@@ -9,8 +11,8 @@ import { createEmptyCanvas, bindCanvasClick } from "./calendar-poster-utils";
 export interface CalendarPosterConfig {
   bgImagePath: string;
   ringImagePath: string;
-  perspectiveImage1Coords: [number, number][];
-  perspectiveImage2Coords: [number, number][];
+  perspectiveImage1Coords?: [number, number][] | null;
+  perspectiveImage2Coords?: [number, number][] | null;
 }
 
 export abstract class BaseCalendarPoster implements ICalendarDemoShowRenderer {
@@ -59,8 +61,14 @@ export abstract class BaseCalendarPoster implements ICalendarDemoShowRenderer {
     // 等待所有透视图片绘制完成
     const perspectivePromises: Promise<void>[] = [];
 
-    // 透视渲染 _images[0]
-    if (_images && _images[0] && _images[0].image) {
+    // 透视渲染 _images[0]（当坐标存在时）
+    if (
+      _images &&
+      _images[0] &&
+      _images[0].image &&
+      _config.perspectiveImage1Coords &&
+      Array.isArray(_config.perspectiveImage1Coords)
+    ) {
       const promise1 = drawPerspectiveImageAsync(
         ctx,
         this._loadedImages[0],
@@ -71,8 +79,14 @@ export abstract class BaseCalendarPoster implements ICalendarDemoShowRenderer {
       perspectivePromises.push(promise1);
     }
 
-    // 透视渲染 _images[1] 到指定坐标
-    if (_images && _images[1] && _images[1].image) {
+    // 透视渲染 _images[1] 到指定坐标（当坐标存在时）
+    if (
+      _images &&
+      _images[1] &&
+      _images[1].image &&
+      _config.perspectiveImage2Coords &&
+      Array.isArray(_config.perspectiveImage2Coords)
+    ) {
       const promise2 = drawPerspectiveImageAsync(
         ctx,
         this._loadedImages[1],
