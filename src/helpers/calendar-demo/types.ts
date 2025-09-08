@@ -5,7 +5,7 @@ export interface Page {
   height: number;
 }
 
-// 模板页面
+// 模板页面配置
 export interface TemplatePage extends Page {
   templateImage: string;
   startX: number; // 百分比 0-100
@@ -14,17 +14,17 @@ export interface TemplatePage extends Page {
   pictureHeight: number; // 百分比 0-100
 }
 
-// 模板
+// 模板定义
 export interface Template {
   id: string;
   name: string;
   pages: TemplatePage[];
   createdAt: number;
   updatedAt: number;
-  [key: string]: unknown;
+  [key: string]: unknown; // 添加索引签名以满足StorageData约束
 }
 
-// 最终渲染的页面图片
+// 渲染后的页面图片
 export interface PageImage {
   image: string; // base64 或 URL
 }
@@ -41,7 +41,7 @@ export interface Calendar {
   cover: string;
   pages: string[];
   templateId?: string;
-  [key: string]: unknown; // 兼容 StorageData 约束
+  [key: string]: unknown; // 添加索引签名以满足StorageData约束
 }
 
 // 用户选择的图片
@@ -49,4 +49,27 @@ export interface UserImage {
   url: string;
   file?: File;
   aspectRatio?: number;
+}
+
+// 日历演示组件配置
+export interface CalendarDemoConfig {
+  maxPages: number;
+  pageWidth: number;
+  pageHeight: number;
+  storeName: string;
+}
+
+// 日历演示状态
+export interface CalendarDemoState {
+  calendars: Calendar[];
+  pictures: UserImage[];
+  selectedId: string | null;
+  templates: Template[];
+  templateConfig: TemplateConfig;
+  pageImages: PageImage[];
+  loading: boolean;
+  isGenerated: boolean;
+  generatingLoading: boolean;
+  switchingLoading: boolean;
+  isGeneratingTemplate: boolean;
 }

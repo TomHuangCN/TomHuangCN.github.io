@@ -6,7 +6,10 @@ import { loadAllImages } from "./image-loader";
 import { drawPerspectiveImageAsync } from "./calendar-poster-utils";
 import { renderInnerPage } from "./inner-page-poster";
 import { drawBottomInnerImages } from "./bottom-images-poster";
-import { createEmptyCanvas, bindCanvasClick } from "./calendar-poster-utils";
+import {
+  createCanvasWithBackground,
+  bindCanvasClick,
+} from "./calendar-poster-utils";
 
 export interface CalendarPosterConfig {
   bgImagePath: string;
@@ -44,10 +47,11 @@ export abstract class BaseCalendarPoster implements ICalendarDemoShowRenderer {
     // 扩展底部空白区域高度（更大）
     const extraHeight = 160; // 比原来更高，给大图和更大顶部间距
 
-    // 创建更高的canvas
-    const canvas = createEmptyCanvas(
+    // 创建带白色背景的canvas
+    const canvas = createCanvasWithBackground(
       _bgImage.width,
-      _bgImage.height + extraHeight
+      _bgImage.height + extraHeight,
+      "#fff"
     );
 
     const ctx = canvas.getContext("2d");
@@ -135,5 +139,43 @@ export abstract class BaseCalendarPoster implements ICalendarDemoShowRenderer {
     );
 
     return [cover, innerPage1, innerPage2];
+  }
+
+  // 实现接口方法
+  async renderCover(): Promise<HTMLCanvasElement> {
+    await this._init();
+    return await this._renderCover();
+  }
+
+  async renderPage(pageIndex: number): Promise<HTMLCanvasElement> {
+    await this._init();
+
+    if (pageIndex === 0) {
+      return await this._renderCover();
+    } else if (pageIndex === 1) {
+      return await renderInnerPage(
+        1,
+        6,
+        this._loadedImages,
+        this._bgImage.width
+      );
+    } else if (pageIndex === 2) {
+      return await renderInnerPage(
+        7,
+        6,
+        this._loadedImages,
+        this._bgImage.width
+      );
+    } else {
+      throw new Error(`页面索引 ${pageIndex} 超出范围`);
+    }
+  }
+
+  getPageCount(): number {
+    return 3; // 封面 + 2页内页
+  }
+
+  getImages(): PageImage[] {
+    return this._images;
   }
 }

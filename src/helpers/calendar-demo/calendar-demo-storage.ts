@@ -6,7 +6,7 @@ import type { Calendar } from "./types";
 // 扩展 Calendar 接口以兼容 StorageData
 export interface CalendarStorageData extends Calendar, StorageData {}
 
-class CalendarStorage extends BaseStorage<Calendar> {
+class CalendarStorage extends BaseStorage<CalendarStorageData> {
   private readonly imageStoreName: string;
   private readonly maxCalendars = 20; // 最多保存20个日历
 

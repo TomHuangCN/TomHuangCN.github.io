@@ -1,4 +1,4 @@
-import { Calendar } from "./calendar-demo-storage";
+import { Calendar } from "./types";
 
 interface CalendarSelectorProps {
   calendars: Calendar[];
