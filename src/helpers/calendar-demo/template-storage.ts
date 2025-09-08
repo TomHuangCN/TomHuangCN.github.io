@@ -3,8 +3,13 @@ import { BaseStorage } from "../storage/base-storage";
 import { storageManager } from "../storage/storage-manager";
 import type { Template, TemplateConfig } from "./types";
 
+// 扩展 Template 接口以兼容 StorageData
+export interface TemplateStorageData extends Template {
+  [key: string]: unknown;
+}
+
 // 模板存储类
-export class TemplateStorage extends BaseStorage<Template> {
+export class TemplateStorage extends BaseStorage<TemplateStorageData> {
   private readonly configStoreName: string;
 
   constructor(storeName: string = "templates") {

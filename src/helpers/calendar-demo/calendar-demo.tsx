@@ -1,24 +1,19 @@
-import React, {
-  useState,
-  useCallback,
-  useEffect,
-  useRef,
-  useMemo,
-} from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import CalendarSelector from "./calendar-selector";
 import PictureSelector from "./picture-selector";
 import CalendarPoster from "./calendar-poster";
 import TemplateSelector from "./template-selector";
-import { CalendarStorage } from "./calendar-demo-storage";
-import { TemplateStorage } from "./template-storage";
+import {
+  useCalendarManagement,
+  useTemplateManagement,
+  useTemplateImageGeneration,
+} from "./calendar-demo-hooks";
 import type {
-  Template,
+  CalendarDemoConfig,
   PageImage,
-  TemplateConfig,
-  Calendar,
+  Template,
   UserImage,
 } from "./types";
-import { createPageImages } from "./template-utils";
 
 interface CalendarDemoProps {
   maxPages?: number;
@@ -36,225 +31,57 @@ function CalendarDemo({
   renderPoster,
   storeName = "calendars",
 }: CalendarDemoProps) {
-  // 在组件内部计算宽高比
+  // 配置对象
+  const config: CalendarDemoConfig = {
+    maxPages,
+    pageWidth,
+    pageHeight,
+    storeName,
+  };
+
+  // 使用自定义hooks管理状态和逻辑
+  const {
+    state,
+    generateCalendar,
+    selectCalendar,
+    deleteCalendar,
+    createNewCalendar,
+    updatePictures,
+    updateState,
+  } = useCalendarManagement(config);
+
+  // 修复：useTemplateManagement 和 useTemplateImageGeneration 不需要参数
+  const { selectTemplate, createTemplate, updateTemplate, deleteTemplate } =
+    useTemplateManagement();
+
+  const { generateTemplateImages } = useTemplateImageGeneration(config);
+
+  // 计算宽高比
   const aspectRatio = pageWidth / pageHeight;
-
-  // 创建存储实例
-  const [storage] = useState(() => new CalendarStorage(storeName));
-  const [templateStorage] = useState(() => new TemplateStorage());
-
-  // 日历列表
-  const [calendars, setCalendars] = useState<Calendar[]>([]);
-  // 当前编辑的图片
-  const [pictures, setPictures] = useState<UserImage[]>([]);
-  // 当前选中的日历 id
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  // 加载状态
-  const [loading, setLoading] = useState(true);
-  // 是否已生成样机
-  const [isGenerated, setIsGenerated] = useState(false);
-  // 生成样机 loading 状态
-  const [generatingLoading, setGeneratingLoading] = useState(false);
-  // 日历切换 loading 状态
-  const [switchingLoading, setSwitchingLoading] = useState(false);
-
-  // 模板相关状态
-  const [templates, setTemplates] = useState<Template[]>([]);
-  const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(
-    null
-  );
-  const [templateConfig, setTemplateConfig] = useState<TemplateConfig>({
-    enabled: false,
-    selectedTemplateId: null,
-  });
-  const [pageImages, setPageImages] = useState<PageImage[]>([]);
-  const [isGeneratingTemplate, setIsGeneratingTemplate] = useState(false);
-
-  // 防抖定时器引用
-  const debounceTimerRef = useRef<number | null>(null);
-
-  // 初始化时加载日历数据和模板数据
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        // 加载日历数据
-        const allCalendars = await storage.getAll();
-        setCalendars(allCalendars);
-
-        // 加载模板数据
-        const allTemplates = await templateStorage.getAll();
-        setTemplates(allTemplates);
-
-        // 加载模板配置
-        const config = await templateStorage.getConfig();
-        setTemplateConfig(config);
-        setSelectedTemplateId(config.selectedTemplateId);
-      } catch (error) {
-        console.error("加载数据失败:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadData();
-  }, [storage, templateStorage]);
-
-  // 监听模板配置变化（从控制台页面修改）
-  useEffect(() => {
-    const checkTemplateConfig = async () => {
-      try {
-        const config = await templateStorage.getConfig();
-        if (config.enabled !== templateConfig.enabled) {
-          setTemplateConfig(config);
-          setSelectedTemplateId(config.selectedTemplateId);
-        }
-      } catch (error) {
-        console.error("检查模板配置失败:", error);
-      }
-    };
-
-    // 定期检查配置变化
-    const interval = setInterval(checkTemplateConfig, 2000);
-    return () => clearInterval(interval);
-  }, [templateConfig.enabled, templateStorage]);
-
-  // 生成样机并存储到 IndexedDB
-  const handleGenerate = useCallback(async () => {
-    if (pictures.length < maxPages || pictures.some(img => !img.url)) return;
-
-    setGeneratingLoading(true);
-    try {
-      const id = Date.now().toString();
-      const cover = pictures[0].url;
-      const pages = pictures.map(img => img.url);
-      const cal: Calendar = {
-        id,
-        cover,
-        pages,
-        templateId:
-          templateConfig.enabled && selectedTemplateId
-            ? selectedTemplateId
-            : undefined,
-      };
-
-      const success = await storage.save(cal);
-      if (success) {
-        const allCalendars = await storage.getAll();
-
-        setCalendars(allCalendars);
-        setSelectedId(id);
-        setIsGenerated(true);
-      } else {
-        alert("保存失败，请重试");
-      }
-    } catch (error) {
-      console.error("生成样机失败:", error);
-      alert("生成样机失败，请重试");
-    } finally {
-      setGeneratingLoading(false);
-    }
-  }, [pictures, maxPages, storage, templateConfig.enabled, selectedTemplateId]);
-
-  // 选择日历
-  const handleSelect = useCallback(
-    async (cal: Calendar) => {
-      setSwitchingLoading(true);
-      try {
-        setSelectedId(cal.id);
-        setPictures(cal.pages.map((url: string) => ({ url })));
-        setIsGenerated(true);
-
-        // 同步恢复所使用的模板
-        if (templateConfig.enabled && cal.templateId) {
-          setSelectedTemplateId(cal.templateId);
-        }
-      } catch (error) {
-        console.error("切换日历失败:", error);
-        alert("切换日历失败，请重试");
-      } finally {
-        setSwitchingLoading(false);
-      }
-    },
-    [templateConfig.enabled]
-  );
-
-  // 删除日历
-  const handleDelete = useCallback(
-    async (id: string) => {
-      try {
-        await storage.delete(id);
-        const allCalendars = await storage.getAll();
-        setCalendars(allCalendars);
-        if (selectedId === id) {
-          setSelectedId(null);
-          setPictures([]);
-          setIsGenerated(false);
-        }
-      } catch (error) {
-        console.error("删除日历失败:", error);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [selectedId, storage]
-  );
-
-  // 新建日历
-  const handleCreateNew = useCallback(async () => {
-    setSwitchingLoading(true);
-    try {
-      setSelectedId(null);
-      setPictures([]);
-      setIsGenerated(false);
-      setSelectedTemplateId(null);
-      setPageImages([]);
-
-      // 保存空模板选择状态
-      const newConfig = { ...templateConfig, selectedTemplateId: null };
-      await templateStorage.saveConfig(newConfig);
-      setTemplateConfig(newConfig);
-    } catch (error) {
-      console.error("新建日历失败:", error);
-      alert("新建日历失败，请重试");
-    } finally {
-      setSwitchingLoading(false);
-    }
-  }, [templateConfig, templateStorage]);
 
   // 模板相关处理函数
   const handleTemplateSelect = useCallback(
     async (templateId: string | null) => {
-      setSelectedTemplateId(templateId);
-
-      // 保存配置，包括空模板的选择
-      const newConfig = { ...templateConfig, selectedTemplateId: templateId };
-      await templateStorage.saveConfig(newConfig);
-      setTemplateConfig(newConfig);
+      const newConfig = await selectTemplate(templateId, state.templateConfig);
+      updateState({ templateConfig: newConfig });
     },
-    [templateConfig, templateStorage]
+    [selectTemplate, state.templateConfig, updateState]
   );
 
   const handleTemplateCreate = useCallback(
     async (pages: Template["pages"], templateName: string) => {
       try {
-        const templateId = await templateStorage.createTemplate(
-          templateName,
-          pages
-        );
-
-        if (templateId) {
-          // 重新加载模板列表
-          const allTemplates = await templateStorage.getAll();
-          setTemplates(allTemplates);
-
-          // 选择新创建的模板
-          await handleTemplateSelect(templateId);
+        const result = await createTemplate(pages, templateName);
+        if (result) {
+          updateState({ templates: result.templates });
+          await handleTemplateSelect(result.templateId);
         }
       } catch (error) {
         console.error("创建模板失败:", error);
         alert("创建模板失败，请重试");
       }
     },
-    [templateStorage, handleTemplateSelect]
+    [createTemplate, updateState, handleTemplateSelect]
   );
 
   const handleTemplateUpdate = useCallback(
@@ -264,14 +91,9 @@ function CalendarDemo({
       templateName: string
     ) => {
       try {
-        const success = await templateStorage.updateTemplate(templateId, {
-          pages,
-          name: templateName,
-        });
-        if (success) {
-          // 重新加载模板列表
-          const allTemplates = await templateStorage.getAll();
-          setTemplates(allTemplates);
+        const templates = await updateTemplate(templateId, pages, templateName);
+        if (templates) {
+          updateState({ templates });
         } else {
           alert("更新模板失败，请重试");
         }
@@ -280,24 +102,24 @@ function CalendarDemo({
         alert("更新模板失败，请重试");
       }
     },
-    [templateStorage]
+    [updateTemplate, updateState]
   );
 
   const handleTemplateDelete = useCallback(
     async (templateId: string) => {
       try {
-        const success = await templateStorage.deleteTemplate(templateId);
-        if (success) {
-          // 重新加载模板列表
-          const allTemplates = await templateStorage.getAll();
-          setTemplates(allTemplates);
+        const templates = await deleteTemplate(templateId);
+        if (templates) {
+          updateState({ templates });
 
-          // 如果删除的是当前选中的模板，清除选择并保存配置
-          if (selectedTemplateId === templateId) {
-            setSelectedTemplateId(null);
-            const newConfig = { ...templateConfig, selectedTemplateId: null };
-            await templateStorage.saveConfig(newConfig);
-            setTemplateConfig(newConfig);
+          // 如果删除的是当前选中的模板，清除选择
+          if (state.templateConfig.selectedTemplateId === templateId) {
+            const newConfig = {
+              ...state.templateConfig,
+              selectedTemplateId: null,
+            };
+            await selectTemplate(null, state.templateConfig);
+            updateState({ templateConfig: newConfig });
           }
         } else {
           alert("删除模板失败，请重试");
@@ -307,99 +129,87 @@ function CalendarDemo({
         alert("删除模板失败，请重试");
       }
     },
-    [templateStorage, selectedTemplateId, templateConfig]
+    [deleteTemplate, updateState, state.templateConfig, selectTemplate]
   );
 
   // 当模板或图片变化时，重新生成页面图片
   useEffect(() => {
-    // 只有在模板启用且有选中模板时才生成页面图片
-    if (templateConfig.enabled && selectedTemplateId && pictures.length > 0) {
-      const selectedTemplate = templates.find(t => t.id === selectedTemplateId);
-      if (selectedTemplate) {
-        setIsGeneratingTemplate(true);
-        createPageImages(
-          selectedTemplate.pages,
-          pictures.map(p => p.url),
-          pageWidth,
-          pageHeight
-        )
-          .then(setPageImages)
-          .finally(() => setIsGeneratingTemplate(false));
+    const generateImages = async () => {
+      if (
+        state.templateConfig.enabled &&
+        state.templateConfig.selectedTemplateId &&
+        state.pictures.length > 0
+      ) {
+        updateState({ isGeneratingTemplate: true });
+        try {
+          const pageImages = await generateTemplateImages(
+            state.templateConfig,
+            state.templateConfig.selectedTemplateId,
+            state.templates,
+            state.pictures
+          );
+          updateState({ pageImages });
+        } finally {
+          updateState({ isGeneratingTemplate: false });
+        }
+      } else {
+        updateState({ pageImages: [], isGeneratingTemplate: false });
       }
-    } else {
-      // 如果模板未启用或没有选中模板，清空页面图片
-      setPageImages([]);
-      setIsGeneratingTemplate(false);
-    }
+    };
+
+    generateImages();
   }, [
-    templateConfig.enabled,
-    selectedTemplateId,
-    templates,
-    pictures,
-    pageWidth,
-    pageHeight,
+    state.templateConfig.enabled,
+    state.templateConfig.selectedTemplateId,
+    state.templates,
+    state.pictures,
+    generateTemplateImages,
+    updateState,
   ]);
 
-  // 计算最终要渲染的页面图片，避免在渲染过程中计算
+  // 计算最终要渲染的页面图片
   const finalPageImages = useMemo(() => {
-    // 如果正在生成模板图片，返回空数组，避免渲染
-    if (isGeneratingTemplate) {
+    if (state.isGeneratingTemplate) {
       return [];
     }
 
-    if (templateConfig.enabled && pageImages.length > 0) {
-      return pageImages;
+    if (state.templateConfig.enabled && state.pageImages.length > 0) {
+      return state.pageImages;
     } else {
-      return pictures.map(picture => ({
+      return state.pictures.map(picture => ({
         image: picture.url,
       }));
     }
-  }, [templateConfig.enabled, pageImages, pictures, isGeneratingTemplate]);
+  }, [
+    state.templateConfig.enabled,
+    state.pageImages,
+    state.pictures,
+    state.isGeneratingTemplate,
+  ]);
 
-  // 处理单张图片替换 - 优化版本
+  // 处理图片替换
   const handlePictureReplace = useCallback(
     async (newPictures: UserImage[]) => {
-      if (selectedId && newPictures.length > 0) {
-        // 清除之前的定时器
-        if (debounceTimerRef.current) {
-          clearTimeout(debounceTimerRef.current);
-        }
-
-        // 设置防抖定时器，300ms 后执行保存操作
-        debounceTimerRef.current = setTimeout(async () => {
-          try {
-            // 更新当前日历的图片
-            const cover = newPictures[0].url;
-            const pages = newPictures.map(img => img.url);
-            const updatedCalendar: Calendar = { id: selectedId, cover, pages };
-
-            const success = await storage.save(updatedCalendar);
-            if (success) {
-              // 只在成功保存后更新日历列表，避免频繁更新
-              const allCalendars = await storage.getAll();
-              setCalendars(allCalendars);
-            } else {
-              console.error("更新日历失败");
-            }
-          } catch (error) {
-            console.error("更新日历失败:", error);
-          }
-        }, 300);
-      }
+      await updatePictures(newPictures);
     },
-    [selectedId, storage]
+    [updatePictures]
   );
 
-  // 清理定时器
-  useEffect(() => {
-    return () => {
-      if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current);
+  // 创建setPictures函数，适配PictureSelector的期望类型
+  const setPictures = useCallback(
+    (value: React.SetStateAction<UserImage[]>) => {
+      if (typeof value === "function") {
+        // 直接更新pictures，不触发其他逻辑
+        const newPictures = value(state.pictures);
+        updateState({ pictures: newPictures });
+      } else {
+        updateState({ pictures: value });
       }
-    };
-  }, []);
+    },
+    [updateState, state.pictures]
+  );
 
-  if (loading) {
+  if (state.loading) {
     return (
       <div
         style={{
@@ -417,21 +227,21 @@ function CalendarDemo({
     <div style={{ maxWidth: 900, margin: "0 auto" }}>
       {/* 上：日历选择 */}
       <CalendarSelector
-        calendars={calendars}
-        selectedId={selectedId}
+        calendars={state.calendars}
+        selectedId={state.selectedId}
         aspectRatio={aspectRatio}
-        onSelect={handleSelect}
-        onDelete={handleDelete}
-        onCreateNew={handleCreateNew}
+        onSelect={selectCalendar}
+        onDelete={deleteCalendar}
+        onCreateNew={createNewCalendar}
         onTemplateSync={handleTemplateSelect}
-        loading={switchingLoading}
+        loading={state.switchingLoading}
       />
 
       {/* 模板选择器 */}
-      {templateConfig.enabled && (
+      {state.templateConfig.enabled && (
         <TemplateSelector
-          templates={templates}
-          selectedTemplateId={selectedTemplateId}
+          templates={state.templates}
+          selectedTemplateId={state.templateConfig.selectedTemplateId}
           onTemplateSelect={handleTemplateSelect}
           onTemplateCreate={handleTemplateCreate}
           onTemplateUpdate={handleTemplateUpdate}
@@ -444,15 +254,23 @@ function CalendarDemo({
 
       {/* 中：原图选择 */}
       <PictureSelector
-        pictures={pictures}
+        pictures={state.pictures}
         setPictures={setPictures}
         maxPages={maxPages}
         onPictureReplace={handlePictureReplace}
         aspectRatio={aspectRatio}
-        templateMode={templateConfig.enabled && selectedTemplateId !== null}
+        templateMode={
+          state.templateConfig.enabled &&
+          state.templateConfig.selectedTemplateId !== null
+        }
         templateAspectRatio={(() => {
-          if (templateConfig.enabled && selectedTemplateId) {
-            const template = templates.find(t => t.id === selectedTemplateId);
+          if (
+            state.templateConfig.enabled &&
+            state.templateConfig.selectedTemplateId
+          ) {
+            const template = state.templates.find(
+              t => t.id === state.templateConfig.selectedTemplateId
+            );
             if (template?.pages[0]) {
               return template.pages[0].width / template.pages[0].height;
             }
@@ -460,6 +278,7 @@ function CalendarDemo({
           return undefined;
         })()}
       />
+
       <div
         style={{
           display: "flex",
@@ -469,23 +288,31 @@ function CalendarDemo({
         }}
       >
         <button
-          onClick={handleGenerate}
+          onClick={generateCalendar}
           disabled={
-            pictures.length < maxPages || isGenerated || generatingLoading
+            state.pictures.length < maxPages ||
+            state.isGenerated ||
+            state.generatingLoading
           }
           style={{
             padding: "8px 16px",
             fontSize: "14px",
             cursor:
-              pictures.length < maxPages || isGenerated || generatingLoading
+              state.pictures.length < maxPages ||
+              state.isGenerated ||
+              state.generatingLoading
                 ? "not-allowed"
                 : "pointer",
             opacity:
-              pictures.length < maxPages || isGenerated || generatingLoading
+              state.pictures.length < maxPages ||
+              state.isGenerated ||
+              state.generatingLoading
                 ? 0.6
                 : 1,
             backgroundColor:
-              pictures.length < maxPages || isGenerated || generatingLoading
+              state.pictures.length < maxPages ||
+              state.isGenerated ||
+              state.generatingLoading
                 ? "#ccc"
                 : "#007bff",
             color: "white",
@@ -493,17 +320,18 @@ function CalendarDemo({
             borderRadius: "4px",
           }}
         >
-          {generatingLoading
+          {state.generatingLoading
             ? "生成中..."
-            : pictures.length < maxPages
+            : state.pictures.length < maxPages
               ? `请选择${maxPages}张图片`
-              : isGenerated
+              : state.isGenerated
                 ? "样机已生成"
                 : "生成样机"}
         </button>
       </div>
+
       {/* 下：日历渲染 */}
-      {isGenerated && (
+      {state.isGenerated && (
         <CalendarPoster
           pageImages={finalPageImages}
           renderPoster={renderPoster}

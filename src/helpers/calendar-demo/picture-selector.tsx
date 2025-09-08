@@ -1,12 +1,12 @@
 import React, { useCallback } from "react";
-import type { CalendarPicture } from "./calendar-demo";
+import type { UserImage } from "./types";
 
 interface PictureSelectorProps {
-  pictures: CalendarPicture[];
-  setPictures: React.Dispatch<React.SetStateAction<CalendarPicture[]>>;
+  pictures: UserImage[];
+  setPictures: React.Dispatch<React.SetStateAction<UserImage[]>>;
   maxPages: number;
   aspectRatio: number; // 接收宽高比参数
-  onPictureReplace?: (pictures: CalendarPicture[]) => void;
+  onPictureReplace?: (pictures: UserImage[]) => void;
   templateMode?: boolean;
   templateAspectRatio?: number; // 模板模式下的宽高比
 }
@@ -31,7 +31,8 @@ export default function PictureSelector({
   const [isDragOver, setIsDragOver] = React.useState(false);
 
   // 使用模板模式下的宽高比或默认宽高比
-  const currentAspectRatio = templateMode && templateAspectRatio ? templateAspectRatio : aspectRatio;
+  const currentAspectRatio =
+    templateMode && templateAspectRatio ? templateAspectRatio : aspectRatio;
 
   // 批量上传
   const handleFiles = useCallback(
