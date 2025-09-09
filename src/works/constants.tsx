@@ -12,6 +12,10 @@ import CJ_MHVAR001, {
   CJ_MHVAR001_HEIGHT,
   CJ_MHVAR001_WIDTH,
 } from "./cj-mhvar001/cj-mhvar001";
+import CJ_MVVAR001, {
+  CJ_MVVAR001_HEIGHT,
+  CJ_MVVAR001_WIDTH,
+} from "./cj-mvvar001/cj-mvvar001";
 
 export interface IWork {
   id: string;
@@ -55,9 +59,17 @@ const works: IWork[] = [
   {
     id: "cj-mhvar001",
     name: "CJ-MHVAR001",
-    desc: `图的印刷尺寸是：170mm * 120mm，按 DPI 300 印刷，像素尺寸至少 ${CJ_MHVAR001_WIDTH} × ${CJ_MHVAR001_HEIGHT}`,
+    desc: `图的印刷尺寸是：145mm * 105mm，按 DPI 300 印刷，像素尺寸至少 ${CJ_MHVAR001_WIDTH} × ${CJ_MHVAR001_HEIGHT}，插槽深度 ：8mm，像素尺寸：110`,
     content: CJ_MHVAR001,
     illustration: "/assets/CJ-MHVAR001_illustration.jpg",
+    tips: [],
+  },
+  {
+    id: "cj-mvvar001",
+    name: "CJ-MVVAR001",
+    desc: `图的印刷尺寸是：170mm * 120mm，按 DPI 300 印刷，像素尺寸至少 ${CJ_MVVAR001_WIDTH} × ${CJ_MVVAR001_HEIGHT}`,
+    content: CJ_MVVAR001,
+    illustration: "/assets/CJ-MVVAR001_illustration.jpg",
     tips: [],
   },
   {

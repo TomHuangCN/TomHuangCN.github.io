@@ -1,12 +1,12 @@
 import CalendarDemo from "../../helpers/calendar-demo/calendar-demo";
 import { useCallback, useState, useRef, useEffect } from "react";
 import type { PageImage } from "../../helpers/calendar-demo/types";
-import { CJMHVAR001Poster } from "./cj-mhvar001-poster";
+import { CJMVVAR001Poster } from "./cj-mvvar001-poster";
 
-export const CJ_MHVAR001_WIDTH = 1996;
-export const CJ_MHVAR001_HEIGHT = 1445;
+export const CJ_MVVAR001_WIDTH = 1653;
+export const CJ_MVVAR001_HEIGHT = 2342;
 
-export default function CJ_MHVAR001() {
+export default function CJ_MVVAR001() {
   const [isLoading, setIsLoading] = useState(false);
   const canvasRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [currentPictures, setCurrentPictures] = useState<PageImage[]>([]);
@@ -15,7 +15,7 @@ export default function CJ_MHVAR001() {
     if (currentPictures.length === 0) return;
 
     setIsLoading(true);
-    const poster = new CJMHVAR001Poster(currentPictures);
+    const poster = new CJMVVAR001Poster(currentPictures);
 
     poster
       .render()
@@ -74,10 +74,10 @@ export default function CJ_MHVAR001() {
   return (
     <CalendarDemo
       maxPages={13}
-      pageWidth={CJ_MHVAR001_WIDTH}
-      pageHeight={CJ_MHVAR001_HEIGHT}
+      pageWidth={CJ_MVVAR001_WIDTH}
+      pageHeight={CJ_MVVAR001_HEIGHT}
       renderPoster={renderPoster}
-      storeName="CJ_MHVAR001"
+      storeName="CJ_MVVAR001"
     />
   );
 }
