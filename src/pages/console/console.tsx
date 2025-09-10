@@ -3,6 +3,7 @@ import { TemplateStorage } from "../../helpers/calendar-demo/template-storage";
 import type { TemplateConfig } from "../../helpers/calendar-demo/types";
 import { DataManagement } from "./data-management";
 import { TemplateManagement } from "./template-management";
+import { FontManagement } from "./font-management";
 import { SystemInfo } from "./system-info";
 import { ProgressBar } from "./progress-bar";
 import { TabNavigation } from "./tab-navigation";
@@ -72,6 +73,16 @@ const Console: React.FC = () => {
         <TemplateManagement
           templateConfig={templateConfig}
           setTemplateConfig={setTemplateConfig}
+        />
+      ),
+    },
+    {
+      id: "font-management",
+      name: "字体管理",
+      component: (
+        <FontManagement
+          updateProgress={updateProgress}
+          hideProgress={hideProgress}
         />
       ),
     },

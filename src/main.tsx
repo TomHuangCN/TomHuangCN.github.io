@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import App from "./app";
 import WorksList from "./pages/works-list";
 import WorkDetail from "./pages/work-detail";
-import Cooperation from "./pages/cooperation";
+import Cooperation from "./pages/Cooperation";
 import Console from "./pages/console";
 import { autoPreloadFonts } from "./utils/font-loader";
 
@@ -13,7 +13,7 @@ const routes = [
   { path: "/works", element: <WorksList /> },
   { path: "/works/:id", element: <WorkDetail /> },
   { path: "/cooperation", element: <Cooperation /> },
-          { path: "/console", element: <Console /> },
+  { path: "/console", element: <Console /> },
 ];
 
 const Main: React.FC = () => (

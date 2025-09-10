@@ -1,3 +1,5 @@
+import React from "react";
+
 export const consoleStyles = {
   container: {
     maxWidth: "1000px",

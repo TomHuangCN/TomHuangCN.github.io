@@ -26,7 +26,7 @@ export async function createPageImageCanvas(
       templateImg.onload = () => {
         // 先绘制模板图片作为背景，拉伸到指定尺寸
         ctx.drawImage(templateImg, 0, 0, pageWidth, pageHeight);
-        
+
         // 绘制用户图片
         drawUserPicture();
       };
@@ -53,13 +53,7 @@ export async function createPageImageCanvas(
 
         // 在指定位置绘制用户图片
         if (ctx) {
-          ctx.drawImage(
-            pictureImg,
-            startXPx,
-            startYPx,
-            widthPx,
-            heightPx
-          );
+          ctx.drawImage(pictureImg, startXPx, startYPx, widthPx, heightPx);
         }
         resolve(canvas);
       };

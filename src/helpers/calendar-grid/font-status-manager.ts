@@ -1,14 +1,18 @@
-import { fontOptions } from "./constants";
-import { isFontLoaded, getFontLoadingStatus } from "../../utils/font-loader";
+import { baseFontOptions, getAllFontOptions } from "./constants";
+import {
+  isFontLoaded,
+  getFontLoadingStatus,
+  loadCustomFonts,
+} from "../../utils/font-loader";
 
 // 字体状态管理
 export class FontStatusManager {
   private static instance: FontStatusManager;
-  private statusCallbacks: Array<(fonts: typeof fontOptions) => void> = [];
-  private currentFonts = [...fontOptions];
+  private statusCallbacks: Array<(fonts: typeof baseFontOptions) => void> = [];
+  private currentFonts = [...baseFontOptions];
 
   private constructor() {
-    this.startMonitoring();
+    this.loadCustomFontsAndStartMonitoring();
   }
 
   public static getInstance(): FontStatusManager {
@@ -16,6 +20,34 @@ export class FontStatusManager {
       FontStatusManager.instance = new FontStatusManager();
     }
     return FontStatusManager.instance;
+  }
+
+  // 加载自定义字体并开始监控
+  private async loadCustomFontsAndStartMonitoring(): Promise<void> {
+    try {
+      // 先加载自定义字体
+      await loadCustomFonts();
+      // 然后获取包含自定义字体的完整列表
+      await this.updateFontList();
+      // 然后开始监控
+      this.startMonitoring();
+    } catch (error) {
+      console.error("加载自定义字体失败:", error);
+      // 即使失败也要开始监控
+      this.startMonitoring();
+    }
+  }
+
+  // 更新字体列表
+  private async updateFontList(): Promise<void> {
+    try {
+      const allFonts = await getAllFontOptions();
+      this.currentFonts = allFonts;
+      this.notifyStatusChange();
+      console.log("字体状态管理器更新完成，共", allFonts.length, "个字体");
+    } catch (error) {
+      console.error("更新字体列表失败:", error);
+    }
   }
 
   // 开始监控字体加载状态
@@ -87,12 +119,14 @@ export class FontStatusManager {
   }
 
   // 获取当前字体状态
-  public getFontStatus(): typeof fontOptions {
+  public getFontStatus(): typeof baseFontOptions {
     return [...this.currentFonts];
   }
 
   // 订阅状态变化
-  public subscribe(callback: (fonts: typeof fontOptions) => void): () => void {
+  public subscribe(
+    callback: (fonts: typeof baseFontOptions) => void
+  ): () => void {
     this.statusCallbacks.push(callback);
 
     // 立即返回当前状态
@@ -117,6 +151,16 @@ export class FontStatusManager {
   // 手动刷新状态
   public refreshStatus(): void {
     this.updateFontStatus();
+  }
+
+  // 重新加载自定义字体
+  public async reloadCustomFonts(): Promise<void> {
+    try {
+      await loadCustomFonts();
+      await this.updateFontList();
+    } catch (error) {
+      console.error("重新加载自定义字体失败:", error);
+    }
   }
 }
 

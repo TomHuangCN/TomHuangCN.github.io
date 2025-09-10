@@ -1,6 +1,6 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import Header, { SearchContext } from "./components/header";
+import Header, { SearchContext } from "./components/Header";
 import Sidebar from "./components/sidebar";
 import { useState } from "react";
 import "./styles/responsive.css";

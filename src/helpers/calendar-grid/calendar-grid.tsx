@@ -5,6 +5,7 @@ import { downloadAllImages } from "./download-service";
 import { CalendarControls } from "./calendar-controls";
 import { CalendarMonth } from "./calendar-month";
 import { DayData } from "./types";
+import { loadCustomFonts } from "../../utils/font-loader";
 
 export const CalendarGrid: React.FC = () => {
   const [year, setYear] = useState<number>(2026);
@@ -27,6 +28,20 @@ export const CalendarGrid: React.FC = () => {
     },
     []
   );
+
+  // 初始化时加载自定义字体
+  useEffect(() => {
+    const initCustomFonts = async () => {
+      try {
+        await loadCustomFonts();
+        console.log("自定义字体加载完成");
+      } catch (error) {
+        console.error("加载自定义字体失败:", error);
+      }
+    };
+
+    initCustomFonts();
+  }, []);
 
   // 当年份或起始日变化时重新生成样机
   useEffect(() => {

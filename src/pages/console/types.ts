@@ -1,3 +1,5 @@
+import React from "react";
+
 export interface ProgressState {
   isVisible: boolean;
   progress: number;

@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { CalendarControlsProps } from "./types";
-import { fontOptions, commonStyles } from "./constants";
+import { baseFontOptions, getAllFontOptions, commonStyles } from "./constants";
 import { fontStatusManager } from "./font-status-manager";
+import { loadCustomFonts } from "../../utils/font-loader";
 
 // 字体选择器组件
 const FontSelector: React.FC<{
@@ -9,8 +10,27 @@ const FontSelector: React.FC<{
   onFontSelect: (font: string) => void;
 }> = ({ selectedFont, onFontSelect }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [fonts, setFonts] = useState(fontOptions);
+  const [fonts, setFonts] = useState(baseFontOptions);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // 加载所有字体选项（包括自定义字体）
+  useEffect(() => {
+    const loadFonts = async () => {
+      try {
+        // 先确保自定义字体已加载到CSS中
+        await loadCustomFonts();
+        // 然后获取所有字体选项
+        const allFonts = await getAllFontOptions();
+        setFonts(allFonts);
+        console.log("字体选择器加载完成，共", allFonts.length, "个字体");
+      } catch (error) {
+        console.error("加载字体选项失败:", error);
+        setFonts(baseFontOptions);
+      }
+    };
+
+    loadFonts();
+  }, []);
 
   // 订阅字体状态变化
   useEffect(() => {

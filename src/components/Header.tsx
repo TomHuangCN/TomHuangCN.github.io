@@ -188,10 +188,7 @@ const Header: React.FC = () => {
         </div>
 
         <div style={styles.right} className="desktop-buttons">
-          <button
-            onClick={() => navigate("/console")}
-            style={styles.button}
-          >
+          <button onClick={() => navigate("/console")} style={styles.button}>
             控制台
           </button>
           <button
