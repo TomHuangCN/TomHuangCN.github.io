@@ -4,7 +4,6 @@
  */
 
 const fontMap: Record<string, string> = {
-  "Ma Shan Zheng": "/assets/fonts/MaShanZheng-Regular.ttf",
   Xiaolai: "/assets/fonts/Xiaolai-Regular.woff2",
   "VonwaonBitmap-12px": "/assets/fonts/VonwaonBitmap-12px.ttf",
   千图小兔体: "/assets/fonts/千图小兔体.ttf",

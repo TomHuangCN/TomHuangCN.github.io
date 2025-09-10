@@ -10,13 +10,6 @@ export const baseFontOptions: FontOption[] = [
     isLoaded: true,
   },
   {
-    name: "Ma Shan Zheng",
-    value: "'Ma Shan Zheng', cursive",
-    displayName: "马善政手写体",
-    isLoading: true,
-    isLoaded: false,
-  },
-  {
     name: "Xiaolai",
     value: "'Xiaolai', cursive",
     displayName: "小赖手写体",
