@@ -1,6 +1,6 @@
 import React from "react";
 import { CalendarMonthProps } from "./types";
-import { weekDays } from "./constants";
+import { weekDays, weekDaysEn, HIGHLIGHT_SUNDAY_COLOR } from "./constants";
 import { CalendarDay } from "./calendar-day";
 
 export const CalendarMonth: React.FC<CalendarMonthProps> = ({
@@ -10,6 +10,8 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = ({
   showOtherMonthDays,
   startDay,
   selectedFont,
+  isEnglish,
+  highlightSunday,
 }) => {
   return (
     <ul
@@ -46,24 +48,31 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = ({
       )}
 
       {/* 星期标题 */}
-      {weekDays.map((day, index) => (
-        <li
-          key={index}
-          className="week"
-          style={{
-            position: "relative",
-            float: "left",
-            width: "50px",
-            height: "34px",
-            lineHeight: "33px",
-            fontSize: "12px",
-            color: "#333333",
-            textAlign: "center",
-          }}
-        >
-          {weekDays[(index + startDay) % 7]}
-        </li>
-      ))}
+      {weekDays.map((day, index) => {
+        const weekdayIndex = (index + startDay) % 7;
+        const headerColor =
+          isEnglish && highlightSunday && weekdayIndex === 0
+            ? HIGHLIGHT_SUNDAY_COLOR
+            : "#333333";
+        return (
+          <li
+            key={index}
+            className="week"
+            style={{
+              position: "relative",
+              float: "left",
+              width: "50px",
+              height: "34px",
+              lineHeight: "33px",
+              fontSize: "12px",
+              color: headerColor,
+              textAlign: "center",
+            }}
+          >
+            {(isEnglish ? weekDaysEn : weekDays)[weekdayIndex]}
+          </li>
+        );
+      })}
 
       {/* 日期 */}
       {monthData.map((dayData, dayIndex) => (
@@ -72,6 +81,8 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = ({
           dayData={dayData}
           startDay={startDay}
           showOtherMonthDays={showOtherMonthDays}
+          isEnglish={isEnglish}
+          highlightSunday={highlightSunday}
         />
       ))}
     </ul>

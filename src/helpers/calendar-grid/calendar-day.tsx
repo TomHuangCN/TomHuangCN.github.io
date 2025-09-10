@@ -6,14 +6,21 @@ import {
   getDayColor,
   getRestDayColor,
 } from "./utils";
+import { HIGHLIGHT_SUNDAY_COLOR } from "./constants";
 
 export const CalendarDay: React.FC<CalendarDayProps> = ({
   dayData,
   showOtherMonthDays,
+  isEnglish,
+  highlightSunday,
 }) => {
   const dayClasses = getDayClasses(dayData);
-  const dayText = getDayText(dayData);
-  const textColor = getDayColor(dayData);
+  const dayText = isEnglish ? "" : getDayText(dayData);
+  const baseColor = getDayColor(dayData);
+  const textColor =
+    isEnglish && highlightSunday && dayData.isSunday
+      ? HIGHLIGHT_SUNDAY_COLOR
+      : baseColor;
   const restDayColor = getRestDayColor(dayData);
 
   return (
@@ -23,7 +30,7 @@ export const CalendarDay: React.FC<CalendarDayProps> = ({
         position: "relative",
         float: "left",
         width: "50px",
-        height: "44px",
+        height: isEnglish ? "32px" : "44px",
         cursor: "default",
         textAlign: "center",
         marginTop: "6px",
@@ -35,19 +42,30 @@ export const CalendarDay: React.FC<CalendarDayProps> = ({
           !showOtherMonthDays && !dayData.isCurrentMonth ? "hidden" : "visible",
       }}
     >
-      {dayData.solar.getDay()}
-      <i
+      <span
         style={{
-          display: "block",
-          fontSize: "9px",
-          fontStyle: "normal",
-          color: textColor,
-          overflow: "hidden",
+          color:
+            isEnglish && highlightSunday && dayData.isSunday
+              ? HIGHLIGHT_SUNDAY_COLOR
+              : "inherit",
         }}
       >
-        {dayText}
-      </i>
-      {dayData.holiday && (
+        {dayData.solar.getDay()}
+      </span>
+      {!isEnglish && (
+        <i
+          style={{
+            display: "block",
+            fontSize: "9px",
+            fontStyle: "normal",
+            color: textColor,
+            overflow: "hidden",
+          }}
+        >
+          {dayText}
+        </i>
+      )}
+      {!isEnglish && dayData.holiday && (
         <u
           style={{
             fontSize: "9px",

@@ -40,7 +40,8 @@ export const fontOptions: FontOption[] = [
 ];
 
 export const weekDays = ["日", "一", "二", "三", "四", "五", "六"];
-
+export const weekDaysEn = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+export const HIGHLIGHT_SUNDAY_COLOR = "#D02F12";
 export const commonStyles = {
   input: {
     border: "1px solid #D7D9E0",

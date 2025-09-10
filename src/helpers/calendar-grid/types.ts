@@ -11,6 +11,7 @@ export interface DayData {
   jieQi: string | null;
   holiday: ReturnType<typeof HolidayUtil.getHoliday>;
   isRest: boolean;
+  isSunday: boolean;
 }
 
 export interface FontOption {
@@ -34,6 +35,10 @@ export interface CalendarControlsProps {
   setSelectedFont: (font: string) => void;
   isDownloading: boolean;
   onDownload: () => void;
+  isEnglish: boolean;
+  setIsEnglish: (isEnglish: boolean) => void;
+  highlightSunday: boolean;
+  setHighlightSunday: (highlight: boolean) => void;
 }
 
 export interface CalendarMonthProps {
@@ -43,10 +48,14 @@ export interface CalendarMonthProps {
   showOtherMonthDays: boolean;
   startDay: number;
   selectedFont: string;
+  isEnglish: boolean;
+  highlightSunday: boolean;
 }
 
 export interface CalendarDayProps {
   dayData: DayData;
   startDay: number;
   showOtherMonthDays: boolean;
+  isEnglish: boolean;
+  highlightSunday: boolean;
 }

@@ -16,6 +16,8 @@ export const CalendarGrid: React.FC = () => {
   );
   const [calendarData, setCalendarData] = useState<DayData[][]>([]);
   const [isDownloading, setIsDownloading] = useState<boolean>(false);
+  const [isEnglish, setIsEnglish] = useState<boolean>(false);
+  const [highlightSunday, setHighlightSunday] = useState<boolean>(false);
 
   // 生成样机数据
   const generateCalendar = useCallback(
@@ -68,6 +70,10 @@ export const CalendarGrid: React.FC = () => {
         setSelectedFont={setSelectedFont}
         isDownloading={isDownloading}
         onDownload={handleDownload}
+        isEnglish={isEnglish}
+        setIsEnglish={setIsEnglish}
+        highlightSunday={highlightSunday}
+        setHighlightSunday={setHighlightSunday}
       />
 
       <div id="body" style={{ overflow: "hidden" }}>
@@ -80,6 +86,8 @@ export const CalendarGrid: React.FC = () => {
             showOtherMonthDays={showOtherMonthDays}
             startDay={startDay}
             selectedFont={selectedFont}
+            isEnglish={isEnglish}
+            highlightSunday={highlightSunday}
           />
         ))}
       </div>
