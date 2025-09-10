@@ -34,43 +34,60 @@ const loadFontToBase64 = async (fontFamily: string): Promise<string | null> => {
   const fontPath = fontMap[fontFamily];
   if (!fontPath) return null;
 
-  try {
-    // const baseUrl = window.location.origin;
-    // const absoluteUrl = `${baseUrl}${fontPath}`;
-    const response = await fetch(fontPath);
+  // 重试配置
+  const maxRetries = 3;
+  const retryDelay = 1000; // 1秒
 
-    if (!response.ok) {
-      throw new Error(
-        `字体文件下载失败: ${response.status} ${response.statusText}`
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const response = await fetch(fontPath, {
+        // 添加超时和重试配置
+        signal: AbortSignal.timeout(10000), // 10秒超时
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `字体文件下载失败: ${response.status} ${response.statusText}`
+        );
+      }
+
+      const arrayBuffer = await response.arrayBuffer();
+      const uint8Array = new Uint8Array(arrayBuffer);
+      let binaryString = "";
+
+      for (let i = 0; i < uint8Array.length; i++) {
+        binaryString += String.fromCharCode(uint8Array[i]);
+      }
+
+      const base64 = btoa(binaryString);
+      const format = fontPath.toLowerCase().endsWith(".ttf")
+        ? "truetype"
+        : fontPath.toLowerCase().endsWith(".woff2")
+          ? "woff2"
+          : "opentype";
+      const dataUrl = `data:font/${format};base64,${base64}`;
+
+      fontCache.set(fontFamily, dataUrl);
+      console.log(
+        `字体 ${fontFamily} 已预加载 (${(arrayBuffer.byteLength / 1024).toFixed(1)}KB)`
       );
+
+      return dataUrl;
+    } catch (error) {
+      if (attempt === maxRetries) {
+        console.error(
+          `字体 ${fontFamily} 加载失败，已重试 ${maxRetries} 次:`,
+          error
+        );
+        return null;
+      }
+
+      // 等待后重试
+      await new Promise(resolve => setTimeout(resolve, retryDelay * attempt));
     }
-
-    const arrayBuffer = await response.arrayBuffer();
-    const uint8Array = new Uint8Array(arrayBuffer);
-    let binaryString = "";
-
-    for (let i = 0; i < uint8Array.length; i++) {
-      binaryString += String.fromCharCode(uint8Array[i]);
-    }
-
-    const base64 = btoa(binaryString);
-    const format = fontPath.toLowerCase().endsWith(".ttf")
-      ? "truetype"
-      : fontPath.toLowerCase().endsWith(".woff2")
-        ? "woff2"
-        : "opentype";
-    const dataUrl = `data:font/${format};base64,${base64}`;
-
-    fontCache.set(fontFamily, dataUrl);
-    console.log(
-      `字体 ${fontFamily} 已预加载 (${(arrayBuffer.byteLength / 1024).toFixed(1)}KB)`
-    );
-
-    return dataUrl;
-  } catch (error) {
-    console.error(`预加载字体 ${fontFamily} 失败:`, error);
-    return null;
   }
+
+  return null;
 };
 
 export const preloadAllFonts = async (): Promise<void> => {
@@ -89,22 +106,40 @@ export const preloadAllFonts = async (): Promise<void> => {
     // 先加载自定义字体
     await loadCustomFonts();
 
-    // 再加载内置字体
+    // 再加载内置字体，使用 Promise.allSettled 避免单个字体失败影响整体
     const fontFamilies = Object.keys(fontMap);
-    await Promise.all(
+    const results = await Promise.allSettled(
       fontFamilies.map(fontFamily => loadFontToBase64(fontFamily))
     );
+
+    // 统计成功和失败的字体
+    const successful = results.filter(
+      result => result.status === "fulfilled"
+    ).length;
+    const failed = results.filter(
+      result => result.status === "rejected"
+    ).length;
 
     isLoaded = true;
     const totalFonts =
       Object.keys(fontMap).length + Object.keys(customFontMap).length;
-    console.log(`字体预加载完成，共加载 ${totalFonts} 个字体`);
+
+    if (failed > 0) {
+      console.log(
+        `字体预加载完成，成功加载 ${successful}/${totalFonts} 个字体 (${failed} 个失败)`
+      );
+    } else {
+      console.log(`字体预加载完成，成功加载 ${totalFonts} 个字体`);
+    }
 
     loadCallbacks.forEach(callback => callback());
     loadCallbacks.length = 0;
   } catch (error) {
     console.error("字体预加载失败:", error);
-    throw error;
+    // 即使失败也标记为已加载，避免重复尝试
+    isLoaded = true;
+    loadCallbacks.forEach(callback => callback());
+    loadCallbacks.length = 0;
   } finally {
     isLoading = false;
   }
@@ -313,11 +348,11 @@ export const loadCustomFonts = async (): Promise<void> => {
 
       // 添加到CSS中
       addFontToCSS(font.name, dataUrl, format);
-
-      console.log(`自定义字体 ${font.displayName} 已加载`);
     }
 
-    console.log(`加载了 ${customFonts.length} 个自定义字体`);
+    if (customFonts.length > 0) {
+      console.log(`加载了 ${customFonts.length} 个自定义字体`);
+    }
   } catch (error) {
     console.error("加载自定义字体失败:", error);
   }
@@ -377,7 +412,6 @@ export const addFontToCSS = (
   `;
 
   document.head.appendChild(style);
-  console.log(`字体 ${fontFamily} 已添加到CSS`);
 };
 
 /**
@@ -387,7 +421,6 @@ export const removeFontFromCSS = (fontFamily: string): void => {
   const existingStyle = document.getElementById(`font-${fontFamily}`);
   if (existingStyle) {
     existingStyle.remove();
-    console.log(`字体 ${fontFamily} 已从CSS中移除`);
   }
 };
 

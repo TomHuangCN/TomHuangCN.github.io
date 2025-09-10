@@ -41,7 +41,7 @@ export const generateCalendarData = (
             jieQi,
             holiday,
             isRest: holiday ? !holiday.isWork() : false,
-            isSunday: day.getDay() === 0,
+            isSunday: day.getWeek() === 0,
           });
         }
       }

@@ -25,9 +25,7 @@ export class FontStatusManager {
   // 加载自定义字体并开始监控
   private async loadCustomFontsAndStartMonitoring(): Promise<void> {
     try {
-      // 先加载自定义字体
-      await loadCustomFonts();
-      // 然后获取包含自定义字体的完整列表
+      // 获取包含自定义字体的完整列表
       await this.updateFontList();
       // 然后开始监控
       this.startMonitoring();
