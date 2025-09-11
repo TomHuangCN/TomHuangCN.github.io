@@ -35,8 +35,6 @@ export interface CalendarControlsProps {
   setSelectedFont: (font: string) => void;
   isDownloading: boolean;
   onDownload: () => void;
-  isEnglish: boolean;
-  setIsEnglish: (isEnglish: boolean) => void;
   highlightSunday: boolean;
   setHighlightSunday: (highlight: boolean) => void;
 }

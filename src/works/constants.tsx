@@ -8,6 +8,7 @@ import CJ_MVTTP002, {
   CJ_MVTTP002_WIDTH,
 } from "./cj-mvttp002/cj-mvttp002";
 import { CalendarGridGen } from "./calendar-grid-gen/calendar-grid-gen";
+import { EnglishCalendarGrid } from "./english-calendar-grid/english-calendar-grid";
 import CJ_MHVAR001, {
   CJ_MHVAR001_HEIGHT,
   CJ_MHVAR001_WIDTH,
@@ -74,9 +75,15 @@ const works: IWork[] = [
   },
   {
     id: "calendar-grid-gen",
-    name: "日历网格生成器",
+    name: "中文日历网格",
     desc: "生成包含农历、节日、节气的日历网格，支持下载为图片作为素材。如有需要新增的字体，请联系作者提出。免费可商用的字体参考：https://freefonts.space/。",
     content: CalendarGridGen,
+  },
+  {
+    id: "english-calendar-grid",
+    name: "英语日历网格",
+    desc: "简洁的英语版日历网格生成器，专注于英语环境下的日历展示，支持周日高亮等功能。",
+    content: EnglishCalendarGrid,
   },
 ];
 

@@ -190,8 +190,6 @@ export const CalendarControls: React.FC<CalendarControlsProps> = ({
   setSelectedFont,
   isDownloading,
   onDownload,
-  isEnglish,
-  setIsEnglish,
   highlightSunday,
   setHighlightSunday,
 }) => {
@@ -312,44 +310,23 @@ export const CalendarControls: React.FC<CalendarControlsProps> = ({
 
       <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
         <button
-          onClick={() => setIsEnglish(!isEnglish)}
+          onClick={() => setHighlightSunday(!highlightSunday)}
           style={{
             ...commonStyles.button,
-            minWidth: "90px",
+            minWidth: "120px",
             borderRadius: "5px",
             padding: "4px 12px",
             fontSize: "15px",
-            background: isEnglish ? "#e6f7ff" : "#f0f0f0",
-            color: isEnglish ? "#1890ff" : "#606266",
-            border: isEnglish ? "1px solid #91d5ff" : "1px solid #d9d9d9",
+            background: highlightSunday ? "#fff1f0" : "#f0f0f0",
+            color: highlightSunday ? "#D02F12" : "#606266",
+            border: highlightSunday ? "1px solid #ffccc7" : "1px solid #d9d9d9",
             transition: "all 0.2s",
           }}
         >
-          {isEnglish ? "English" : "中文"}
+          {highlightSunday ? "取消周日标红" : "周日标红"}
         </button>
       </div>
-      {isEnglish && (
-        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-          <button
-            onClick={() => setHighlightSunday(!highlightSunday)}
-            style={{
-              ...commonStyles.button,
-              minWidth: "120px",
-              borderRadius: "5px",
-              padding: "4px 12px",
-              fontSize: "15px",
-              background: highlightSunday ? "#fff1f0" : "#f0f0f0",
-              color: highlightSunday ? "#D02F12" : "#606266",
-              border: highlightSunday
-                ? "1px solid #ffccc7"
-                : "1px solid #d9d9d9",
-              transition: "all 0.2s",
-            }}
-          >
-            {highlightSunday ? "取消周日标红" : "周日标红"}
-          </button>
-        </div>
-      )}
+
       <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
         <button
           onClick={onDownload}

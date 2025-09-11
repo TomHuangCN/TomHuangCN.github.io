@@ -8,7 +8,8 @@ export { CalendarDay } from "./calendar-day";
 // 字体状态管理
 export { fontStatusManager } from "./font-status-manager";
 
-// 测试组件
+// 共享组件
+export * from "./shared";
 
 // 类型定义
 export type {

@@ -18,7 +18,7 @@ export const CalendarDay: React.FC<CalendarDayProps> = ({
   const dayText = isEnglish ? "" : getDayText(dayData);
   const baseColor = getDayColor(dayData);
   const textColor =
-    isEnglish && highlightSunday && dayData.isSunday
+    highlightSunday && dayData.isSunday
       ? HIGHLIGHT_SUNDAY_COLOR
       : baseColor;
   const restDayColor = getRestDayColor(dayData);
@@ -45,7 +45,7 @@ export const CalendarDay: React.FC<CalendarDayProps> = ({
       <span
         style={{
           color:
-            isEnglish && highlightSunday && dayData.isSunday
+            highlightSunday && dayData.isSunday
               ? HIGHLIGHT_SUNDAY_COLOR
               : "inherit",
         }}

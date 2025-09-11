@@ -1,9 +1,19 @@
 import React from "react";
-import { CalendarMonthProps } from "./types";
-import { weekDays, weekDaysEn, HIGHLIGHT_SUNDAY_COLOR } from "./constants";
-import { CalendarDay } from "./calendar-day";
+import { EnglishDayData } from "./english-calendar-generator";
+import { weekDaysEn, HIGHLIGHT_SUNDAY_COLOR } from "../constants";
 
-export const CalendarMonth: React.FC<CalendarMonthProps> = ({
+export interface EnglishCalendarMonthProps {
+  monthData: EnglishDayData[];
+  monthIndex: number;
+  showMonthTitle: boolean;
+  showOtherMonthDays: boolean;
+  startDay: number;
+  selectedFont: string;
+  isEnglish: boolean;
+  highlightSunday: boolean;
+}
+
+export const EnglishCalendarMonth: React.FC<EnglishCalendarMonthProps> = ({
   monthData,
   monthIndex,
   showMonthTitle,
@@ -13,6 +23,11 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = ({
   isEnglish,
   highlightSunday,
 }) => {
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+
   return (
     <ul
       style={{
@@ -43,12 +58,12 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = ({
             margin: 0,
           }}
         >
-          {monthIndex + 1}月
+          {monthNames[monthIndex]}
         </h3>
       )}
 
       {/* 星期标题 */}
-      {weekDays.map((day, index) => {
+      {weekDaysEn.map((day, index) => {
         const weekdayIndex = (index + startDay) % 7;
         const headerColor =
           highlightSunday && weekdayIndex === 0
@@ -69,22 +84,54 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = ({
               textAlign: "center",
             }}
           >
-            {(isEnglish ? weekDaysEn : weekDays)[weekdayIndex]}
+            {weekDaysEn[weekdayIndex]}
           </li>
         );
       })}
 
       {/* 日期 */}
       {monthData.map((dayData, dayIndex) => (
-        <CalendarDay
+        <EnglishCalendarDay
           key={dayIndex}
           dayData={dayData}
-          startDay={startDay}
           showOtherMonthDays={showOtherMonthDays}
-          isEnglish={isEnglish}
           highlightSunday={highlightSunday}
         />
       ))}
     </ul>
+  );
+};
+
+interface EnglishCalendarDayProps {
+  dayData: EnglishDayData;
+  showOtherMonthDays: boolean;
+  highlightSunday: boolean;
+}
+
+const EnglishCalendarDay: React.FC<EnglishCalendarDayProps> = ({
+  dayData,
+  showOtherMonthDays,
+  highlightSunday,
+}) => {
+  return (
+    <li
+      style={{
+        position: "relative",
+        float: "left",
+        width: "50px",
+        height: "32px",
+        cursor: "default",
+        textAlign: "center",
+        marginTop: "6px",
+        lineHeight: "32px",
+        fontWeight: "normal",
+        color: highlightSunday && dayData.isSunday ? HIGHLIGHT_SUNDAY_COLOR : "#444",
+        opacity: !dayData.isCurrentMonth ? 0.3 : 1,
+        visibility:
+          !showOtherMonthDays && !dayData.isCurrentMonth ? "hidden" : "visible",
+      }}
+    >
+      {dayData.day}
+    </li>
   );
 };
