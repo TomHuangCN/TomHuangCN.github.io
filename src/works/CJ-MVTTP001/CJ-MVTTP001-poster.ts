@@ -7,8 +7,8 @@ import {
 export class CJMVTTP001Poster extends BaseCalendarPoster {
   constructor(images: PageImage[]) {
     const config: CalendarPosterConfig = {
-      bgImagePath: "/assets/CJ-MVTTP001-calendar-bg.png",
-      ringImagePath: "/assets/CJ-MVTTP001-calendar-ring.png",
+      bgImagePath: "/assets/CJ-MVTTP001-calendar-bg.e2df6d74.png",
+      ringImagePath: "/assets/CJ-MVTTP001-calendar-ring.a5505a05.png",
       perspectiveImage1Coords: [
         [190, 203], // 左上
         [539, 185], // 右上

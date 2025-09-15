@@ -7,7 +7,7 @@ const Cooperation: React.FC = () => {
       <p>请通过邮箱 huangtong.ht@qq.com 联系我。</p>
       <div style={{ marginTop: "24px" }}>
         <p>添加微信：</p>
-        <img width={100} src="/assets/wechat-qr.png" alt="微信二维码" />
+        <img width={100} src="/assets/wechat-qr.506cb037.png" alt="微信二维码" />
       </div>
     </div>
   );

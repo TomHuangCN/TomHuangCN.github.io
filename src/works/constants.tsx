@@ -36,7 +36,7 @@ const works: IWork[] = [
     name: "CJ-MVTTP001",
     desc: `图的印刷尺寸是：155mm * 215mm，按 DPI 300 印刷，像素尺寸至少 ${CJ_MVTTP001_WIDTH} × ${CJ_MVTTP001_HEIGHT}`,
     content: CJ_MVTTP001,
-    illustration: "/assets/CJ-MVTTP001_illustration.png",
+    illustration: "/assets/CJ-MVTTP001_illustration.515e667e.png",
     tips: [
       // {
       //   content: "产品编号的含义",
@@ -49,7 +49,7 @@ const works: IWork[] = [
     name: "CJ-MVTTP002",
     desc: `图的印刷尺寸是：145mm * 215mm，按 DPI 300 印刷，像素尺寸至少 ${CJ_MVTTP002_WIDTH} × ${CJ_MVTTP002_HEIGHT}`,
     content: CJ_MVTTP002,
-    illustration: "/assets/CJ-MVTTP002_illustration.png",
+    illustration: "/assets/CJ-MVTTP002_illustration.6447eeaa.png",
     tips: [
       // {
       //   content: "产品编号的含义",
@@ -62,7 +62,7 @@ const works: IWork[] = [
     name: "CJ-MHVAR001",
     desc: `图的印刷尺寸是：145mm * 105mm，按 DPI 350 印刷，像素尺寸至少 ${CJ_MHVAR001_WIDTH} × ${CJ_MHVAR001_HEIGHT}，插槽深度 ：8mm，像素尺寸：110`,
     content: CJ_MHVAR001,
-    illustration: "/assets/CJ-MHVAR001_illustration.jpg",
+    illustration: "/assets/CJ-MHVAR001_illustration.1bf27dfc.jpg",
     tips: [],
   },
   {
@@ -70,7 +70,7 @@ const works: IWork[] = [
     name: "CJ-MVVAR001",
     desc: `图的印刷尺寸是：170mm * 120mm，按 DPI 350 印刷，像素尺寸至少 ${CJ_MVVAR001_WIDTH} × ${CJ_MVVAR001_HEIGHT}，插槽深度 ：10mm，像素尺寸：110`,
     content: CJ_MVVAR001,
-    illustration: "/assets/CJ-MVVAR001_illustration.jpg",
+    illustration: "/assets/CJ-MVVAR001_illustration.fc78abbb.jpg",
     tips: [],
   },
   {
