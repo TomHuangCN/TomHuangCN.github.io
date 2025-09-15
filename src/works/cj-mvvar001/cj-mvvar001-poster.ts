@@ -10,16 +10,16 @@ export class CJMVVAR001Poster extends BaseCalendarPoster {
       bgImagePath: "/assets/CJ-MVVAR001-calendar-bg.jpg",
       ringImagePath: "/assets/CJ-MVVAR001-calendar-ring.png",
       perspectiveImage1Coords: [
-        [153, 212],
-        [468, 200],
-        [509, 660],
-        [193, 713],
+        [180, 348],
+        [760, 334],
+        [819, 1160],
+        [239, 1225],
       ],
       perspectiveImage2Coords: [
-        [629, 191], // 左上
-        [941, 202], // 右上
-        [902, 693], // 右下
-        [593, 650], // 左下
+        [965, 337], // 左上
+        [1548, 352], // 右上
+        [1489, 1231], // 右下
+        [904, 1166], // 左下
       ],
     };
     super(images, config);
