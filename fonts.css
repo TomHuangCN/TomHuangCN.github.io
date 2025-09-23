@@ -3,7 +3,7 @@
 /* 手写体字体定义 */
 @font-face {
   font-family: 'Xiaolai';
-  src: url('https://cdn.jsdelivr.net.cn/gh/TomHuangCN/TomHuangCN.github.io@gh-pages/assets/fonts/Xiaolai-Regular.woff2') format('woff2');
+  src: url('https://cdn.jsdelivr.net.cn/gh/TomHuangCN/TomHuangCN.github.io@gh-pages/assets/fonts/Xiaolai-Regular.d3c42476.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -11,7 +11,7 @@
 
 @font-face {
   font-family: 'VonwaonBitmap-12px';
-  src: url('https://cdn.jsdelivr.net.cn/gh/TomHuangCN/TomHuangCN.github.io@gh-pages/assets/fonts/VonwaonBitmap-12px.ttf') format('truetype');
+  src: url('https://cdn.jsdelivr.net.cn/gh/TomHuangCN/TomHuangCN.github.io@gh-pages/assets/fonts/VonwaonBitmap-12px.696c3c92.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -19,7 +19,7 @@
 
 @font-face {
   font-family: '千图小兔体';
-  src: url('https://cdn.jsdelivr.net.cn/gh/TomHuangCN/TomHuangCN.github.io@gh-pages/assets/fonts/千图小兔体.ttf') format('truetype');
+  src: url('https://cdn.jsdelivr.net.cn/gh/TomHuangCN/TomHuangCN.github.io@gh-pages/assets/fonts/千图小兔体.3b0b79b2.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
