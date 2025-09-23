@@ -4,9 +4,9 @@
  */
 
 const fontMap: Record<string, string> = {
-  Xiaolai: "/assets/fonts/Xiaolai-Regular.woff2",
-  "VonwaonBitmap-12px": "/assets/fonts/VonwaonBitmap-12px.ttf",
-  千图小兔体: "/assets/fonts/千图小兔体.ttf",
+  Xiaolai: "/assets/fonts/Xiaolai-Regular.d3c42476.woff2",
+  "VonwaonBitmap-12px": "/assets/fonts/VonwaonBitmap-12px.696c3c92.ttf",
+  千图小兔体: "/assets/fonts/千图小兔体.3b0b79b2.ttf",
 };
 
 // 自定义字体映射（从IndexedDB加载）

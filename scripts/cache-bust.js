@@ -85,6 +85,56 @@ function generateNewFileName(originalPath) {
 }
 
 /**
+ * 专门处理字体文件的路径更新
+ * @param {string} filePath 文件路径
+ * @param {Map} fontMap 字体文件映射
+ */
+function updateFontReferences(filePath, fontMap) {
+  let content = fs.readFileSync(filePath, "utf8");
+  let modified = false;
+
+  for (const [originalPath, newPath] of fontMap) {
+    const originalFileName = path.basename(originalPath);
+    const newFileName = path.basename(newPath);
+    
+    if (originalFileName === newFileName) continue;
+
+    // 字体文件的特殊匹配模式
+    const fontPatterns = [
+      // CSS @font-face 中的 src 属性
+      new RegExp(
+        `(src:\\s*url\\(['"]?)/assets/fonts/${originalFileName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(['"]?\\))`,
+        "g"
+      ),
+      // JavaScript 中的字体路径字符串
+      new RegExp(
+        `(['"]/assets/fonts/)${originalFileName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(['"])`,
+        "g"
+      ),
+      // 字体映射对象中的路径
+      new RegExp(
+        `(['"]/assets/fonts/)${originalFileName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(['"])`,
+        "g"
+      )
+    ];
+
+    for (const pattern of fontPatterns) {
+      if (pattern.test(content)) {
+        content = content.replace(pattern, (match, prefix, suffix) => {
+          return `${prefix}${newFileName}${suffix}`;
+        });
+        modified = true;
+      }
+    }
+  }
+
+  if (modified) {
+    fs.writeFileSync(filePath, content, "utf8");
+    console.log(`✓ 更新字体引用: ${path.relative(projectRoot, filePath)}`);
+  }
+}
+
+/**
  * 更新文件中的资源引用
  * @param {string} filePath 文件路径
  * @param {Map} fileMap 文件映射
@@ -95,33 +145,72 @@ function updateFileReferences(filePath, fileMap) {
 
   // 更新所有映射的文件引用
   for (const [originalPath, newPath] of fileMap) {
-    // 匹配各种可能的引用格式
-    const patterns = [
-      new RegExp(
-        `"/assets/${path.basename(originalPath).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}"`,
-        "g"
-      ),
-      new RegExp(
-        `'/assets/${path.basename(originalPath).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}'`,
-        "g"
-      ),
-      new RegExp(
-        `"/assets/${path.basename(originalPath).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}"`,
-        "g"
-      ),
-      new RegExp(
-        `'/assets/${path.basename(originalPath).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}'`,
-        "g"
-      ),
-    ];
+    const originalFileName = path.basename(originalPath);
+    const newFileName = path.basename(newPath);
+    
+    // 跳过没有变化的文件
+    if (originalFileName === newFileName) continue;
 
+    // 获取文件扩展名，用于特殊处理
+    const ext = path.extname(originalPath).toLowerCase();
+    const isFontFile = ['.ttf', '.woff', '.woff2', '.otf'].includes(ext);
+
+    // 构建更全面的匹配模式
+    const patterns = [];
+
+    if (isFontFile) {
+      // 字体文件的特殊处理 - 支持更多引用格式
+      patterns.push(
+        // CSS @font-face 中的 url() 引用
+        new RegExp(
+          `url\\(['"]?/assets/fonts/${originalFileName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}['"]?\\)`,
+          "g"
+        ),
+        // JavaScript/TypeScript 中的字符串引用
+        new RegExp(
+          `['"]/assets/fonts/${originalFileName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}['"]`,
+          "g"
+        ),
+        // 相对路径引用
+        new RegExp(
+          `['"]\\./assets/fonts/${originalFileName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}['"]`,
+          "g"
+        ),
+        // 不带引号的引用
+        new RegExp(
+          `/assets/fonts/${originalFileName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`,
+          "g"
+        )
+      );
+    } else {
+      // 其他资源文件的处理
+      patterns.push(
+        new RegExp(
+          `['"]/assets/${originalFileName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}['"]`,
+          "g"
+        ),
+        new RegExp(
+          `['"]\\./assets/${originalFileName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}['"]`,
+          "g"
+        )
+      );
+    }
+
+    // 应用所有匹配模式
     for (const pattern of patterns) {
       if (pattern.test(content)) {
         content = content.replace(pattern, match => {
-          return match.replace(
-            path.basename(originalPath),
-            path.basename(newPath)
-          );
+          // 保持原有的引号格式
+          if (match.includes("url(")) {
+            // CSS url() 格式
+            return match.replace(originalFileName, newFileName);
+          } else if (match.startsWith('"') || match.startsWith("'")) {
+            // 带引号的字符串
+            return match.replace(originalFileName, newFileName);
+          } else {
+            // 不带引号的路径
+            return match.replace(originalFileName, newFileName);
+          }
         });
         modified = true;
       }
@@ -131,6 +220,34 @@ function updateFileReferences(filePath, fileMap) {
   if (modified) {
     fs.writeFileSync(filePath, content, "utf8");
     console.log(`✓ 更新文件引用: ${path.relative(projectRoot, filePath)}`);
+  }
+}
+
+/**
+ * 递归更新目录中字体文件的引用
+ * @param {string} dir 目录路径
+ * @param {Map} fontMap 字体文件映射
+ */
+function updateFontReferencesInDirectory(dir, fontMap) {
+  const items = fs.readdirSync(dir);
+
+  for (const item of items) {
+    const fullPath = path.join(dir, item);
+    const stat = fs.statSync(fullPath);
+
+    if (stat.isDirectory()) {
+      updateFontReferencesInDirectory(fullPath, fontMap);
+    } else if (stat.isFile()) {
+      const ext = path.extname(item).toLowerCase();
+      // 字体引用可能出现在这些文件中
+      const supportedExtensions = [
+        ".ts", ".tsx", ".js", ".jsx", ".css", ".scss", ".sass", ".less"
+      ];
+      
+      if (supportedExtensions.includes(ext)) {
+        updateFontReferences(fullPath, fontMap);
+      }
+    }
   }
 }
 
@@ -148,14 +265,16 @@ function updateDirectoryReferences(dir, fileMap) {
 
     if (stat.isDirectory()) {
       updateDirectoryReferences(fullPath, fileMap);
-    } else if (
-      stat.isFile() &&
-      (item.endsWith(".ts") ||
-        item.endsWith(".tsx") ||
-        item.endsWith(".js") ||
-        item.endsWith(".jsx"))
-    ) {
-      updateFileReferences(fullPath, fileMap);
+    } else if (stat.isFile()) {
+      const ext = path.extname(item).toLowerCase();
+      // 支持更多文件类型，包括 CSS 文件
+      const supportedExtensions = [
+        ".ts", ".tsx", ".js", ".jsx", ".css", ".scss", ".sass", ".less"
+      ];
+      
+      if (supportedExtensions.includes(ext)) {
+        updateFileReferences(fullPath, fileMap);
+      }
     }
   }
 }
@@ -203,6 +322,7 @@ function main() {
   }
 
   const fileMap = new Map();
+  const fontMap = new Map();
 
   // 重命名文件
   console.log("📝 重命名文件:");
@@ -212,6 +332,12 @@ function main() {
     fs.renameSync(file, newPath);
     fileMap.set(file, newPath);
 
+    // 分离字体文件用于特殊处理
+    const ext = path.extname(file).toLowerCase();
+    if (['.ttf', '.woff', '.woff2', '.otf'].includes(ext)) {
+      fontMap.set(file, newPath);
+    }
+
     console.log(`  ${path.basename(file)} → ${path.basename(newPath)}`);
   }
 
@@ -219,6 +345,26 @@ function main() {
 
   // 更新源代码中的引用
   updateDirectoryReferences(CONFIG.srcDir, fileMap);
+  
+  // 更新 public 目录中的 CSS 文件引用
+  const publicDir = path.join(projectRoot, "public");
+  if (fs.existsSync(publicDir)) {
+    console.log("📝 更新 public 目录中的文件引用:");
+    updateDirectoryReferences(publicDir, fileMap);
+  }
+
+  // 专门处理字体文件引用
+  if (fontMap.size > 0) {
+    console.log("\n📝 更新字体文件引用:");
+    
+    // 处理 src 目录中的字体引用
+    updateFontReferencesInDirectory(CONFIG.srcDir, fontMap);
+    
+    // 处理 public 目录中的字体引用
+    if (fs.existsSync(publicDir)) {
+      updateFontReferencesInDirectory(publicDir, fontMap);
+    }
+  }
 
   // 保存缓存映射
   saveCacheMap(fileMap);
@@ -226,6 +372,7 @@ function main() {
   console.log("\n✅ 缓存破坏处理完成!");
   console.log(`📊 处理统计:`);
   console.log(`   - 重命名文件: ${files.length} 个`);
+  console.log(`   - 字体文件: ${fontMap.size} 个`);
   console.log(
     `   - 映射文件: ${path.relative(projectRoot, CONFIG.cacheMapFile)}`
   );
