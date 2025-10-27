@@ -17,6 +17,7 @@ import CJ_MVVAR001, {
   CJ_MVVAR001_HEIGHT,
   CJ_MVVAR001_WIDTH,
 } from "./cj-mvvar001/cj-mvvar001";
+import { ImageCollage } from "./image-collage/image-collage";
 
 export interface IWork {
   id: string;
@@ -84,6 +85,12 @@ const works: IWork[] = [
     name: "英语日历网格",
     desc: "简洁的英语版日历网格生成器，专注于英语环境下的日历展示，支持周日高亮等功能。",
     content: EnglishCalendarGrid,
+  },
+  {
+    id: "image-collage",
+    name: "图片拼接工具",
+    desc: "上传多张图片，自动按网格布局拼接成一张图，并智能提取最适合的背景色。支持任意数量图片，自动计算最佳布局。",
+    content: ImageCollage,
   },
 ];
 
